@@ -1,0 +1,24 @@
+export const COLLECTIONS = {
+  USERS: 'users',
+  GUILDS: 'guilds',
+  GAMES: 'games',
+  ACHIEVEMENTS: 'achievements',
+  EVENTS: 'events',
+  PRODUCTS: 'marketplace_products',
+  COUPONS: 'marketplace_coupons',
+  PLANS: 'premium_plans',
+  REPORTS: 'reports',
+  NOTIFICATIONS: 'notifications',
+  CMS_SECTIONS: 'cms_sections',
+  SEO: 'seo_settings',
+  TRANSLATIONS: 'translations',
+  ADMIN_ROLES: 'admin_roles',
+  ADMIN_LOGS: 'admin_logs',
+  ADMIN_SESSIONS: 'admin_sessions',
+  SETTINGS: 'platform_settings',
+  BANNERS: 'banners',
+  FAQ: 'faq',
+  AUDIT_LOG: 'audit_log',
+} as const;
+
+export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
