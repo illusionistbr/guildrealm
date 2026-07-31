@@ -2,20 +2,26 @@
 
 import { Eye, EyeOff, Lock, LogIn, Mail, ShieldCheck, Trophy, UsersRound, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { useState } from 'react';
-import { useAuthStore, loginTestAdmin } from '@/lib/admin/rbac/store';
+import { getFirebaseAuth } from '@/lib/admin/firebase/client';
 
 const trustIcons = [ShieldCheck, UsersRound, Trophy, ShieldCheck] as const;
 
 type TrustBadge = { title: string; text: string };
 
-const TEST_ACCOUNTS = [
-  { label: 'Admin', email: 'admin@guildrealm.com', password: 'Admin@123', role: 'Super Admin' },
-  { label: 'Moderador', email: 'mod@guildrealm.com', password: 'Mod@123', role: 'Moderador' },
-  { label: 'Editor', email: 'editor@guildrealm.com', password: 'Editor@123', role: 'Editor' },
-];
+const ERROR_MESSAGES: Record<string, string> = {
+  'auth/invalid-credential': 'E-mail ou senha inválidos.',
+  'auth/invalid-login-credentials': 'E-mail ou senha inválidos.',
+  'auth/wrong-password': 'E-mail ou senha inválidos.',
+  'auth/user-not-found': 'E-mail ou senha inválidos.',
+  'auth/invalid-email': 'Digite um e-mail válido.',
+  'auth/user-disabled': 'Esta conta foi desativada. Contate o suporte.',
+  'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
+  'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.',
+};
 
 export default function LoginPage() {
   const t = useTranslations('Login');
@@ -24,32 +30,30 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
   const [loading, setLoading] = useState(false);
-  const setSession = useAuthStore((s) => s.setSession);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setWarning('');
     setLoading(true);
 
-    // Simula delay de rede
-    await new Promise((r) => setTimeout(r, 600));
+    try {
+      const credential = await signInWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
 
-    const session = loginTestAdmin(email, password);
-    if (!session) {
-      setError('Email ou senha inválidos.');
+      if (!credential.user.emailVerified) {
+        setWarning('Seu e-mail ainda não foi verificado. Confira sua caixa de entrada e, se necessário, reenvie o link de confirmação.');
+      }
+
+      setTimeout(() => {
+        window.location.href = '/app/dashboard';
+      }, 300);
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code ?? '';
+      setError(ERROR_MESSAGES[code] ?? 'Erro ao entrar. Tente novamente em instantes.');
       setLoading(false);
-      return;
     }
-
-    setSession(session);
-    document.cookie = 'admin_session=active; path=/admin; max-age=86400';
-    window.location.href = '/app/dashboard';
-  };
-
-  const fillTestAccount = (acc: typeof TEST_ACCOUNTS[0]) => {
-    setEmail(acc.email);
-    setPassword(acc.password);
   };
 
   return (
@@ -61,24 +65,15 @@ export default function LoginPage() {
           <h2>{t('formTitle')}</h2>
           <p className="login-card-sub">{t('formText')}</p>
 
-          {/* Test accounts */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {TEST_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.email}
-                type="button"
-                onClick={() => fillTestAccount(acc)}
-                className="text-xs px-2.5 py-1.5 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted hover:text-white hover:border-accent/30 transition-all bg-[rgba(10,18,32,0.4)]"
-                title={`${acc.role}: ${acc.email} / ${acc.password}`}
-              >
-                {acc.label}
-              </button>
-            ))}
-          </div>
-
           {error && (
             <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
               <AlertCircle size={16} /> {error}
+            </div>
+          )}
+
+          {warning && (
+            <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
+              <AlertCircle size={16} /> {warning}
             </div>
           )}
 

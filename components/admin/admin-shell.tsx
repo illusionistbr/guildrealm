@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore, logoutTestAdmin } from '@/lib/admin/rbac/store';
+import { signOut } from 'firebase/auth';
+import { useAuthStore } from '@/lib/admin/rbac/store';
+import { getFirebaseAuth } from '@/lib/admin/firebase/client';
 import { Sidebar } from './sidebar';
 import { AdminHeader } from './admin-header';
 import { cn } from '@/lib/admin/utils/cn';
@@ -32,8 +34,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const handleLogout = () => {
-    logoutTestAdmin();
+  const handleLogout = async () => {
+    try {
+      await signOut(getFirebaseAuth());
+    } catch {
+      // Ignora falha no signOut local
+    }
     document.cookie = 'admin_session=; path=/admin; max-age=0';
     useAuthStore.getState().clearSession();
     router.push('/admin/login');

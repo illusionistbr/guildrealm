@@ -2,15 +2,25 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { ShieldCheck, Eye, EyeOff, LogIn, AlertTriangle } from 'lucide-react';
-import { useAuthStore, loginTestAdmin } from '@/lib/admin/rbac/store';
+import { useAuthStore, buildAdminSession } from '@/lib/admin/rbac/store';
+import type { AdminRole, Permission } from '@/lib/admin/rbac/roles';
+import { getFirebaseAuth } from '@/lib/admin/firebase/client';
 import { cn } from '@/lib/admin/utils/cn';
 
-const TEST_ACCOUNTS = [
-  { email: 'admin@guildrealm.com', password: 'Admin@123', role: 'Super Admin' },
-  { email: 'mod@guildrealm.com', password: 'Mod@123', role: 'Moderador' },
-  { email: 'editor@guildrealm.com', password: 'Editor@123', role: 'Editor' },
-];
+const ADMIN_ROLES: AdminRole[] = ['super_admin', 'admin', 'moderator', 'editor', 'support'];
+
+const ERROR_MESSAGES: Record<string, string> = {
+  'auth/invalid-credential': 'E-mail ou senha inválidos.',
+  'auth/invalid-login-credentials': 'E-mail ou senha inválidos.',
+  'auth/wrong-password': 'E-mail ou senha inválidos.',
+  'auth/user-not-found': 'E-mail ou senha inválidos.',
+  'auth/invalid-email': 'Digite um e-mail válido.',
+  'auth/user-disabled': 'Esta conta foi desativada. Contate o suporte.',
+  'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
+  'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.',
+};
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -19,7 +29,6 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const setSession = useAuthStore((s) => s.setSession);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,36 +36,39 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      // Simulate network delay
-      await new Promise((r) => setTimeout(r, 300));
+      const credential = await signInWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
 
-      const session = loginTestAdmin(email, password);
+      const idTokenResult = await credential.user.getIdTokenResult();
+      const role = idTokenResult.claims.role as AdminRole | undefined;
 
-      if (!session) {
-        setError('Credenciais inválidas.');
+      if (!role || !ADMIN_ROLES.includes(role)) {
+        setError('Acesso negado. Esta conta não possui permissões administrativas.');
         setLoading(false);
         return;
       }
 
+      const session = buildAdminSession({
+        uid: credential.user.uid,
+        email: credential.user.email ?? email.trim(),
+        role,
+        permissions: Array.isArray(idTokenResult.claims.permissions)
+          ? (idTokenResult.claims.permissions as Permission[])
+          : [],
+        displayName: credential.user.displayName ?? undefined,
+        photoURL: credential.user.photoURL ?? undefined,
+      });
+
       // Set cookie for middleware (server-side auth check)
-      document.cookie = `admin_session=${session.uid}; path=/admin; max-age=86400; SameSite=Lax`;
+      document.cookie = `admin_session=${credential.user.uid}; path=/admin; max-age=86400; SameSite=Lax`;
 
-      setSession(session);
-
-      // Force a small delay to ensure zustand persist writes to localStorage
-      await new Promise((r) => setTimeout(r, 50));
+      useAuthStore.getState().setSession(session);
 
       window.location.href = '/admin/dashboard';
-    } catch {
-      setError('Erro ao fazer login.');
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code ?? '';
+      setError(ERROR_MESSAGES[code] ?? 'Erro ao fazer login.');
       setLoading(false);
     }
-  };
-
-  const fillAccount = (acc: typeof TEST_ACCOUNTS[0]) => {
-    setEmail(acc.email);
-    setPassword(acc.password);
-    setError('');
   };
 
   return (
@@ -70,7 +82,7 @@ export default function AdminLoginPage() {
             <ShieldCheck className="w-8 h-8 text-accent" />
           </div>
           <h1 className="text-2xl font-heading font-bold text-white">GuildRealm Admin</h1>
-          <p className="text-muted text-sm mt-1">Painel administrativo — modo teste</p>
+          <p className="text-muted text-sm mt-1">Painel administrativo — acesso restrito</p>
         </div>
 
         <form
@@ -90,7 +102,7 @@ export default function AdminLoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@guildrealm.com"
+              placeholder="seu@email.com"
               required
               className="w-full h-11 px-4 bg-[#050912] border border-[rgba(38,51,86,0.7)] rounded-lg text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
             />
@@ -135,27 +147,6 @@ export default function AdminLoginPage() {
             )}
           </button>
         </form>
-
-        <div className="mt-6 bg-[#0a1122] border border-[rgba(38,51,86,0.7)] rounded-2xl p-5 space-y-3">
-          <p className="text-muted text-xs font-bold uppercase tracking-widest text-center mb-3">
-            Contas de teste
-          </p>
-          {TEST_ACCOUNTS.map((acc) => (
-            <button
-              key={acc.email}
-              onClick={() => fillAccount(acc)}
-              className="w-full flex items-center justify-between px-4 py-3 bg-[rgba(38,51,86,0.2)] hover:bg-[rgba(109,40,217,0.1)] rounded-lg text-sm transition-colors"
-            >
-              <div className="text-left">
-                <p className="text-white font-medium">{acc.email}</p>
-                <p className="text-muted text-xs">{acc.password}</p>
-              </div>
-              <span className="px-2 py-0.5 bg-accent/10 text-accent text-xs font-medium rounded">
-                {acc.role}
-              </span>
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
