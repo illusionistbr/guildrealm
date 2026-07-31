@@ -5,87 +5,160 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Admin roles collection - only admins can read/write
-    match /admin_roles/{userId} {
-      allow read: if request.auth != null && request.auth.token.role in ['super_admin', 'admin'];
-      allow write: if request.auth != null && request.auth.token.role == 'super_admin';
+    // Helpers: cargos definidos via Custom Claims (Cloud Function setAdminClaims)
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Admin logs - only admins can read
-    match /admin_logs/{logId} {
-      allow read: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'moderator'];
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin'];
+    function hasRole(roles) {
+      return isSignedIn() && request.auth.token.role in roles;
     }
 
-    // Users collection
+    function isAdmin() {
+      return hasRole(['super_admin', 'admin']);
+    }
+
+    function isStaff() {
+      return hasRole(['super_admin', 'admin', 'moderator', 'editor', 'support']);
+    }
+
+    // ============ USUÁRIOS ============
     match /users/{userId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null && (request.auth.uid == userId || request.auth.token.role in ['super_admin', 'admin', 'moderator']);
-      allow delete: if request.auth != null && request.auth.token.role in ['super_admin', 'admin'];
+      allow read: if isSignedIn(); // perfis podem exigir login
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() &&
+        (request.auth.uid == userId || isStaff());
+      allow delete: if isAdmin();
     }
 
-    // Guilds collection
+    // ============ GUILDS ============
     match /guilds/{guildId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'moderator'];
+      allow read: if true; // listagem pública
+      allow create: if isSignedIn() &&
+        request.resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn() &&
+        (request.resource.data.ownerId == request.auth.uid ||
+         resource.data.ownerId == request.auth.uid ||
+         isStaff());
+      allow delete: if isSignedIn() &&
+        (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
-    // Games collection
-    match /games/{gameId} {
+    // ============ CONTEÚDO PÚBLICO (leitura livre, escrita de staff) ============
+    match /games/{id} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'editor'];
+      allow write: if hasRole(['super_admin', 'admin', 'editor']);
     }
-
-    // Achievements collection
-    match /achievements/{achievementId} {
+    match /achievements/{id} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'editor'];
+      allow write: if hasRole(['super_admin', 'admin', 'editor']);
     }
-
-    // Events collection
-    match /events/{eventId} {
+    match /events/{id} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'editor'];
+      allow write: if hasRole(['super_admin', 'admin', 'editor']);
     }
-
-    // CMS sections
-    match /cms_sections/{sectionId} {
+    match /cms_sections/{id} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'editor'];
+      allow write: if hasRole(['super_admin', 'admin', 'editor']);
+    }
+    match /seo_settings/{id} {
+      allow read: if true;
+      allow write: if hasRole(['super_admin', 'admin', 'editor']);
+    }
+    match /translations/{id} {
+      allow read: if true;
+      allow write: if hasRole(['super_admin', 'admin', 'editor']);
+    }
+    match /banners/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /faq/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /premium_plans/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
-    // Platform settings
-    match /platform_settings/{settingId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin'];
+    // ============ MARKETPLACE ============
+    match /marketplace_products/{id} {
+      allow read: if true;
+      allow write: if hasRole(['super_admin', 'admin']); // marketplace:manage
+    }
+    match /marketplace_coupons/{id} {
+      allow read: if isStaff(); // cupons não são públicos
+      allow write: if isAdmin();
     }
 
-    // Reports (moderation)
-    match /reports/{reportId} {
-      allow read: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'moderator'];
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'moderator'];
-    }
-
-    // Notifications
+    // ============ NOTIFICAÇÕES (somente do próprio usuário) ============
     match /notifications/{notificationId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'editor'];
+      allow read: if isSignedIn() &&
+        (request.auth.uid == notificationId ||
+         request.auth.token.uid == request.resource.data.uid ||
+         isAdmin());
+      allow create: if isSignedIn() &&
+        request.resource.data.uid == request.auth.uid;
+      allow update: if isSignedIn() &&
+        (request.resource.data.uid == request.auth.uid ||
+         resource.data.uid == request.auth.uid);
+      allow delete: if isSignedIn() &&
+        resource.data.uid == request.auth.uid;
     }
 
-    // SEO settings
-    match /seo_settings/{settingId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'editor'];
+    // ============ MODERAÇÃO ============
+    match /reports/{reportId} {
+      allow create: if isSignedIn(); // qualquer usuário pode denunciar
+      allow read: if hasRole(['super_admin', 'admin', 'moderator']);
+      allow update: if hasRole(['super_admin', 'admin', 'moderator']);
+      allow delete: if isAdmin();
     }
 
-    // Translations
-    match /translations/{langId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role in ['super_admin', 'admin', 'editor'];
+    // ============ ADMIN ============
+    match /admin_roles/{userId} {
+      // leitura do próprio doc para montar sessão (getAdminProfile)
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if isAdmin();
+      allow delete: if hasRole(['super_admin']);
     }
 
-    // Deny all other access
+    match /admin_permissions/{id} {
+      allow read, write: if hasRole(['super_admin']);
+    }
+
+    match /admin_sessions/{sessionId} {
+      allow read: if hasRole(['super_admin']);
+      allow create: if isStaff(); // criação da sessão
+      allow update: if hasRole(['super_admin', 'admin']);
+      allow delete: if hasRole(['super_admin', 'admin']);
+    }
+
+    match /admin_settings/{id} {
+      allow read: if isStaff();
+      allow write: if isAdmin(); // settings:manage
+    }
+
+    match /admin_logs/{logId} {
+      // logs são criados pelo client (createAuditLog/recordAdminLogin)
+      allow create: if isStaff();
+      allow read: if hasRole(['super_admin', 'admin', 'moderator']);
+      allow update: if hasRole(['super_admin', 'admin']);
+      allow delete: if hasRole(['super_admin']);
+    }
+
+    match /audit_log/{logId} {
+      allow create: if isStaff();
+      allow read: if hasRole(['super_admin', 'admin']);
+      allow update, delete: if hasRole(['super_admin']);
+    }
+
+    match /platform_settings/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ============ NEGA TODO O RESTO ============
     match /{document=**} {
       allow read, write: if false;
     }
