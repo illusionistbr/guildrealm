@@ -146,6 +146,23 @@ export function useGuildGroups(guildId: string | null) {
   const [loading, setLoading] = useState(true);
   const guildIdRef = useRef(guildId);
   guildIdRef.current = guildId;
+  const groupsRef = useRef<GroupWithMembers[]>([]);
+  groupsRef.current = groups;
+
+  // Aplica a mudança otimista e reverte caso a operação no servidor falhe.
+  const withOptimistic = useCallback(
+    async (mutate: (prev: GroupWithMembers[]) => GroupWithMembers[], fn: () => Promise<unknown>) => {
+      const prev = groupsRef.current;
+      setGroups(mutate(prev));
+      try {
+        await fn();
+      } catch (err) {
+        setGroups(prev);
+        throw err;
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!guildId) {
@@ -293,10 +310,29 @@ export function useGuildGroups(guildId: string | null) {
         getFunctions(getFirebaseApp()),
         'assignGuildMember',
       );
-      await fn({ guildId: gid, userId, toGroupId: groupId, roleId });
+      await withOptimistic(
+        (prev) =>
+          prev.map((g) =>
+            g.id === groupId && !g.members.some((m) => m.userId === userId)
+              ? {
+                  ...g,
+                  members: [
+                    ...g.members,
+                    {
+                      userId,
+                      roleId,
+                      position: g.members.length,
+                      joinedAt: undefined,
+                    },
+                  ],
+                }
+              : g,
+          ),
+        () => fn({ guildId: gid, userId, toGroupId: groupId, roleId }),
+      );
       return true;
     },
-    [],
+    [withOptimistic],
   );
 
   const moveMember = useCallback(
@@ -318,25 +354,54 @@ export function useGuildGroups(guildId: string | null) {
         getFunctions(getFirebaseApp()),
         'assignGuildMember',
       );
-      await fn({ guildId: gid, userId, fromGroupId, toGroupId, roleId: toRoleId });
+      await withOptimistic(
+        (prev) =>
+          prev.map((g) => {
+            if (g.id === fromGroupId) {
+              return { ...g, members: g.members.filter((m) => m.userId !== userId) };
+            }
+            if (g.id === toGroupId && !g.members.some((m) => m.userId === userId)) {
+              return {
+                ...g,
+                members: [
+                  ...g.members,
+                  { userId, roleId: toRoleId, position: g.members.length, joinedAt: undefined },
+                ],
+              };
+            }
+            return g;
+          }),
+        () => fn({ guildId: gid, userId, fromGroupId, toGroupId, roleId: toRoleId }),
+      );
       return true;
     },
-    [],
+    [withOptimistic],
   );
 
-  const removeMemberFromGroup = useCallback(async (groupId: string, userId: string) => {
-    const gid = guildIdRef.current;
-    if (!gid) return;
-    const fn = httpsCallable<{
-      guildId: string;
-      groupId: string;
-      userId: string;
-    }, { success: boolean }>(
-      getFunctions(getFirebaseApp()),
-      'removeGuildMember',
-    );
-    await fn({ guildId: gid, groupId, userId });
-  }, []);
+  const removeMemberFromGroup = useCallback(
+    async (groupId: string, userId: string) => {
+      const gid = guildIdRef.current;
+      if (!gid) return;
+      const fn = httpsCallable<{
+        guildId: string;
+        groupId: string;
+        userId: string;
+      }, { success: boolean }>(
+        getFunctions(getFirebaseApp()),
+        'removeGuildMember',
+      );
+      await withOptimistic(
+        (prev) =>
+          prev.map((g) =>
+            g.id === groupId
+              ? { ...g, members: g.members.filter((m) => m.userId !== userId) }
+              : g,
+          ),
+        () => fn({ guildId: gid, groupId, userId }),
+      );
+    },
+    [withOptimistic],
+  );
 
   const setMemberRole = useCallback(async (groupId: string, userId: string, roleId: string | null) => {
     const gid = guildIdRef.current;

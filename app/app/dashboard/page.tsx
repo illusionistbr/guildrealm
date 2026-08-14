@@ -25,14 +25,17 @@ import {
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import { cn } from '@/lib/admin/utils/cn';
 import {
+  AlertTriangle,
   ChevronRight,
   Crown,
   LayoutDashboard,
   Loader2,
   LogIn,
+  Pencil,
   Plus,
   Shield,
   Sword,
+  Trash2,
   Users,
   X,
 } from 'lucide-react';
@@ -97,6 +100,9 @@ export default function UserDashboard() {
     busy: boolean;
     error: string;
   } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<CharacterDoc | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const ownedGuildsRef = useRef<Map<string, GuildDoc>>(new Map());
   const memberGuildsRef = useRef<Map<string, GuildDoc>>(new Map());
@@ -285,6 +291,28 @@ export default function UserDashboard() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteError('');
+    setDeleteLoading(true);
+    try {
+      const fn = httpsCallable<{ characterId: string }, { success: boolean }>(
+        getFunctions(getFirebaseApp()),
+        'deleteCharacter',
+      );
+      await fn({ characterId: deleteTarget.id });
+      setDeleteTarget(null);
+    } catch (err) {
+      const e = err as { code?: string };
+      setDeleteError(
+        e?.code === 'functions/failed-precondition'
+          ? t('deleteInGuildError')
+          : t('deleteError'),
+      );
+    }
+    setDeleteLoading(false);
+  };
+
   return (
     <motion.div
       initial="initial"
@@ -315,6 +343,7 @@ export default function UserDashboard() {
             onCreateFirst={t('createFirstCharacter')}
             onJoin={openJoinModal}
             onLeave={handleLeave}
+            onDelete={setDeleteTarget}
             guildAction={guildAction}
           />
           <GuildsSection
@@ -333,6 +362,20 @@ export default function UserDashboard() {
           error={joinError}
           onClose={() => setJoinCharacter(null)}
           onJoin={handleJoin}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteCharacterModal
+          character={deleteTarget}
+          loading={deleteLoading}
+          error={deleteError}
+          onClose={() => {
+            if (deleteLoading) return;
+            setDeleteTarget(null);
+            setDeleteError('');
+          }}
+          onConfirm={handleDelete}
         />
       )}
     </motion.div>
@@ -402,6 +445,7 @@ function CharactersSection({
   onCreateFirst,
   onJoin,
   onLeave,
+  onDelete,
   guildAction,
 }: {
   characters: CharacterDoc[];
@@ -411,6 +455,7 @@ function CharactersSection({
   onCreateFirst: string;
   onJoin: (character: CharacterDoc) => void;
   onLeave: (character: CharacterDoc) => void;
+  onDelete: (character: CharacterDoc) => void;
   guildAction: { characterId: string; busy: boolean; error: string } | null;
 }) {
   const t = useTranslations('Dashboard');
@@ -478,7 +523,7 @@ function CharactersSection({
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-muted">
-                        {t('level')} {character.level ?? 1}
+                        {t('cp')} {new Intl.NumberFormat('pt-BR').format(character.level ?? 1)}
                       </span>
                       {character.game && (
                         <span className="text-xs px-1.5 py-0.5 rounded text-muted bg-[rgba(38,51,86,0.3)]">
@@ -491,6 +536,25 @@ function CharactersSection({
                         </span>
                       )}
                     </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Link
+                      href={`/app/characters/new?id=${character.id}`}
+                      aria-label={t('edit')}
+                      title={t('edit')}
+                      className="p-2 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors"
+                    >
+                      <Pencil size={15} />
+                    </Link>
+                    <button
+                      type="button"
+                      aria-label={t('delete')}
+                      title={t('delete')}
+                      onClick={() => onDelete(character)}
+                      className="p-2 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </div>
                 </div>
 
@@ -680,6 +744,82 @@ function JoinGuildModal({
               ))}
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeleteCharacterModal({
+  character,
+  loading,
+  error,
+  onClose,
+  onConfirm,
+}: {
+  character: CharacterDoc;
+  loading: boolean;
+  error: string;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const t = useTranslations('Dashboard');
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#0a1122] shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(38,51,86,0.5)]">
+          <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+            <Trash2 size={18} className="text-red-400" />
+            {t('deleteModalTitle')}
+          </h2>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="p-1.5 rounded-lg text-muted hover:text-white hover:bg-[rgba(38,51,86,0.3)] transition-colors disabled:opacity-50"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="p-5">
+          <p className="text-sm text-muted">
+            {t('deleteModalSub', { name: character.name ?? '' })}
+          </p>
+
+          {error && (
+            <div className="flex items-center gap-2 p-3 mt-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              <AlertTriangle size={16} /> {error}
+            </div>
+          )}
+
+          <div className="flex gap-2 mt-6">
+            <button
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1 h-10 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-sm font-medium hover:text-white hover:bg-[rgba(38,51,86,0.2)] transition-colors disabled:opacity-50"
+            >
+              {t('deleteCancel')}
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={loading}
+              className="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+            >
+              {loading ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Trash2 size={15} />
+              )}
+              {t('deleteConfirm')}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -118,6 +118,7 @@ export const DEFAULT_ROLES: Omit<GuildRole, 'id' | 'guildId' | 'createdBy' | 'cr
   { name: 'DPS', icon: 'Sword', color: '#ef4444', isDefault: true },
   { name: 'Healer', icon: 'HeartPulse', color: '#22c55e', isDefault: true },
   { name: 'Off-healer', icon: 'Sparkles', color: '#a855f7', isDefault: true },
+  { name: 'Support', icon: 'Star', color: '#eab308', isDefault: true },
 ];
 
 export const ROLE_COLORS = [

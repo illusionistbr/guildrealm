@@ -226,27 +226,83 @@
     "gmLabel": "GM: {name}",
     "recruiting": "Recruiting",
     "closedRecruitment": "Recruitment closed",
-    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
     "regions": [
-      { "value": "na", "label": "North America" },
-      { "value": "sa", "label": "South America" },
-      { "value": "asia", "label": "Asia" },
-      { "value": "europe", "label": "Europe" },
-      { "value": "oceania", "label": "Oceania" }
+      {
+        "value": "na",
+        "label": "North America"
+      },
+      {
+        "value": "sa",
+        "label": "South America"
+      },
+      {
+        "value": "asia",
+        "label": "Asia"
+      },
+      {
+        "value": "europe",
+        "label": "Europe"
+      },
+      {
+        "value": "oceania",
+        "label": "Oceania"
+      }
     ],
     "languages": [
-      { "value": "pt", "label": "Portuguese" },
-      { "value": "en", "label": "English" },
-      { "value": "es", "label": "Spanish" },
-      { "value": "fr", "label": "French" },
-      { "value": "de", "label": "German" },
-      { "value": "it", "label": "Italian" },
-      { "value": "pl", "label": "Polish" },
-      { "value": "ru", "label": "Russian" },
-      { "value": "ja", "label": "Japanese" },
-      { "value": "ko", "label": "Korean" },
-      { "value": "zh", "label": "Chinese (Simplified)" },
-      { "value": "tr", "label": "Turkish" }
+      {
+        "value": "pt",
+        "label": "Portuguese"
+      },
+      {
+        "value": "en",
+        "label": "English"
+      },
+      {
+        "value": "es",
+        "label": "Spanish"
+      },
+      {
+        "value": "fr",
+        "label": "French"
+      },
+      {
+        "value": "de",
+        "label": "German"
+      },
+      {
+        "value": "it",
+        "label": "Italian"
+      },
+      {
+        "value": "pl",
+        "label": "Polish"
+      },
+      {
+        "value": "ru",
+        "label": "Russian"
+      },
+      {
+        "value": "ja",
+        "label": "Japanese"
+      },
+      {
+        "value": "ko",
+        "label": "Korean"
+      },
+      {
+        "value": "zh",
+        "label": "Chinese (Simplified)"
+      },
+      {
+        "value": "tr",
+        "label": "Turkish"
+      }
     ]
   },
   "Terms": {
@@ -561,7 +617,10 @@
         "title": "Real Achievements",
         "text": "Climb the rankings and show your dominance."
       },
-      { "title": "Built for Gamers", "text": "All the tools your guild needs." }
+      {
+        "title": "Built for Gamers",
+        "text": "All the tools your guild needs."
+      }
     ]
   },
   "ForgotPassword": {
@@ -609,7 +668,6 @@
     "guildsTitle": "Your Guilds",
     "charactersEmpty": "You haven't created any characters yet.",
     "guildsEmpty": "You're not part of any guild yet.",
-    "level": "Level",
     "leaderRole": "Leader",
     "memberRole": "Member",
     "membersCount": "{count} members",
@@ -630,17 +688,63 @@
     "join": "Join",
     "joinError": "Couldn't join the guild. Please try again.",
     "leaveError": "Couldn't leave the guild. Please try again.",
-    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
     "classes": [
-      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
-      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
-      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
-      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
-      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
-      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
-      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
-      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
-    ]
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
+    ],
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteModalTitle": "Delete character",
+    "deleteModalSub": "Are you sure you want to delete {name}? This action cannot be undone.",
+    "deleteCancel": "Cancel",
+    "deleteConfirm": "Delete",
+    "deleteError": "Couldn't delete the character. Please try again.",
+    "deleteInGuildError": "You can't delete a character that is in a guild. Leave the guild first.",
+    "cp": "CP"
   },
   "CharacterCreate": {
     "title": "Create Character",
@@ -648,24 +752,70 @@
     "nameLabel": "Character name",
     "namePlaceholder": "e.g. Ragnar, Lyra, Thalos",
     "gameLabel": "Game",
-    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
     "classes": [
-      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
-      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
-      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
-      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
-      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
-      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
-      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
-      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
     ],
     "classLabel": "Class",
-    "levelLabel": "Starting level",
     "submit": "Create character",
     "creating": "Creating...",
     "nameRequired": "Enter a name for your character.",
     "createError": "Couldn't create your character. Please try again.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "back": "Back to dashboard",
+    "editTitle": "Edit Character",
+    "editSubtitle": "Update your character details.",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "loading": "Loading character...",
+    "notFound": "Character not found.",
+    "cpLabel": "Combat Power (CP)",
+    "roleLabel": "Role",
+    "rolePlaceholder": "Select a role"
   },
   "GuildCreate": {
     "title": "Create Guild",
@@ -712,37 +862,125 @@
     "noCharacters": "You don't have any characters yet.",
     "createCharacterFirst": "Create character",
     "loadingCharacters": "Loading characters...",
-    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
     "regions": [
-      { "value": "na", "label": "North America" },
-      { "value": "sa", "label": "South America" },
-      { "value": "asia", "label": "Asia" },
-      { "value": "europe", "label": "Europe" },
-      { "value": "oceania", "label": "Oceania" }
+      {
+        "value": "na",
+        "label": "North America"
+      },
+      {
+        "value": "sa",
+        "label": "South America"
+      },
+      {
+        "value": "asia",
+        "label": "Asia"
+      },
+      {
+        "value": "europe",
+        "label": "Europe"
+      },
+      {
+        "value": "oceania",
+        "label": "Oceania"
+      }
     ],
     "languages": [
-      { "value": "pt", "label": "Portuguese" },
-      { "value": "en", "label": "English" },
-      { "value": "es", "label": "Spanish" },
-      { "value": "fr", "label": "French" },
-      { "value": "de", "label": "German" },
-      { "value": "it", "label": "Italian" },
-      { "value": "pl", "label": "Polish" },
-      { "value": "ru", "label": "Russian" },
-      { "value": "ja", "label": "Japanese" },
-      { "value": "ko", "label": "Korean" },
-      { "value": "zh", "label": "Chinese (Simplified)" },
-      { "value": "tr", "label": "Turkish" }
+      {
+        "value": "pt",
+        "label": "Portuguese"
+      },
+      {
+        "value": "en",
+        "label": "English"
+      },
+      {
+        "value": "es",
+        "label": "Spanish"
+      },
+      {
+        "value": "fr",
+        "label": "French"
+      },
+      {
+        "value": "de",
+        "label": "German"
+      },
+      {
+        "value": "it",
+        "label": "Italian"
+      },
+      {
+        "value": "pl",
+        "label": "Polish"
+      },
+      {
+        "value": "ru",
+        "label": "Russian"
+      },
+      {
+        "value": "ja",
+        "label": "Japanese"
+      },
+      {
+        "value": "ko",
+        "label": "Korean"
+      },
+      {
+        "value": "zh",
+        "label": "Chinese (Simplified)"
+      },
+      {
+        "value": "tr",
+        "label": "Turkish"
+      }
     ],
     "classes": [
-      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
-      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
-      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
-      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
-      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
-      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
-      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
-      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
     ]
   },
   "GuildPage": {
@@ -758,25 +996,76 @@
     "languagesLabel": "Languages",
     "recruitmentLabel": "Recruitment",
     "regions": [
-      { "value": "na", "label": "North America" },
-      { "value": "sa", "label": "South America" },
-      { "value": "asia", "label": "Asia" },
-      { "value": "europe", "label": "Europe" },
-      { "value": "oceania", "label": "Oceania" }
+      {
+        "value": "na",
+        "label": "North America"
+      },
+      {
+        "value": "sa",
+        "label": "South America"
+      },
+      {
+        "value": "asia",
+        "label": "Asia"
+      },
+      {
+        "value": "europe",
+        "label": "Europe"
+      },
+      {
+        "value": "oceania",
+        "label": "Oceania"
+      }
     ],
     "languages": [
-      { "value": "pt", "label": "Portuguese" },
-      { "value": "en", "label": "English" },
-      { "value": "es", "label": "Spanish" },
-      { "value": "fr", "label": "French" },
-      { "value": "de", "label": "German" },
-      { "value": "it", "label": "Italian" },
-      { "value": "pl", "label": "Polish" },
-      { "value": "ru", "label": "Russian" },
-      { "value": "ja", "label": "Japanese" },
-      { "value": "ko", "label": "Korean" },
-      { "value": "zh", "label": "Chinese (Simplified)" },
-      { "value": "tr", "label": "Turkish" }
+      {
+        "value": "pt",
+        "label": "Portuguese"
+      },
+      {
+        "value": "en",
+        "label": "English"
+      },
+      {
+        "value": "es",
+        "label": "Spanish"
+      },
+      {
+        "value": "fr",
+        "label": "French"
+      },
+      {
+        "value": "de",
+        "label": "German"
+      },
+      {
+        "value": "it",
+        "label": "Italian"
+      },
+      {
+        "value": "pl",
+        "label": "Polish"
+      },
+      {
+        "value": "ru",
+        "label": "Russian"
+      },
+      {
+        "value": "ja",
+        "label": "Japanese"
+      },
+      {
+        "value": "ko",
+        "label": "Korean"
+      },
+      {
+        "value": "zh",
+        "label": "Chinese (Simplified)"
+      },
+      {
+        "value": "tr",
+        "label": "Turkish"
+      }
     ]
   },
   "GuildPanel": {
@@ -803,14 +1092,46 @@
     "level": "Level",
     "memberRole": "Member",
     "classes": [
-      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
-      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
-      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
-      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
-      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
-      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
-      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
-      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
     ],
     "infoTitle": "Guild Information",
     "leader": "Leader",
@@ -823,26 +1144,103 @@
     "closedRecruitment": "Recruitment closed",
     "languagesLabel": "Languages",
     "regions": [
-      { "value": "na", "label": "North America" },
-      { "value": "sa", "label": "South America" },
-      { "value": "asia", "label": "Asia" },
-      { "value": "europe", "label": "Europe" },
-      { "value": "oceania", "label": "Oceania" }
+      {
+        "value": "na",
+        "label": "North America"
+      },
+      {
+        "value": "sa",
+        "label": "South America"
+      },
+      {
+        "value": "asia",
+        "label": "Asia"
+      },
+      {
+        "value": "europe",
+        "label": "Europe"
+      },
+      {
+        "value": "oceania",
+        "label": "Oceania"
+      }
     ],
     "languages": [
-      { "value": "pt", "label": "Portuguese" },
-      { "value": "en", "label": "English" },
-      { "value": "es", "label": "Spanish" },
-      { "value": "fr", "label": "French" },
-      { "value": "de", "label": "German" },
-      { "value": "it", "label": "Italian" },
-      { "value": "pl", "label": "Polish" },
-      { "value": "ru", "label": "Russian" },
-      { "value": "ja", "label": "Japanese" },
-      { "value": "ko", "label": "Korean" },
-      { "value": "zh", "label": "Chinese (Simplified)" },
-      { "value": "tr", "label": "Turkish" }
-    ]
+      {
+        "value": "pt",
+        "label": "Portuguese"
+      },
+      {
+        "value": "en",
+        "label": "English"
+      },
+      {
+        "value": "es",
+        "label": "Spanish"
+      },
+      {
+        "value": "fr",
+        "label": "French"
+      },
+      {
+        "value": "de",
+        "label": "German"
+      },
+      {
+        "value": "it",
+        "label": "Italian"
+      },
+      {
+        "value": "pl",
+        "label": "Polish"
+      },
+      {
+        "value": "ru",
+        "label": "Russian"
+      },
+      {
+        "value": "ja",
+        "label": "Japanese"
+      },
+      {
+        "value": "ko",
+        "label": "Korean"
+      },
+      {
+        "value": "zh",
+        "label": "Chinese (Simplified)"
+      },
+      {
+        "value": "tr",
+        "label": "Turkish"
+      }
+    ],
+    "cp": "CP",
+    "colMember": "Member",
+    "colClass": "Class",
+    "colCp": "CP",
+    "colRole": "Role",
+    "colRank": "Rank",
+    "colActions": "Actions",
+    "rankLeader": "Leader",
+    "rankOfficer": "Officer",
+    "rankMember": "Member",
+    "roleNone": "No role",
+    "memberInactive": "Inactive",
+    "actionKick": "Kick",
+    "actionBan": "Ban",
+    "actionInactivate": "Deactivate",
+    "actionActivate": "Activate",
+    "actionPromote": "Promote",
+    "actionDemote": "Demote",
+    "kickTitle": "Kick member",
+    "kickMessage": "Remove {name} from the guild? This action cannot be undone.",
+    "banTitle": "Ban member",
+    "banMessage": "Ban {name} from the guild? The character will not be able to join again.",
+    "kickError": "Couldn't remove the member. Please try again.",
+    "banError": "Couldn't ban the member. Please try again.",
+    "statusError": "Couldn't change the status. Please try again.",
+    "roleError": "Couldn't change the role. Please try again."
   },
   "GuildCalendar": {
     "today": "Today",

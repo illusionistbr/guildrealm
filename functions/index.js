@@ -213,6 +213,9 @@ exports.joinGuild = callable(async (data, context) => {
     if (guild.recruitment === 'closed') {
       throw new CallableError('failed-precondition', 'Guild is not recruiting');
     }
+    if ((guild.bannedCharacters ?? []).includes(characterId)) {
+      throw new CallableError('permission-denied', 'Character is banned from this guild');
+    }
     if (guild.game && character.game && guild.game !== character.game) {
       throw new CallableError('invalid-argument', 'Game does not match guild');
     }
@@ -261,6 +264,20 @@ exports.leaveGuild = callable(async (data, context) => {
 
   const guildId = character.guildId;
 
+  if (guildId) {
+    const guildSnap = await guildDoc(guildId).get();
+    if (guildSnap.exists && guildSnap.data().ownerCharacterId === characterId) {
+      throw new CallableError('failed-precondition', 'Guild leader cannot leave the guild');
+    }
+  }
+
+  await removeCharacterFromGuild(guildId, characterId);
+
+  return { success: true };
+});
+
+// Helper: remove um personagem da guild (membros, memberOwnerIds, grupos, dados do personagem)
+async function removeCharacterFromGuild(guildId, characterId) {
   await admin.firestore().runTransaction(async (tx) => {
     const guildSnap = await tx.get(guildDoc(guildId));
     if (!guildSnap.exists) {
@@ -273,22 +290,14 @@ exports.leaveGuild = callable(async (data, context) => {
     }
 
     const guild = guildSnap.data();
-    if (guild.ownerCharacterId === characterId) {
-      throw new CallableError('failed-precondition', 'Guild leader cannot leave the guild');
-    }
 
     const members = (guild.members ?? []).filter((id) => id !== characterId);
-    tx.update(guildDoc(guildId), {
-      members,
-      updatedAt: fv.serverTimestamp(),
-    });
+    const update = { members, updatedAt: fv.serverTimestamp() };
 
     // Recalcula os donos de membros restantes (uid só sai se não sobrar personagem dele)
     const remainingOwners = new Set(guild.memberOwnerIds ?? []);
     if (members.length > 0) {
-      const chars = await Promise.all(
-        members.map((id) => characterDoc(id).get())
-      );
+      const chars = await Promise.all(members.map((id) => characterDoc(id).get()));
       const present = new Set();
       for (const c of chars) {
         if (c.exists && c.data().ownerId) present.add(c.data().ownerId);
@@ -299,28 +308,126 @@ exports.leaveGuild = callable(async (data, context) => {
     } else {
       remainingOwners.clear();
     }
-    tx.update(guildDoc(guildId), {
-      memberOwnerIds: [...remainingOwners],
-    });
+    update.memberOwnerIds = [...remainingOwners];
 
+    // Limpa dados auxiliares do membro removido
+    const memberRoles = { ...(guild.memberRoles ?? {}) };
+    delete memberRoles[characterId];
+    update.memberRoles = memberRoles;
+    if (Array.isArray(guild.officerCharacters)) {
+      update.officerCharacters = guild.officerCharacters.filter((id) => id !== characterId);
+    }
+    if (Array.isArray(guild.inactiveCharacters)) {
+      update.inactiveCharacters = guild.inactiveCharacters.filter((id) => id !== characterId);
+    }
+
+    tx.update(guildDoc(guildId), update);
     tx.update(characterDoc(characterId), {
       guildId: null,
       updatedAt: fv.serverTimestamp(),
     });
   });
 
-  // Remove o personagem de todos os grupos da guild
+  // Remove o personagem de todos os grupos da guild e ajusta os contadores
   try {
     const groups = await guildGroupsCol(guildId).get();
-    const deletes = [];
+    const ops = [];
     for (const g of groups.docs) {
       const memberRef = groupMembersCol(guildId, g.id).doc(characterId);
-      deletes.push(memberRef.delete().catch(() => {}));
+      const memberSnap = await memberRef.get();
+      if (memberSnap.exists) {
+        ops.push(memberRef.delete());
+        const groupSnap = await groupDoc(guildId, g.id).get();
+        if (groupSnap.exists) {
+          const count = groupSnap.data().memberCount ?? 1;
+          ops.push(
+            groupDoc(guildId, g.id).update({
+              memberCount: Math.max(0, count - 1),
+              updatedAt: fv.serverTimestamp(),
+            })
+          );
+        }
+      }
     }
-    await Promise.all(deletes);
+    await Promise.all(ops);
   } catch (err) {
-    console.error('[leaveGuild] limpeza de grupos falhou:', err.message);
+    console.error('[removeCharacterFromGuild] limpeza de grupos falhou:', err.message);
   }
+}
+
+// Líder expulsa um personagem da guild
+exports.kickGuildMember = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, characterId } = data ?? {};
+  if (!guildId || !characterId) {
+    throw new CallableError('invalid-argument', 'guildId and characterId are required');
+  }
+
+  const guild = await requireGuildLeader(guildId, context.auth.uid);
+  if (guild.ownerCharacterId === characterId) {
+    throw new CallableError('failed-precondition', 'Guild leader cannot be removed');
+  }
+  if (!(guild.members ?? []).includes(characterId)) {
+    throw new CallableError('invalid-argument', 'Character is not a guild member');
+  }
+
+  await removeCharacterFromGuild(guildId, characterId);
+
+  return { success: true };
+});
+
+// Líder expulsa e bane um personagem da guild (não pode mais entrar)
+exports.banGuildMember = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, characterId } = data ?? {};
+  if (!guildId || !characterId) {
+    throw new CallableError('invalid-argument', 'guildId and characterId are required');
+  }
+
+  const guild = await requireGuildLeader(guildId, context.auth.uid);
+  if (guild.ownerCharacterId === characterId) {
+    throw new CallableError('failed-precondition', 'Guild leader cannot be banned');
+  }
+  if (!(guild.members ?? []).includes(characterId)) {
+    throw new CallableError('invalid-argument', 'Character is not a guild member');
+  }
+
+  await removeCharacterFromGuild(guildId, characterId);
+
+  await guildDoc(guildId).update({
+    bannedCharacters: admin.firestore.FieldValue.arrayUnion(characterId),
+    updatedAt: fv.serverTimestamp(),
+  });
+
+  return { success: true };
+});
+
+// Exclui um personagem (só é permitido se ele não estiver em nenhuma guild)
+exports.deleteCharacter = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { characterId } = data ?? {};
+  if (!characterId) {
+    throw new CallableError('invalid-argument', 'characterId is required');
+  }
+
+  const uid = context.auth.uid;
+
+  const charSnap = await characterDoc(characterId).get();
+  if (!charSnap.exists) {
+    throw new CallableError('not-found', 'Character not found');
+  }
+  const character = charSnap.data();
+  if (character.ownerId !== uid) {
+    throw new CallableError('permission-denied', 'Character does not belong to this user');
+  }
+  if (character.guildId) {
+    throw new CallableError('failed-precondition', 'Character is in a guild');
+  }
+
+  await characterDoc(characterId).delete();
 
   return { success: true };
 });
@@ -385,17 +492,24 @@ exports.assignGuildMember = callable(async (data, context) => {
   let targetGroupId = toGroupId;
 
   await admin.firestore().runTransaction(async (tx) => {
-    // Remove do grupo de origem (se informado) ou do grupo onde já está
-    const groupsSnap = await tx.get(guildGroupsCol(guildId));
+    // Determina o grupo atual do usuário. Se o cliente informou fromGroupId,
+    // confirma apenas ali (evita varrer todos os grupos da guild).
     let currentGroupId = null;
-
-    // Determina o grupo atual do usuário (fora da transação não pode; aqui com reads de docs)
-    // Usa apenas refs de doc para leituras dentro da transação
-    for (const g of groupsSnap.docs) {
-      const memberSnap = await tx.get(groupMembersCol(guildId, g.id).doc(userId));
-      if (memberSnap.exists) {
-        currentGroupId = g.id;
-        break;
+    if (fromGroupId) {
+      const fromSnap = await tx.get(groupDoc(guildId, fromGroupId));
+      if (fromSnap.exists) {
+        const mSnap = await tx.get(groupMembersCol(guildId, fromGroupId).doc(userId));
+        if (mSnap.exists) currentGroupId = fromGroupId;
+      }
+    }
+    if (!currentGroupId) {
+      const groupsSnap = await tx.get(guildGroupsCol(guildId));
+      for (const g of groupsSnap.docs) {
+        const memberSnap = await tx.get(groupMembersCol(guildId, g.id).doc(userId));
+        if (memberSnap.exists) {
+          currentGroupId = g.id;
+          break;
+        }
       }
     }
 
@@ -403,19 +517,7 @@ exports.assignGuildMember = callable(async (data, context) => {
       throw new CallableError('invalid-argument', 'fromGroupId does not match current group');
     }
 
-    // Unicidade: se já está em outro grupo e o destino é diferente, remove do atual
-    if (currentGroupId && currentGroupId !== targetGroupId) {
-      const srcGroupSnap = await tx.get(groupDoc(guildId, currentGroupId));
-      const srcCount = srcGroupSnap.exists ? (srcGroupSnap.data().memberCount ?? 1) : 1;
-      tx.delete(groupMembersCol(guildId, currentGroupId).doc(userId));
-      if (srcGroupSnap.exists) {
-        tx.update(groupDoc(guildId, currentGroupId), {
-          memberCount: Math.max(0, srcCount - 1),
-        });
-      }
-    }
-
-    // Capacidade do destino
+    // Capacidade do destino (leitura antes de qualquer escrita)
     const destGroupSnap = await tx.get(groupDoc(guildId, targetGroupId));
     if (!destGroupSnap.exists) throw new CallableError('not-found', 'Target group not found');
     const destGroup = destGroupSnap.data();
@@ -424,7 +526,23 @@ exports.assignGuildMember = callable(async (data, context) => {
       throw new CallableError('group-full', 'Group is full');
     }
 
-    // Insere no destino
+    // Leitura do grupo de origem (se o membro será movido)
+    let srcGroupSnap = null;
+    if (currentGroupId && currentGroupId !== targetGroupId) {
+      srcGroupSnap = await tx.get(groupDoc(guildId, currentGroupId));
+    }
+
+    // ---- a partir daqui apenas escritas ----
+    if (currentGroupId && currentGroupId !== targetGroupId) {
+      const srcCount = srcGroupSnap?.exists ? (srcGroupSnap.data().memberCount ?? 1) : 1;
+      tx.delete(groupMembersCol(guildId, currentGroupId).doc(userId));
+      if (srcGroupSnap?.exists) {
+        tx.update(groupDoc(guildId, currentGroupId), {
+          memberCount: Math.max(0, srcCount - 1),
+        });
+      }
+    }
+
     const memberRef = groupMembersCol(guildId, targetGroupId).doc(userId);
     tx.set(memberRef, {
       roleId: roleId ?? null,
@@ -452,12 +570,14 @@ exports.removeGuildMember = callable(async (data, context) => {
 
   await admin.firestore().runTransaction(async (tx) => {
     const memberRef = groupMembersCol(guildId, groupId).doc(userId);
-    const memberSnap = await tx.get(memberRef);
+    const [memberSnap, groupSnap] = await Promise.all([
+      tx.get(memberRef),
+      tx.get(groupDoc(guildId, groupId)),
+    ]);
     if (!memberSnap.exists) return;
 
     tx.delete(memberRef);
 
-    const groupSnap = await tx.get(groupDoc(guildId, groupId));
     if (groupSnap.exists) {
       const count = groupSnap.data().memberCount ?? 1;
       tx.update(groupDoc(guildId, groupId), {

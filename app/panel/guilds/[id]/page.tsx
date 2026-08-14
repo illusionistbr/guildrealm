@@ -12,16 +12,28 @@ import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { onAuthStateChanged } from 'firebase/auth';
 import {
+  arrayRemove,
+  arrayUnion,
   doc,
   getDoc,
   onSnapshot,
+  updateDoc,
 } from 'firebase/firestore';
-import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import {
+  getFirebaseApp,
+  getFirebaseAuth,
+  getFirebaseDb,
+} from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import { cn } from '@/lib/admin/utils/cn';
 import { GuildCalendar } from '@/components/guild-calendar/GuildCalendar';
 import { GroupsView } from '@/components/guild-groups/GroupsView';
+import { ConfirmDialog } from '@/components/guild-groups/ConfirmDialog';
+import { DEFAULT_ROLES } from '@/lib/groups/types';
 import {
+  AlertTriangle,
+  Ban,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -29,11 +41,15 @@ import {
   Gamepad2,
   Globe2,
   LayoutDashboard,
+  Loader2,
   MapPin,
   Menu,
   Shield,
   Swords,
   User,
+  UserCheck,
+  UserMinus,
+  UserX,
   Users,
 } from 'lucide-react';
 
@@ -60,6 +76,10 @@ type GuildDoc = {
   members?: string[];
   memberOwnerIds?: string[];
   ownerCharacterId?: string;
+  memberRoles?: Record<string, string>;
+  officerCharacters?: string[];
+  inactiveCharacters?: string[];
+  bannedCharacters?: string[];
   timezone?: number;
   createdAt?: { seconds: number };
 };
@@ -71,10 +91,11 @@ type CharacterDoc = {
   className?: string;
   game?: string;
   level?: number;
+  role?: string;
 };
 
 type MemberNames = Record<string, string>;
-type MemberMeta = Record<string, { className?: string; level?: number }>;
+type MemberMeta = Record<string, { className?: string; level?: number; role?: string }>;
 
 const FACIONS: Record<string, string> = {
   elyos: 'Elyos',
@@ -132,7 +153,7 @@ export default function GuildPanelPage() {
 
     const load = async () => {
       const names: Record<string, string> = {};
-      const meta: Record<string, { className?: string; level?: number }> = {};
+      const meta: Record<string, { className?: string; level?: number; role?: string }> = {};
       await Promise.all(
         ids.map(async (memberId) => {
           try {
@@ -143,6 +164,7 @@ export default function GuildPanelPage() {
               meta[memberId] = {
                 className: data.className,
                 level: data.level,
+                role: data.role,
               };
               return;
             }
@@ -292,6 +314,8 @@ export default function GuildPanelPage() {
                     guild={guild}
                     memberNames={memberNames}
                     memberMeta={memberMeta}
+                    isLeader={isLeader}
+                    uid={uid ?? ''}
                   />
                 )}
               </motion.div>
@@ -626,62 +650,311 @@ function MembersView({
   guild,
   memberNames,
   memberMeta,
+  isLeader,
+  uid,
 }: {
   guild: GuildDoc;
   memberNames: MemberNames;
   memberMeta: MemberMeta;
+  isLeader: boolean;
+  uid: string;
 }) {
   const t = useTranslations('GuildPanel');
   const classOptions = useMemo(() => t.raw('classes') as ClassOption[], [t]);
+  const [confirm, setConfirm] = useState<{
+    type: 'kick' | 'ban';
+    characterId: string;
+  } | null>(null);
+  const [busy, setBusy] = useState<Record<string, boolean>>({});
+  const [error, setError] = useState('');
+  const db = getFirebaseDb();
+  const guildRef = doc(db, COLLECTIONS.GUILDS, guild.id);
+
+  const setBusyKey = (key: string, value: boolean) =>
+    setBusy((prev) => ({ ...prev, [key]: value }));
+
+  const handleKickBan = async () => {
+    if (!confirm) return;
+    const key = `${confirm.type}-${confirm.characterId}`;
+    setBusyKey(key, true);
+    setError('');
+    try {
+      const fn = httpsCallable<
+        { guildId: string; characterId: string },
+        { success: boolean }
+      >(
+        getFunctions(getFirebaseApp()),
+        confirm.type === 'kick' ? 'kickGuildMember' : 'banGuildMember',
+      );
+      await fn({ guildId: guild.id, characterId: confirm.characterId });
+      setConfirm(null);
+    } catch {
+      setError(confirm.type === 'kick' ? t('kickError') : t('banError'));
+    }
+    setBusyKey(key, false);
+  };
+
+  const handleToggleActive = async (characterId: string) => {
+    setBusyKey(`active-${characterId}`, true);
+    setError('');
+    try {
+      const isInactive = (guild.inactiveCharacters ?? []).includes(characterId);
+      await updateDoc(guildRef, {
+        inactiveCharacters: isInactive
+          ? arrayRemove(characterId)
+          : arrayUnion(characterId),
+      });
+    } catch {
+      setError(t('statusError'));
+    }
+    setBusyKey(`active-${characterId}`, false);
+  };
+
+  const handleToggleOfficer = async (characterId: string) => {
+    setBusyKey(`officer-${characterId}`, true);
+    setError('');
+    try {
+      const isOfficer = (guild.officerCharacters ?? []).includes(characterId);
+      await updateDoc(guildRef, {
+        officerCharacters: isOfficer
+          ? arrayRemove(characterId)
+          : arrayUnion(characterId),
+      });
+    } catch {
+      setError(t('statusError'));
+    }
+    setBusyKey(`officer-${characterId}`, false);
+  };
+
+  const officerChars = guild.officerCharacters ?? [];
+  const inactiveChars = guild.inactiveCharacters ?? [];
 
   return (
     <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
       <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2 mb-4">
         <Users size={18} className="text-accent" /> {t('membersTitle')}
       </h2>
+
+      {error && (
+        <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <AlertTriangle size={16} /> {error}
+        </div>
+      )}
+
+      <div className="hidden md:grid md:grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1.2fr)_auto] gap-3 px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
+        <span>{t('colMember')}</span>
+        <span>{t('colClass')}</span>
+        <span>{t('colCp')}</span>
+        <span>{t('colRole')}</span>
+        <span>{t('colRank')}</span>
+        <span className="text-right">{t('colActions')}</span>
+      </div>
+
       <div className="space-y-2">
         {(guild.members ?? []).map((memberId) => {
-          const isLeader = memberId === guild.ownerCharacterId;
+          const isGuildLeader = memberId === guild.ownerCharacterId;
+          const isOfficer = officerChars.includes(memberId);
+          const isInactive = inactiveChars.includes(memberId);
           const displayName = memberNames[memberId] ?? memberId.slice(0, 8);
           const meta = memberMeta[memberId];
           const classOption = classOptions.find(
             (c) => c.value === meta?.className,
           );
+          const charRole = meta?.role
+            ? DEFAULT_ROLES.find((r) => r.name === meta.role)
+            : undefined;
+          const canManage = isLeader && !isGuildLeader;
+
           return (
             <div
               key={memberId}
-              className="flex items-center gap-3 p-3 rounded-lg border border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)]"
-            >
-              <div className="w-8 h-8 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center overflow-hidden shrink-0">
-                {classOption?.icon ? (
-                  <img
-                    src={classOption.icon}
-                    alt={classOption.label}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User size={15} className="text-accent" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-white font-medium truncate">
-                  {displayName}
-                </p>
-                <p className="text-xs text-muted truncate">
-                  {classOption?.label ??
-                    (meta?.className ? meta.className : t('memberRole'))}
-                  {meta?.level != null && ` • ${t('level')} ${meta.level}`}
-                </p>
-              </div>
-              {isLeader && (
-                <span className="text-xs px-2 py-0.5 rounded bg-yellow-400/10 text-yellow-400 flex items-center gap-1 shrink-0">
-                  <Crown size={12} /> {t('leader')}
-                </span>
+              className={cn(
+                'rounded-lg border p-3',
+                isInactive
+                  ? 'border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.25)] opacity-75'
+                  : 'border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)]',
               )}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,1.2fr)_auto] gap-3 items-center">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center overflow-hidden shrink-0">
+                    {classOption?.icon ? (
+                      <img
+                        src={classOption.icon}
+                        alt={classOption.label}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User size={15} className="text-accent" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white font-medium truncate">
+                      {displayName}
+                    </p>
+                    {isInactive && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-400/10 text-yellow-400">
+                        {t('memberInactive')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-[11px] text-muted md:hidden mb-0.5">
+                    {t('colClass')}
+                  </p>
+                  <p className="text-sm text-white truncate">
+                    {classOption?.label ??
+                      (meta?.className ? meta.className : '—')}
+                  </p>
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-[11px] text-muted md:hidden mb-0.5">
+                    {t('colCp')}
+                  </p>
+                  <p className="text-sm text-white">
+                    {t('cp')}{' '}
+                    {new Intl.NumberFormat('pt-BR').format(meta?.level ?? 0)}
+                  </p>
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-[11px] text-muted md:hidden mb-0.5">
+                    {t('colRole')}
+                  </p>
+                  {charRole ? (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-white">
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: charRole.color }}
+                      />
+                      {charRole.name}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-muted">
+                      {meta?.role || t('roleNone')}
+                    </span>
+                  )}
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-[11px] text-muted md:hidden mb-0.5">
+                    {t('colRank')}
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded',
+                        isGuildLeader
+                          ? 'bg-yellow-400/10 text-yellow-400'
+                          : isOfficer
+                            ? 'bg-accent/10 text-accent'
+                            : 'bg-[rgba(38,51,86,0.3)] text-muted',
+                      )}
+                    >
+                      {isGuildLeader && <Crown size={11} />}
+                      {isOfficer && <Shield size={11} />}
+                      {isGuildLeader
+                        ? t('rankLeader')
+                        : isOfficer
+                          ? t('rankOfficer')
+                          : t('rankMember')}
+                    </span>
+                    {canManage && (
+                      <button
+                        onClick={() => handleToggleOfficer(memberId)}
+                        disabled={busy[`officer-${memberId}`]}
+                        title={isOfficer ? t('actionDemote') : t('actionPromote')}
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-[rgba(38,51,86,0.5)] text-muted hover:text-accent hover:border-accent/40 transition-colors disabled:opacity-50"
+                      >
+                        {busy[`officer-${memberId}`] ? (
+                          <Loader2 size={10} className="animate-spin" />
+                        ) : isOfficer ? (
+                          t('actionDemote')
+                        ) : (
+                          t('actionPromote')
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-[11px] text-muted md:hidden mb-0.5">
+                    {t('colActions')}
+                  </p>
+                  {canManage ? (
+                    <div className="flex items-center gap-1 md:justify-end">
+                      <button
+                        onClick={() =>
+                          setConfirm({ type: 'kick', characterId: memberId })
+                        }
+                        title={t('actionKick')}
+                        className="p-1.5 rounded-lg text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        <UserX size={15} />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setConfirm({ type: 'ban', characterId: memberId })
+                        }
+                        title={t('actionBan')}
+                        className="p-1.5 rounded-lg text-muted hover:text-orange-400 hover:bg-orange-500/10 transition-colors"
+                      >
+                        <Ban size={15} />
+                      </button>
+                      <button
+                        onClick={() => handleToggleActive(memberId)}
+                        disabled={busy[`active-${memberId}`]}
+                        title={isInactive ? t('actionActivate') : t('actionInactivate')}
+                        className={cn(
+                          'p-1.5 rounded-lg transition-colors disabled:opacity-50',
+                          isInactive
+                            ? 'text-emerald-400 hover:bg-emerald-500/10'
+                            : 'text-muted hover:text-yellow-400 hover:bg-yellow-500/10',
+                        )}
+                      >
+                        {busy[`active-${memberId}`] ? (
+                          <Loader2 size={15} className="animate-spin" />
+                        ) : isInactive ? (
+                          <UserCheck size={15} />
+                        ) : (
+                          <UserMinus size={15} />
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="block text-xs text-muted md:text-right">
+                      {isGuildLeader ? t('rankLeader') : '—'}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           );
         })}
       </div>
+
+      {confirm && (
+        <ConfirmDialog
+          title={confirm.type === 'kick' ? t('kickTitle') : t('banTitle')}
+          message={
+            confirm.type === 'kick'
+              ? t('kickMessage', {
+                  name: memberNames[confirm.characterId] ?? '',
+                })
+              : t('banMessage', {
+                  name: memberNames[confirm.characterId] ?? '',
+                })
+          }
+          danger
+          confirmLabel={confirm.type === 'kick' ? t('actionKick') : t('actionBan')}
+          onConfirm={handleKickBan}
+          onClose={() => setConfirm(null)}
+        />
+      )}
     </div>
   );
 }
