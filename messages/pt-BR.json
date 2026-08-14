@@ -36,27 +36,101 @@
     "featuresTitle": "Tudo que você precisa para dominar seu reino",
     "featuresText": "Ferramentas poderosas para jogadores e líderes de guildas",
     "features": [
-      { "title": "Gerencie sua Guilda", "text": "Ferramentas completas para administrar membros, cargos, recrutamento e mais." },
-      { "title": "Perfil do Jogador", "text": "Crie seu perfil, compartilhe suas conquistas e construa sua reputação." },
-      { "title": "Conquistas & XP", "text": "Complete desafios, ganhe XP, desbloqueie conquistas e suba nos rankings." },
-      { "title": "Sistema DKP", "text": "Distribua pontos, registre loot e mantenha a progressão da sua guilda transparente." },
-      { "title": "Comunidade Global", "text": "Conecte-se com jogadores do mundo todo e faça parte de algo maior." },
-      { "title": "Rankings", "text": "Compita com jogadores e guildas e conquiste o topo do ranking global." }
+      {
+        "title": "Gerencie sua Guilda",
+        "text": "Ferramentas completas para administrar membros, cargos, recrutamento e mais."
+      },
+      {
+        "title": "Perfil do Jogador",
+        "text": "Crie seu perfil, compartilhe suas conquistas e construa sua reputação."
+      },
+      {
+        "title": "Conquistas & XP",
+        "text": "Complete desafios, ganhe XP, desbloqueie conquistas e suba nos rankings."
+      },
+      {
+        "title": "Sistema DKP",
+        "text": "Distribua pontos, registre loot e mantenha a progressão da sua guilda transparente."
+      },
+      {
+        "title": "Comunidade Global",
+        "text": "Conecte-se com jogadores do mundo todo e faça parte de algo maior."
+      },
+      {
+        "title": "Rankings",
+        "text": "Compita com jogadores e guildas e conquiste o topo do ranking global."
+      }
     ],
     "leaderPains": [
-      { "title": "Horas de planejamento", "text": "Organizar raids, escalações e eventos consome tempo que deveria ser dedicado a jogar." },
-      { "title": "Planilhas sem fim", "text": "Membros, presenças, DKP e progresso espalhados em documentos difíceis de acompanhar." },
-      { "title": "Briga interna por loot", "text": "Sem regras claras e histórico visível, decisões importantes viram fonte de conflito." },
-      { "title": "Comunicação dispersa", "text": "Avisos se perdem entre chats, servidores e canais, deixando a guilda desalinhada." }
+      {
+        "title": "Horas de planejamento",
+        "text": "Organizar raids, escalações e eventos consome tempo que deveria ser dedicado a jogar."
+      },
+      {
+        "title": "Planilhas sem fim",
+        "text": "Membros, presenças, DKP e progresso espalhados em documentos difíceis de acompanhar."
+      },
+      {
+        "title": "Briga interna por loot",
+        "text": "Sem regras claras e histórico visível, decisões importantes viram fonte de conflito."
+      },
+      {
+        "title": "Comunicação dispersa",
+        "text": "Avisos se perdem entre chats, servidores e canais, deixando a guilda desalinhada."
+      }
     ],
     "supportedGames": [
-      { "name": "Throne and Liberty", "abbreviation": "TL", "genre": "MMORPG • PvP & PvE", "description": "Organize alianças, domine territórios e prepare sua guilda para os maiores confrontos de Solisium." },
-      { "name": "Aion 2", "abbreviation": "A2", "genre": "MMORPG • Facções", "description": "Reúna sua legião, coordene estratégias e escreva sua história entre os Elyos e os Asmodians." }
+      {
+        "name": "Throne and Liberty",
+        "abbreviation": "TL",
+        "genre": "MMORPG • PvP & PvE",
+        "description": "Organize alianças, domine territórios e prepare sua guilda para os maiores confrontos de Solisium."
+      },
+      {
+        "name": "Aion 2",
+        "abbreviation": "A2",
+        "genre": "MMORPG • Facções",
+        "description": "Reúna sua legião, coordene estratégias e escreva sua história entre os Elyos e os Asmodians."
+      }
     ],
     "plans": [
-      { "name": "Aventureiro", "price": "Grátis", "description": "Para jogadores que querem explorar e encontrar sua comunidade.", "features": ["Perfil de jogador", "Entrar em guildas", "Conquistas e rankings"], "cta": "Começar agora", "isFree": true },
-      { "name": "Mestre de Guilda", "price": "R$ 19", "description": "Tudo para organizar sua guilda com mais eficiência.", "features": ["Até 100 membros", "Sistema DKP e loot", "Eventos e calendário", "Analytics de guilda"], "cta": "Criar minha guilda", "featured": true },
-      { "name": "Aliança", "price": "R$ 49", "description": "Estrutura avançada para comunidades que conquistam reinos.", "features": ["Membros ilimitados", "Gestão de alianças", "Suporte prioritário", "Personalização completa"], "cta": "Falar com a equipe" }
+      {
+        "name": "Aventureiro",
+        "price": "Grátis",
+        "description": "Para jogadores que querem explorar e encontrar sua comunidade.",
+        "features": [
+          "Perfil de jogador",
+          "Entrar em guildas",
+          "Conquistas e rankings"
+        ],
+        "cta": "Começar agora",
+        "isFree": true
+      },
+      {
+        "name": "Mestre de Guilda",
+        "price": "R$ 19",
+        "description": "Tudo para organizar sua guilda com mais eficiência.",
+        "features": [
+          "Até 100 membros",
+          "Sistema DKP e loot",
+          "Eventos e calendário",
+          "Analytics de guilda"
+        ],
+        "cta": "Criar minha guilda",
+        "featured": true
+      },
+      {
+        "name": "Aliança",
+        "price": "R$ 49",
+        "description": "Estrutura avançada para comunidades que conquistam reinos.",
+        "features": [
+          "Membros ilimitados",
+          "Gestão de alianças",
+          "Suporte prioritário",
+          "Personalização completa"
+        ],
+        "cta": "Falar com a equipe"
+      }
     ],
     "gamesEyebrow": "JOGOS SUPORTADOS",
     "gamesTitle": "Seu próximo reino já está esperando.",
@@ -77,20 +151,54 @@
     "asideTitle3": "aqui.",
     "asideText": "Crie sua conta e faça parte da maior plataforma global para jogadores e guilds de MMORPG.",
     "benefits": [
-      { "title": "Conecte-se com jogadores", "text": "Encontre guilds, jogadores e comunidades com os mesmos objetivos que você." },
-      { "title": "Acompanhe seu progresso", "text": "Monitore conquistas, rankings e estatísticas em tempo real." },
-      { "title": "Gerencie sua guilda", "text": "Ferramentas completas para líderes levarem suas guildas ao topo." }
+      {
+        "title": "Conecte-se com jogadores",
+        "text": "Encontre guilds, jogadores e comunidades com os mesmos objetivos que você."
+      },
+      {
+        "title": "Acompanhe seu progresso",
+        "text": "Monitore conquistas, rankings e estatísticas em tempo real."
+      },
+      {
+        "title": "Gerencie sua guilda",
+        "text": "Ferramentas completas para líderes levarem suas guildas ao topo."
+      }
     ],
     "formTitle": "Criar sua conta",
     "formText": "Preencha os dados abaixo para criar sua conta no GuildRealm.",
     "fields": [
-      { "label": "NICKNAME", "placeholder": "Escolha um nickname", "hint": "Este será seu nome público e URL do perfil. Não poderá ser alterado depois.", "isPassword": false },
-      { "label": "E-MAIL", "placeholder": "seu@email.com", "hint": "Você receberá um e-mail de confirmação.", "isPassword": false },
-      { "label": "CONFIRMAR E-MAIL", "placeholder": "Confirme seu e-mail", "hint": "Digite novamente seu e-mail.", "isPassword": false },
-      { "label": "SENHA", "placeholder": "Crie uma senha segura", "hint": "Mínimo de 8 caracteres com letras e números.", "isPassword": true },
-      { "label": "CONFIRMAR SENHA", "placeholder": "Confirme sua senha", "hint": "Digite novamente sua senha.", "isPassword": true }
+      {
+        "label": "NICKNAME",
+        "placeholder": "Escolha um nickname",
+        "hint": "Este será seu nome público e URL do perfil. Não poderá ser alterado depois.",
+        "isPassword": false
+      },
+      {
+        "label": "E-MAIL",
+        "placeholder": "seu@email.com",
+        "hint": "Você receberá um e-mail de confirmação.",
+        "isPassword": false
+      },
+      {
+        "label": "CONFIRMAR E-MAIL",
+        "placeholder": "Confirme seu e-mail",
+        "hint": "Digite novamente seu e-mail.",
+        "isPassword": false
+      },
+      {
+        "label": "SENHA",
+        "placeholder": "Crie uma senha segura",
+        "hint": "Mínimo de 8 caracteres com letras e números.",
+        "isPassword": true
+      },
+      {
+        "label": "CONFIRMAR SENHA",
+        "placeholder": "Confirme sua senha",
+        "hint": "Digite novamente sua senha.",
+        "isPassword": true
+      }
     ],
-"checkboxTerms": "Concordo com os <terms>Termos de Uso</terms> e <privacy>Política de Privacidade</privacy>.",
+    "checkboxTerms": "Concordo com os <terms>Termos de Uso</terms> e <privacy>Política de Privacidade</privacy>.",
     "checkboxNews": "Quero receber novidades por e-mail.",
     "checkboxAge": "Tenho mais de 13 anos.",
     "submit": "Criar minha conta",
@@ -103,28 +211,42 @@
     "heroTitle2": "Guildas",
     "heroText": "Encontre a guilda perfeita para você. Junte-se a uma comunidade ativa, participe de raids épicas e conquiste o topo.",
     "createGuild": "Criar Guilda",
-    "searchPlaceholder": "Pesquisar guilda por nome, tag, GM (líder) ou servidor...",
-    "selectFilters": [
-      { "label": "JOGO MMORPG", "value": "Todos os Jogos" },
-      { "label": "REGIÃO", "value": "Todas as Regiões" },
-      { "label": "RECRUTAMENTO", "value": "Todos os Status" },
-      { "label": "ESTILO DE JOGO", "value": "Todos os Estilos" }
-    ],
-    "advancedFilters": "Filtros Avançados",
+    "searchPlaceholder": "Pesquisar guilda por nome...",
+    "filterGame": "JOGO",
+    "filterRegion": "REGIÃO",
+    "filterRecruitment": "RECRUTAMENTO",
+    "filterAnyGame": "Todos os Jogos",
+    "filterAnyRegion": "Todas as Regiões",
+    "filterAnyRecruitment": "Todos",
+    "noGuilds": "Nenhuma guild encontrada.",
     "resultsFound": "{count} guildas encontradas",
-    "sortBy": "Ordenar por:",
-    "popularity": "Popularidade",
     "viewGuild": "Ver Guilda",
     "apply": "Candidatar-se",
     "members": "{count} Membros",
-    "onlineNow": "Online agora",
-    "rank": "Rank #{rank}",
     "gmLabel": "GM: {name}",
-    "guilds": [
-      { "name": "DragonSlayers BR", "tag": "DSBR", "rank": 1, "game": "World of Warcraft", "gm": "ValkyriePrime", "members": 128, "tone": "gold", "statusType": "open", "status": "RECRUTAMENTO ABERTO", "tags": ["Raids", "PvP", "Competitivo", "M+"], "description": "A maior e mais organizada guilda brasileira competitiva de World of Warcraft. Foco em Mythic Raiding, PvP e M+." },
-      { "name": "Eternal Guardians", "tag": "ETG", "rank": 2, "game": "Final Fantasy XIV", "gm": "Kaelthas_BR", "members": 96, "tone": "silver", "statusType": "invite", "status": "APENAS CONVITE", "tags": ["Raids", "PvE", "Casual-Hardcore", "Eventos"], "description": "Guilda focada em conteúdo PvE de alto nível, com uma comunidade madura e ativa todos os dias." },
-      { "name": "Horde United", "tag": "HORDE", "rank": 3, "game": "Albion Online", "gm": "DarkEclipse", "members": 74, "tone": "red", "statusType": "open", "status": "RECRUTAMENTO ABERTO", "tags": ["GvG", "PvP", "Zerg", "Território"], "description": "Especialistas em guerras territoriais, GvG e controle de zonas. Unidos pela força e pela honra!" },
-      { "name": "Lunar Eclipse", "tag": "LUNAR", "rank": 4, "game": "Black Desert Online", "gm": "Lunaris", "members": 58, "tone": "violet", "statusType": "invite", "status": "APENAS CONVITE", "tags": ["Lifeskill", "Node War", "Social", "PvE"], "description": "Guilda social com foco em lifeskill, node wars e progressão constante. Respeito e amizade acima de tudo." }
+    "recruiting": "Recrutando",
+    "closedRecruitment": "Recrutamento fechado",
+    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "regions": [
+      { "value": "na", "label": "América do Norte" },
+      { "value": "sa", "label": "América do Sul" },
+      { "value": "asia", "label": "Ásia" },
+      { "value": "europe", "label": "Europa" },
+      { "value": "oceania", "label": "Oceania" }
+    ],
+    "languages": [
+      { "value": "pt", "label": "Português" },
+      { "value": "en", "label": "Inglês" },
+      { "value": "es", "label": "Espanhol" },
+      { "value": "fr", "label": "Francês" },
+      { "value": "de", "label": "Alemão" },
+      { "value": "it", "label": "Italiano" },
+      { "value": "pl", "label": "Polonês" },
+      { "value": "ru", "label": "Russo" },
+      { "value": "ja", "label": "Japonês" },
+      { "value": "ko", "label": "Coreano" },
+      { "value": "zh", "label": "Chinês (Simplificado)" },
+      { "value": "tr", "label": "Turco" }
     ]
   },
   "Terms": {
@@ -309,23 +431,108 @@
     "next": "Próximo",
     "nextTitle": "Dados que coletamos",
     "sections": [
-      {"id":"introducao","num":"1","title":"Introdução","content":"<p>A GuildRealm (<b>\"nós\"</b>, <b>\"nossa\"</b> ou <b>\"plataforma\"</b>) está comprometida em proteger a sua privacidade e seus dados pessoais. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos as informações que você nos fornece ou que coletamos automaticamente ao utilizar nossos serviços.</p>"},
-      {"id":"quem-somos","num":"2","title":"Quem somos","content":"<p>A GuildRealm é a controladora dos dados pessoais tratados por meio da plataforma.</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>Razão Social</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>Endereço</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – Brasil – CEP 93510-000</td></tr><tr><td><b>E-mail</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>DPO / Encarregado</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"},
-      {"id":"dados-coletados","num":"3","title":"Quais dados coletamos","content":"<p>Coletamos diferentes tipos de dados para oferecer a melhor experiência possível na GuildRealm.</p><h4>Dados fornecidos pelo usuário</h4><ul><li><b>Nome</b> — utilizado para personalizar seu perfil</li><li><b>Nickname</b> — seu identificador público na plataforma</li><li><b>E-mail</b> — para criação de conta e recuperação de senha</li><li><b>Senha</b> — armazenada de forma criptografada (hash)</li><li><b>Foto / Avatar</b> — imagem que representa você publicamente</li><li><b>Banner</b> — imagem de fundo do perfil</li><li><b>Biografia</b> — texto descritivo sobre você</li><li><b>País e idioma</b> — para conteúdo localizado</li><li><b>Links de redes sociais</b> — compartilhados voluntariamente</li><li><b>Conteúdo publicado</b> — textos, comentários, posts e guias</li></ul><h4>Dados gerados durante o uso</h4><ul><li><b>Guildas</b> — guildas que você cria ou participa</li><li><b>Conquistas e badges</b> — medalhas e reconhecimentos</li><li><b>Mensagens privadas</b> — conteúdo trocado com outros usuários</li><li><b>Lista de amigos</b> — conexões estabelecidas</li><li><b>Notificações</b> — registros de notificações</li><li><b>Comentários e curtidas</b> — interações com conteúdo</li><li><b>Histórico de login</b> — datas e horários de acesso</li></ul><h4>Dados coletados automaticamente</h4><ul><li><b>Endereço IP</b> — para segurança e análises</li><li><b>Navegador e SO</b> — identificação técnica</li><li><b>Idioma e fuso horário</b> — para personalização</li><li><b>Tipo de dispositivo</b> — desktop, tablet ou celular</li><li><b>Cookies e identificadores</b> — para funcionalidade e segurança</li><li><b>Logs de servidor</b> — registros técnicos automáticos</li></ul>"},
-      {"id":"utilizacao","num":"4","title":"Como utilizamos seus dados","content":"<p>Cada dado coletado tem uma finalidade específica:</p><table><thead><tr><th>Finalidade</th><th>Descrição</th></tr></thead><tbody><tr><td><b>Criar e gerenciar sua conta</b></td><td>Permitir seu registro, login e manutenção da conta</td></tr><tr><td><b>Autenticar sua identidade</b></td><td>Garantir que você é quem diz ser</td></tr><tr><td><b>Proteger contra fraudes</b></td><td>Identificar e bloquear atividades suspeitas</td></tr><tr><td><b>Personalizar experiência</b></td><td>Exibir conteúdo no seu idioma e recomendar guildas</td></tr><tr><td><b>Moderação</b></td><td>Analisar denúncias e aplicar regras</td></tr><tr><td><b>Segurança</b></td><td>Monitorar acessos e detectar invasões</td></tr><tr><td><b>Estatísticas</b></td><td>Entender como a plataforma é utilizada</td></tr><tr><td><b>Suporte</b></td><td>Responder dúvidas e resolver problemas</td></tr><tr><td><b>Comunicações</b></td><td>Notificar sobre alterações importantes</td></tr><tr><td><b>Obrigações legais</b></td><td>Atender exigências da legislação</td></tr></tbody></table><p>Nós <b>não</b> utilizamos seus dados para decisões automatizadas significativas ou criação de perfis para publicidade sem consentimento.</p>"},
-      {"id":"base-legal","num":"5","title":"Base legal (LGPD)","content":"<p>A GuildRealm trata seus dados em conformidade com a <b>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</b>.</p><table><thead><tr><th>Base Legal</th><th>Aplicação</th></tr></thead><tbody><tr><td><b>Consentimento</b> (art. 7º, I)</td><td>Quando você aceita nossa Política e cookies não essenciais</td></tr><tr><td><b>Execução de contrato</b> (art. 7º, V)</td><td>Para criar sua conta e fornecer os serviços</td></tr><tr><td><b>Obrigação legal</b> (art. 7º, II)</td><td>Para atender exigências legais e ordens judiciais</td></tr><tr><td><b>Exercício regular de direitos</b> (art. 7º, VI)</td><td>Para proteger os direitos da GuildRealm e usuários</td></tr><tr><td><b>Legítimo interesse</b> (art. 7º, IX)</td><td>Para segurança, prevenção a fraudes e melhoria dos serviços</td></tr></tbody></table><p>Você pode revogar seu consentimento a qualquer momento.</p>"},
-      {"id":"compartilhamento","num":"6","title":"Compartilhamento de dados","content":"<p>A GuildRealm <b>não vende</b> seus dados pessoais para terceiros.</p><p>Podemos compartilhar dados nas seguintes situações:</p><ul><li><b>Prestadores de serviço</b> — empresas que nos auxiliam a operar a plataforma</li><li><b>Autoridades públicas</b> — quando exigido por lei ou ordem judicial</li><li><b>Com consentimento</b> — quando você autorizar expressamente</li><li><b>Transferências corporativas</b> — em caso de fusão ou aquisição</li></ul>"},
-      {"id":"terceiros","num":"7","title":"Serviços de terceiros","content":"<p>A GuildRealm utiliza serviços de terceiros para funcionar:</p><ul><li><b>Firebase (Google)</b> — Authentication, Firestore, Storage e Hosting</li><li><b>Cloudflare</b> — proteção DDoS, CDN e segurança de rede</li><li><b>Google Analytics</b> — estatísticas de uso (quando habilitado)</li><li><b>Google reCAPTCHA</b> — proteção contra bots</li><li><b>Resend</b> — envio de e-mails transacionais</li></ul>"},
-      {"id":"cookies","num":"8","title":"Cookies","content":"<p>Cookies são pequenos arquivos armazenados no seu navegador.</p><table><thead><tr><th>Tipo</th><th>Finalidade</th></tr></thead><tbody><tr><td><b>Necessários</b></td><td>Essenciais para o funcionamento da plataforma</td></tr><tr><td><b>Funcionais</b></td><td>Lembram suas preferências (idioma, configurações)</td></tr><tr><td><b>Desempenho</b></td><td>Ajudam a melhorar a plataforma (Google Analytics)</td></tr><tr><td><b>Marketing</b></td><td>Não utilizamos no momento</td></tr></tbody></table><p>Você pode gerenciar cookies nas configurações do seu navegador.</p>"},
-      {"id":"retencao","num":"9","title":"Retenção dos dados","content":"<p>Seus dados são mantidos pelo tempo necessário para cumprir as finalidades descritas nesta Política.</p><ul><li><b>Necessidade do serviço</b> — enquanto sua conta estiver ativa</li><li><b>Obrigações legais</b> — prazos determinados por lei</li><li><b>Segurança</b> — logs mantidos para investigações</li></ul><p>Após exclusão da conta, dados pessoais são removidos em até <b>30 dias</b>. Backups podem conter dados por até 90 dias.</p>"},
-      {"id":"direitos","num":"10","title":"Seus direitos (LGPD)","content":"<p>Como titular de dados, você pode:</p><ul><li><b>Confirmar e acessar</b> — solicitar cópia dos seus dados</li><li><b>Corrigir</b> — solicitar correção de dados incorretos</li><li><b>Atualizar</b> — atualizar informações na plataforma</li><li><b>Anonimizar, bloquear ou eliminar</b> — solicitar remoção de dados</li><li><b>Portabilidade</b> — solicitar transferência para outro serviço</li><li><b>Revogar consentimento</b> — a qualquer momento</li><li><b>Informação sobre compartilhamento</b> — saber com quem compartilhamos</li><li><b>Oposição</b> — se opor ao tratamento baseado em legítimo interesse</li></ul><p>Entre em contato via <b>privacy@guildrealm.com</b>. Responderemos em até <b>15 dias</b>.</p>"},
-      {"id":"exclusao","num":"11","title":"Exclusão da conta","content":"<p>Ao solicitar a exclusão:</p><ul><li>Perfil e dados pessoais são removidos ou anonimizados</li><li>Guildas, conquistas e rankings são desvinculados</li><li>Mensagens privadas podem permanecer visíveis para outros</li><li>Conteúdo em guildas pode permanecer sem identificação</li></ul><p>Dados retidos por obrigação legal (ex.: registros de acesso por 6 meses) podem permanecer pelo prazo exigido.</p>"},
-      {"id":"seguranca","num":"12","title":"Segurança dos dados","content":"<p>Medidas adotadas pela GuildRealm:</p><ul><li><b>Criptografia</b> — HTTPS (SSL/TLS) em todas as transmissões</li><li><b>Controle de acesso</b> — acesso restrito e autorizado</li><li><b>Monitoramento</b> — logs de acesso e tentativas de invasão</li><li><b>Firebase Security</b> — regras de segurança no banco de dados</li><li><b>Cloudflare</b> — proteção contra DDoS</li><li><b>Backups regulares</b> — para garantir integridade dos dados</li><li><b>Senhas criptografadas</b> — algoritmo bcrypt</li></ul>"},
-      {"id":"criancas","num":"13","title":"Crianças e adolescentes","content":"<p>A GuildRealm não é direcionada a crianças menores de 13 anos.</p><p>Se você tem entre 13 e 18 anos, recomendamos que seus pais ou responsáveis estejam cientes desta Política.</p><p>Não coletamos intencionalmente dados de crianças menores de 13 anos. Se identificarmos uma conta nessa faixa, excluiremos os dados e encerraremos a conta.</p>"},
-      {"id":"transferencia","num":"14","title":"Transferência internacional","content":"<p>Alguns provedores podem armazenar dados em outros países (ex.: Google Firebase e Cloudflare nos EUA).</p><p>Adotamos medidas como cláusulas contratuais padronizadas e avaliação periódica dos prestadores para garantir proteção adequada.</p>"},
-      {"id":"alteracoes","num":"15","title":"Alterações desta política","content":"<p>Podemos atualizar esta Política periodicamente.</p><ul><li>Versão atualizada será publicada na plataforma</li><li>Alterações significativas serão comunicadas por e-mail</li><li>Alterações entram em vigor em <b>30 dias</b></li></ul><p>O uso continuado após a vigência constitui aceitação.</p>"},
-      {"id":"contato-priv","num":"16","title":"Contato","content":"<p>Para questões sobre privacidade e proteção de dados:</p><ul><li><b>Privacidade:</b> privacy@guildrealm.com</li><li><b>Questões legais:</b> legal@guildrealm.com</li><li><b>Dúvidas gerais:</b> contato@guildrealm.com</li></ul>"},
-      {"id":"lei-aplicavel","num":"17","title":"Lei aplicável","content":"<p>Esta Política é regida pelas leis da <b>República Federativa do Brasil</b>, especialmente pela <b>LGPD (Lei nº 13.709/2018)</b> e pelo <b>Marco Civil da Internet (Lei nº 12.965/2014)</b>.</p><p>Controvérsias serão resolvidas no foro da Comarca de Novo Hamburgo, Rio Grande do Sul.</p>"}
+      {
+        "id": "introducao",
+        "num": "1",
+        "title": "Introdução",
+        "content": "<p>A GuildRealm (<b>\"nós\"</b>, <b>\"nossa\"</b> ou <b>\"plataforma\"</b>) está comprometida em proteger a sua privacidade e seus dados pessoais. Esta Política de Privacidade explica como coletamos, usamos, armazenamos e protegemos as informações que você nos fornece ou que coletamos automaticamente ao utilizar nossos serviços.</p>"
+      },
+      {
+        "id": "quem-somos",
+        "num": "2",
+        "title": "Quem somos",
+        "content": "<p>A GuildRealm é a controladora dos dados pessoais tratados por meio da plataforma.</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>Razão Social</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>Endereço</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – Brasil – CEP 93510-000</td></tr><tr><td><b>E-mail</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>DPO / Encarregado</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"
+      },
+      {
+        "id": "dados-coletados",
+        "num": "3",
+        "title": "Quais dados coletamos",
+        "content": "<p>Coletamos diferentes tipos de dados para oferecer a melhor experiência possível na GuildRealm.</p><h4>Dados fornecidos pelo usuário</h4><ul><li><b>Nome</b> — utilizado para personalizar seu perfil</li><li><b>Nickname</b> — seu identificador público na plataforma</li><li><b>E-mail</b> — para criação de conta e recuperação de senha</li><li><b>Senha</b> — armazenada de forma criptografada (hash)</li><li><b>Foto / Avatar</b> — imagem que representa você publicamente</li><li><b>Banner</b> — imagem de fundo do perfil</li><li><b>Biografia</b> — texto descritivo sobre você</li><li><b>País e idioma</b> — para conteúdo localizado</li><li><b>Links de redes sociais</b> — compartilhados voluntariamente</li><li><b>Conteúdo publicado</b> — textos, comentários, posts e guias</li></ul><h4>Dados gerados durante o uso</h4><ul><li><b>Guildas</b> — guildas que você cria ou participa</li><li><b>Conquistas e badges</b> — medalhas e reconhecimentos</li><li><b>Mensagens privadas</b> — conteúdo trocado com outros usuários</li><li><b>Lista de amigos</b> — conexões estabelecidas</li><li><b>Notificações</b> — registros de notificações</li><li><b>Comentários e curtidas</b> — interações com conteúdo</li><li><b>Histórico de login</b> — datas e horários de acesso</li></ul><h4>Dados coletados automaticamente</h4><ul><li><b>Endereço IP</b> — para segurança e análises</li><li><b>Navegador e SO</b> — identificação técnica</li><li><b>Idioma e fuso horário</b> — para personalização</li><li><b>Tipo de dispositivo</b> — desktop, tablet ou celular</li><li><b>Cookies e identificadores</b> — para funcionalidade e segurança</li><li><b>Logs de servidor</b> — registros técnicos automáticos</li></ul>"
+      },
+      {
+        "id": "utilizacao",
+        "num": "4",
+        "title": "Como utilizamos seus dados",
+        "content": "<p>Cada dado coletado tem uma finalidade específica:</p><table><thead><tr><th>Finalidade</th><th>Descrição</th></tr></thead><tbody><tr><td><b>Criar e gerenciar sua conta</b></td><td>Permitir seu registro, login e manutenção da conta</td></tr><tr><td><b>Autenticar sua identidade</b></td><td>Garantir que você é quem diz ser</td></tr><tr><td><b>Proteger contra fraudes</b></td><td>Identificar e bloquear atividades suspeitas</td></tr><tr><td><b>Personalizar experiência</b></td><td>Exibir conteúdo no seu idioma e recomendar guildas</td></tr><tr><td><b>Moderação</b></td><td>Analisar denúncias e aplicar regras</td></tr><tr><td><b>Segurança</b></td><td>Monitorar acessos e detectar invasões</td></tr><tr><td><b>Estatísticas</b></td><td>Entender como a plataforma é utilizada</td></tr><tr><td><b>Suporte</b></td><td>Responder dúvidas e resolver problemas</td></tr><tr><td><b>Comunicações</b></td><td>Notificar sobre alterações importantes</td></tr><tr><td><b>Obrigações legais</b></td><td>Atender exigências da legislação</td></tr></tbody></table><p>Nós <b>não</b> utilizamos seus dados para decisões automatizadas significativas ou criação de perfis para publicidade sem consentimento.</p>"
+      },
+      {
+        "id": "base-legal",
+        "num": "5",
+        "title": "Base legal (LGPD)",
+        "content": "<p>A GuildRealm trata seus dados em conformidade com a <b>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</b>.</p><table><thead><tr><th>Base Legal</th><th>Aplicação</th></tr></thead><tbody><tr><td><b>Consentimento</b> (art. 7º, I)</td><td>Quando você aceita nossa Política e cookies não essenciais</td></tr><tr><td><b>Execução de contrato</b> (art. 7º, V)</td><td>Para criar sua conta e fornecer os serviços</td></tr><tr><td><b>Obrigação legal</b> (art. 7º, II)</td><td>Para atender exigências legais e ordens judiciais</td></tr><tr><td><b>Exercício regular de direitos</b> (art. 7º, VI)</td><td>Para proteger os direitos da GuildRealm e usuários</td></tr><tr><td><b>Legítimo interesse</b> (art. 7º, IX)</td><td>Para segurança, prevenção a fraudes e melhoria dos serviços</td></tr></tbody></table><p>Você pode revogar seu consentimento a qualquer momento.</p>"
+      },
+      {
+        "id": "compartilhamento",
+        "num": "6",
+        "title": "Compartilhamento de dados",
+        "content": "<p>A GuildRealm <b>não vende</b> seus dados pessoais para terceiros.</p><p>Podemos compartilhar dados nas seguintes situações:</p><ul><li><b>Prestadores de serviço</b> — empresas que nos auxiliam a operar a plataforma</li><li><b>Autoridades públicas</b> — quando exigido por lei ou ordem judicial</li><li><b>Com consentimento</b> — quando você autorizar expressamente</li><li><b>Transferências corporativas</b> — em caso de fusão ou aquisição</li></ul>"
+      },
+      {
+        "id": "terceiros",
+        "num": "7",
+        "title": "Serviços de terceiros",
+        "content": "<p>A GuildRealm utiliza serviços de terceiros para funcionar:</p><ul><li><b>Firebase (Google)</b> — Authentication, Firestore, Storage e Hosting</li><li><b>Cloudflare</b> — proteção DDoS, CDN e segurança de rede</li><li><b>Google Analytics</b> — estatísticas de uso (quando habilitado)</li><li><b>Google reCAPTCHA</b> — proteção contra bots</li><li><b>Resend</b> — envio de e-mails transacionais</li></ul>"
+      },
+      {
+        "id": "cookies",
+        "num": "8",
+        "title": "Cookies",
+        "content": "<p>Cookies são pequenos arquivos armazenados no seu navegador.</p><table><thead><tr><th>Tipo</th><th>Finalidade</th></tr></thead><tbody><tr><td><b>Necessários</b></td><td>Essenciais para o funcionamento da plataforma</td></tr><tr><td><b>Funcionais</b></td><td>Lembram suas preferências (idioma, configurações)</td></tr><tr><td><b>Desempenho</b></td><td>Ajudam a melhorar a plataforma (Google Analytics)</td></tr><tr><td><b>Marketing</b></td><td>Não utilizamos no momento</td></tr></tbody></table><p>Você pode gerenciar cookies nas configurações do seu navegador.</p>"
+      },
+      {
+        "id": "retencao",
+        "num": "9",
+        "title": "Retenção dos dados",
+        "content": "<p>Seus dados são mantidos pelo tempo necessário para cumprir as finalidades descritas nesta Política.</p><ul><li><b>Necessidade do serviço</b> — enquanto sua conta estiver ativa</li><li><b>Obrigações legais</b> — prazos determinados por lei</li><li><b>Segurança</b> — logs mantidos para investigações</li></ul><p>Após exclusão da conta, dados pessoais são removidos em até <b>30 dias</b>. Backups podem conter dados por até 90 dias.</p>"
+      },
+      {
+        "id": "direitos",
+        "num": "10",
+        "title": "Seus direitos (LGPD)",
+        "content": "<p>Como titular de dados, você pode:</p><ul><li><b>Confirmar e acessar</b> — solicitar cópia dos seus dados</li><li><b>Corrigir</b> — solicitar correção de dados incorretos</li><li><b>Atualizar</b> — atualizar informações na plataforma</li><li><b>Anonimizar, bloquear ou eliminar</b> — solicitar remoção de dados</li><li><b>Portabilidade</b> — solicitar transferência para outro serviço</li><li><b>Revogar consentimento</b> — a qualquer momento</li><li><b>Informação sobre compartilhamento</b> — saber com quem compartilhamos</li><li><b>Oposição</b> — se opor ao tratamento baseado em legítimo interesse</li></ul><p>Entre em contato via <b>privacy@guildrealm.com</b>. Responderemos em até <b>15 dias</b>.</p>"
+      },
+      {
+        "id": "exclusao",
+        "num": "11",
+        "title": "Exclusão da conta",
+        "content": "<p>Ao solicitar a exclusão:</p><ul><li>Perfil e dados pessoais são removidos ou anonimizados</li><li>Guildas, conquistas e rankings são desvinculados</li><li>Mensagens privadas podem permanecer visíveis para outros</li><li>Conteúdo em guildas pode permanecer sem identificação</li></ul><p>Dados retidos por obrigação legal (ex.: registros de acesso por 6 meses) podem permanecer pelo prazo exigido.</p>"
+      },
+      {
+        "id": "seguranca",
+        "num": "12",
+        "title": "Segurança dos dados",
+        "content": "<p>Medidas adotadas pela GuildRealm:</p><ul><li><b>Criptografia</b> — HTTPS (SSL/TLS) em todas as transmissões</li><li><b>Controle de acesso</b> — acesso restrito e autorizado</li><li><b>Monitoramento</b> — logs de acesso e tentativas de invasão</li><li><b>Firebase Security</b> — regras de segurança no banco de dados</li><li><b>Cloudflare</b> — proteção contra DDoS</li><li><b>Backups regulares</b> — para garantir integridade dos dados</li><li><b>Senhas criptografadas</b> — algoritmo bcrypt</li></ul>"
+      },
+      {
+        "id": "criancas",
+        "num": "13",
+        "title": "Crianças e adolescentes",
+        "content": "<p>A GuildRealm não é direcionada a crianças menores de 13 anos.</p><p>Se você tem entre 13 e 18 anos, recomendamos que seus pais ou responsáveis estejam cientes desta Política.</p><p>Não coletamos intencionalmente dados de crianças menores de 13 anos. Se identificarmos uma conta nessa faixa, excluiremos os dados e encerraremos a conta.</p>"
+      },
+      {
+        "id": "transferencia",
+        "num": "14",
+        "title": "Transferência internacional",
+        "content": "<p>Alguns provedores podem armazenar dados em outros países (ex.: Google Firebase e Cloudflare nos EUA).</p><p>Adotamos medidas como cláusulas contratuais padronizadas e avaliação periódica dos prestadores para garantir proteção adequada.</p>"
+      },
+      {
+        "id": "alteracoes",
+        "num": "15",
+        "title": "Alterações desta política",
+        "content": "<p>Podemos atualizar esta Política periodicamente.</p><ul><li>Versão atualizada será publicada na plataforma</li><li>Alterações significativas serão comunicadas por e-mail</li><li>Alterações entram em vigor em <b>30 dias</b></li></ul><p>O uso continuado após a vigência constitui aceitação.</p>"
+      },
+      {
+        "id": "contato-priv",
+        "num": "16",
+        "title": "Contato",
+        "content": "<p>Para questões sobre privacidade e proteção de dados:</p><ul><li><b>Privacidade:</b> privacy@guildrealm.com</li><li><b>Questões legais:</b> legal@guildrealm.com</li><li><b>Dúvidas gerais:</b> contato@guildrealm.com</li></ul>"
+      },
+      {
+        "id": "lei-aplicavel",
+        "num": "17",
+        "title": "Lei aplicável",
+        "content": "<p>Esta Política é regida pelas leis da <b>República Federativa do Brasil</b>, especialmente pela <b>LGPD (Lei nº 13.709/2018)</b> e pelo <b>Marco Civil da Internet (Lei nº 12.965/2014)</b>.</p><p>Controvérsias serão resolvidas no foro da Comarca de Novo Hamburgo, Rio Grande do Sul.</p>"
+      }
     ]
   },
   "Login": {
@@ -342,10 +549,22 @@
     "noAccount": "Ainda não tem uma conta?",
     "signupLink": "Criar conta grátis →",
     "badges": [
-      {"title": "Seguro e Confiável", "text": "Seus dados protegidos com criptografia avançada."},
-      {"title": "Comunidades Épicas", "text": "Encontre guildas e jogadores de todo o mundo."},
-      {"title": "Conquistas Reais", "text": "Suba nos rankings e mostre seu domínio."},
-      {"title": "Feito para Gamers", "text": "Todas as ferramentas que sua guild precisa."}
+      {
+        "title": "Seguro e Confiável",
+        "text": "Seus dados protegidos com criptografia avançada."
+      },
+      {
+        "title": "Comunidades Épicas",
+        "text": "Encontre guildas e jogadores de todo o mundo."
+      },
+      {
+        "title": "Conquistas Reais",
+        "text": "Suba nos rankings e mostre seu domínio."
+      },
+      {
+        "title": "Feito para Gamers",
+        "text": "Todas as ferramentas que sua guild precisa."
+      }
     ]
   },
   "ForgotPassword": {
@@ -362,10 +581,346 @@
     "tipsTitle": "Não recebeu o e-mail?",
     "tipsSub": "Verifique estas possibilidades:",
     "tips": [
-      {"title": "Verifique sua caixa de spam", "text": "O e-mail pode ter sido redirecionado para o spam."},
-      {"title": "Aguarde alguns minutos", "text": "Pode levar alguns minutos para o e-mail chegar."},
-      {"title": "Confira o e-mail digitado", "text": "Certifique-se de que o e-mail informado está correto."},
-      {"title": "Tentar novamente", "text": "Ainda não recebeu? Envie novamente as instruções."}
+      {
+        "title": "Verifique sua caixa de spam",
+        "text": "O e-mail pode ter sido redirecionado para o spam."
+      },
+      {
+        "title": "Aguarde alguns minutos",
+        "text": "Pode levar alguns minutos para o e-mail chegar."
+      },
+      {
+        "title": "Confira o e-mail digitado",
+        "text": "Certifique-se de que o e-mail informado está correto."
+      },
+      {
+        "title": "Tentar novamente",
+        "text": "Ainda não recebeu? Envie novamente as instruções."
+      }
     ]
+  },
+  "Dashboard": {
+    "welcomeBack": "Bem-vindo de volta,",
+    "adventurer": "Aventureiro",
+    "subtitle": "Resumo do seu reino: personagens e guildas em um só lugar.",
+    "createCharacter": "Criar personagem",
+    "createCharacterSub": "Forje seu herói e comece sua jornada",
+    "createGuild": "Criar guild",
+    "createGuildSub": "Reúna aliados e construa seu legado",
+    "openGuildPanel": "Acessar painel da guild",
+    "charactersTitle": "Seus Personagens",
+    "guildsTitle": "Suas Guildas",
+    "charactersEmpty": "Você ainda não criou nenhum personagem.",
+    "guildsEmpty": "Você ainda não participa de nenhuma guild.",
+    "level": "Nível",
+    "leaderRole": "Líder",
+    "memberRole": "Membro",
+    "membersCount": "{count} membros",
+    "loading": "Carregando seu reino...",
+    "loadError": "Não foi possível carregar seus dados. Tente novamente.",
+    "retry": "Tentar novamente",
+    "createFirstCharacter": "Criar primeiro personagem",
+    "createFirstGuild": "Criar primeira guild",
+    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "classes": [
+      { "value": "warrior", "label": "Guerreiro" },
+      { "value": "mage", "label": "Mago" },
+      { "value": "rogue", "label": "Ladino" },
+      { "value": "ranger", "label": "Caçador" },
+      { "value": "cleric", "label": "Clérigo" }
+    ]
+  },
+  "CharacterCreate": {
+    "title": "Criar Personagem",
+    "subtitle": "Forje seu herói e prepare-se para a aventura.",
+    "nameLabel": "Nome do personagem",
+    "namePlaceholder": "Ex: Ragnar, Lyra, Thalos",
+    "gameLabel": "Jogo",
+    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "classes": [
+      { "value": "warrior", "label": "Guerreiro" },
+      { "value": "mage", "label": "Mago" },
+      { "value": "rogue", "label": "Ladino" },
+      { "value": "ranger", "label": "Caçador" },
+      { "value": "cleric", "label": "Clérigo" }
+    ],
+    "classLabel": "Classe",
+    "levelLabel": "Nível inicial",
+    "submit": "Criar personagem",
+    "creating": "Criando...",
+    "nameRequired": "Informe um nome para o personagem.",
+    "createError": "Não foi possível criar o personagem. Tente novamente.",
+    "cancel": "Cancelar"
+  },
+  "GuildCreate": {
+    "title": "Criar Guild",
+    "subtitle": "Reúna aliados e construa seu legado no reino.",
+    "nameLabel": "Nome da guild",
+    "namePlaceholder": "Ex: Dragões de Fogo",
+    "submit": "Criar guild",
+    "creating": "Criando...",
+    "nameRequired": "Informe um nome para a guild.",
+    "createError": "Não foi possível criar a guild. Tente novamente.",
+    "cancel": "Cancelar",
+    "gameLabel": "Jogo",
+    "logoLabel": "Logo da guild",
+    "logoSub": "PNG, JPG ou WEBP. Tamanho máximo de 2MB.",
+    "logoUpload": "Enviar logo",
+    "logoChange": "Trocar logo",
+    "logoRemove": "Remover logo",
+    "logoInvalid": "Formato de imagem inválido. Use PNG, JPG ou WEBP.",
+    "logoTooLarge": "Imagem muito grande. O limite é 2MB.",
+    "logoUploading": "Enviando logo...",
+    "factionLabel": "Facção",
+    "recruitmentLabel": "Recrutamento",
+    "recruitmentOpen": "Aberto",
+    "recruitmentClosed": "Fechado",
+    "recruiting": "Recrutando",
+    "closedRecruitment": "Recrutamento fechado",
+    "regionLabel": "Região",
+    "languagesLabel": "Idiomas da guild",
+    "languagesHint": "Selecione um ou mais idiomas.",
+    "previewTitle": "Prévia da Guild",
+    "previewSub": "Confira como sua guild vai aparecer. Tudo certo? Confirme para criar.",
+    "editInfo": "Editar informações",
+    "confirmCreate": "Confirmar criação",
+    "createdTitle": "Guild criada!",
+    "createdSub": "Sua guild está no ar. Compartilhe o link e comece a recrutar.",
+    "guildLink": "Link da guild",
+    "copyLink": "Copiar link",
+    "linkCopied": "Link copiado!",
+    "goToPanel": "Ir para o painel da guild",
+    "leaderRole": "Líder",
+    "games": [{ "value": "aion2", "label": "Aion 2" }],
+    "regions": [
+      { "value": "na", "label": "América do Norte" },
+      { "value": "sa", "label": "América do Sul" },
+      { "value": "asia", "label": "Ásia" },
+      { "value": "europe", "label": "Europa" },
+      { "value": "oceania", "label": "Oceania" }
+    ],
+    "languages": [
+      { "value": "pt", "label": "Português" },
+      { "value": "en", "label": "Inglês" },
+      { "value": "es", "label": "Espanhol" },
+      { "value": "fr", "label": "Francês" },
+      { "value": "de", "label": "Alemão" },
+      { "value": "it", "label": "Italiano" },
+      { "value": "pl", "label": "Polonês" },
+      { "value": "ru", "label": "Russo" },
+      { "value": "ja", "label": "Japonês" },
+      { "value": "ko", "label": "Coreano" },
+      { "value": "zh", "label": "Chinês (Simplificado)" },
+      { "value": "tr", "label": "Turco" }
+    ]
+  },
+  "GuildPage": {
+    "notFound": "Guild não encontrada.",
+    "backToHome": "Voltar para a página inicial",
+    "recruiting": "Recrutando",
+    "closedRecruitment": "Recrutamento fechado",
+    "leader": "Líder",
+    "membersCount": "{count} membros",
+    "gameLabel": "Jogo",
+    "factionLabel": "Facção",
+    "regionLabel": "Região",
+    "languagesLabel": "Idiomas",
+    "recruitmentLabel": "Recrutamento",
+    "regions": [
+      { "value": "na", "label": "América do Norte" },
+      { "value": "sa", "label": "América do Sul" },
+      { "value": "asia", "label": "Ásia" },
+      { "value": "europe", "label": "Europa" },
+      { "value": "oceania", "label": "Oceania" }
+    ],
+    "languages": [
+      { "value": "pt", "label": "Português" },
+      { "value": "en", "label": "Inglês" },
+      { "value": "es", "label": "Espanhol" },
+      { "value": "fr", "label": "Francês" },
+      { "value": "de", "label": "Alemão" },
+      { "value": "it", "label": "Italiano" },
+      { "value": "pl", "label": "Polonês" },
+      { "value": "ru", "label": "Russo" },
+      { "value": "ja", "label": "Japonês" },
+      { "value": "ko", "label": "Coreano" },
+      { "value": "zh", "label": "Chinês (Simplificado)" },
+      { "value": "tr", "label": "Turco" }
+    ]
+  },
+  "GuildPanel": {
+    "backToDashboard": "Voltar ao painel",
+    "title": "Painel da Guild",
+    "subtitle": "Gerencie sua guild a partir daqui.",
+    "menuOverview": "Visão geral",
+    "menuCalendar": "Calendário",
+    "menuGroups": "Grupos",
+    "menuMembers": "Membros",
+    "timezoneLabel": "Fuso horário",
+    "createEvent": "Criar evento",
+    "eventTitle": "Título do evento",
+    "eventTitlePlaceholder": "Ex: Raid de domingo",
+    "eventDay": "Dia",
+    "eventHour": "Horário",
+    "eventSubmit": "Criar evento",
+    "close": "Fechar",
+    "eventNameRequired": "Informe o título do evento.",
+    "eventCreateError": "Não foi possível criar o evento. Tente novamente.",
+    "noEvents": "Nenhum evento nesta semana.",
+    "notFound": "Guild não encontrada.",
+    "membersTitle": "Membros",
+    "infoTitle": "Informações da Guild",
+    "leader": "Líder",
+    "membersCount": "{count} membros",
+    "gameLabel": "Jogo",
+    "factionLabel": "Facção",
+    "regionLabel": "Região",
+    "recruitmentLabel": "Recrutamento",
+    "recruiting": "Recrutando",
+    "closedRecruitment": "Recrutamento fechado",
+    "languagesLabel": "Idiomas",
+    "regions": [
+      { "value": "na", "label": "América do Norte" },
+      { "value": "sa", "label": "América do Sul" },
+      { "value": "asia", "label": "Ásia" },
+      { "value": "europe", "label": "Europa" },
+      { "value": "oceania", "label": "Oceania" }
+    ],
+    "languages": [
+      { "value": "pt", "label": "Português" },
+      { "value": "en", "label": "Inglês" },
+      { "value": "es", "label": "Espanhol" },
+      { "value": "fr", "label": "Francês" },
+      { "value": "de", "label": "Alemão" },
+      { "value": "it", "label": "Italiano" },
+      { "value": "pl", "label": "Polonês" },
+      { "value": "ru", "label": "Russo" },
+      { "value": "ja", "label": "Japonês" },
+      { "value": "ko", "label": "Coreano" },
+      { "value": "zh", "label": "Chinês (Simplificado)" },
+      { "value": "tr", "label": "Turco" }
+    ]
+  },
+  "GuildCalendar": {
+    "today": "Hoje",
+    "month": "M\u00EAs",
+    "week": "Semana",
+    "day": "Dia",
+    "createEvent": "Criar evento",
+    "newEvent": "Novo Evento",
+    "title": "T\u00EDtulo",
+    "titlePlaceholder": "Ex: Raid de domingo",
+    "titleRequired": "Informe o t\u00EDtulo do evento.",
+    "description": "Descri\u00E7\u00E3o",
+    "descriptionPlaceholder": "Descreva o evento...",
+    "eventType": "Tipo de evento",
+    "date": "Data",
+    "startTime": "In\u00EDcio",
+    "endTime": "Fim",
+    "invalidTime": "O hor\u00E1rio de t\u00E9rmino deve ser ap\u00F3s o in\u00EDcio.",
+    "location": "Local",
+    "locationPlaceholder": "Ex: Discord, No jogo...",
+    "maxParticipants": "M\u00E1x. participantes",
+    "unlimited": "Ilimitado",
+    "allowRegistration": "Permitir inscri\u00E7\u00E3o",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "createError": "N\u00E3o foi poss\u00EDvel criar o evento. Tente novamente.",
+    "deleteEvent": "Excluir evento",
+    "confirmDelete": "Confirmar exclus\u00E3o",
+    "leaveEvent": "Sair do evento",
+    "joinEvent": "Participar",
+    "eventFull": "Evento lotado",
+    "participants": "participantes",
+    "participantsList": "Participantes",
+    "emptyTitle": "Nenhum evento programado",
+    "emptyDescription": "Crie o primeiro evento da guilda para come\u00E7ar a organizar suas atividades.",
+    "RAID": "Raid",
+    "DUNGEON": "Dungeon",
+    "WORLD_BOSS": "World Boss",
+    "GUILD_WAR": "Guerra",
+    "PVP": "PvP",
+    "TOURNAMENT": "Torneio",
+    "MEETING": "Reuni\u00E3o",
+    "TRAINING": "Treinamento",
+    "OTHER": "Outro"
+  },
+  "GuildGroups": {
+    "tabGroups": "Grupos",
+    "tabPresets": "Modelos",
+    "manageRoles": "Funções",
+    "newGroup": "Novo grupo",
+    "editGroup": "Editar grupo",
+    "deleteGroup": "Excluir",
+    "deleteGroupTitle": "Excluir grupo",
+    "deleteGroupMessage": "Todos os membros serão removidos do grupo. Esta ação não pode ser desfeita.",
+    "delete": "Excluir",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "processing": "Processando...",
+    "errorGroupFull": "Este grupo está cheio.",
+    "errorAlreadyInGroup": "Este membro já está em outro grupo.",
+    "errorGeneric": "Não foi possível concluir a ação. Tente novamente.",
+    "availableMembers": "Membros disponíveis",
+    "searchAvailable": "Buscar membro...",
+    "noAvailableMembers": "Todos os membros estão alocados.",
+    "dragHintText": "Arraste um membro para um grupo para alocá-lo. Arraste o cabeçalho de um grupo para reordená-lo.",
+    "dragHint": "Arraste para mover",
+    "dragGroupHint": "Arraste para reordenar",
+    "loading": "Carregando...",
+    "noGroups": "Nenhum grupo criado ainda.",
+    "createFirstGroup": "Criar primeiro grupo",
+    "dropHint": "Solte membros aqui",
+    "noRoleLabel": "Sem função",
+    "noRole": "Sem função",
+    "setRole": "Definir função",
+    "removeMember": "Remover do grupo",
+    "type_PVE": "PvE",
+    "type_PVP": "PvP",
+    "type_RAID": "Raid",
+    "type_DUNGEON": "Dungeon",
+    "type_WAR": "Guerra",
+    "type_TOURNAMENT": "Torneio",
+    "type_OTHER": "Outro",
+    "name": "Nome",
+    "groupNameRequired": "Informe o nome do grupo.",
+    "groupNamePlaceholder": "Ex: Esquadrão Alfa",
+    "type": "Tipo",
+    "size": "Tamanho máximo",
+    "groupSizeInvalid": "Informe um tamanho válido.",
+    "headerColor": "Cor do cabeçalho",
+    "create": "Criar",
+    "save": "Salvar",
+    "saveError": "Não foi possível salvar. Tente novamente.",
+    "newPreset": "Novo modelo",
+    "editPreset": "Editar modelo",
+    "deletePreset": "Excluir modelo",
+    "deletePresetTitle": "Excluir modelo",
+    "deletePresetMessage": "Esta ação não pode ser desfeita.",
+    "filterAll": "Todos",
+    "noPresets": "Nenhum modelo criado.",
+    "groupsCount": "grupos",
+    "usePreset": "Usar modelo",
+    "presetNameRequired": "Informe o nome do modelo.",
+    "presetGroupsRequired": "Adicione ao menos um grupo ao modelo.",
+    "presetNamePlaceholder": "Ex: Farm de domingo",
+    "presetDescriptionPlaceholder": "Descreva o modelo...",
+    "description": "Descrição",
+    "icon": "Ícone",
+    "groupsBuilder": "Grupos do modelo",
+    "addGroup": "Adicionar grupo",
+    "noGroupsInPreset": "Nenhum grupo adicionado ainda.",
+    "quantity": "Qtd",
+    "addRoleToGroup": "Adicionar função",
+    "summary": "Resumo",
+    "totalPlayersLabel": "jogadores no total",
+    "roleNameRequired": "Informe o nome da função.",
+    "roleNamePlaceholder": "Ex: Suporte",
+    "roleIcon": "Ícone",
+    "roleColor": "Cor",
+    "defaultRole": "Padrão",
+    "editRole": "Editar função",
+    "deleteRole": "Excluir função",
+    "newRole": "Nova função"
   }
 }

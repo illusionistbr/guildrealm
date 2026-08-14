@@ -36,27 +36,101 @@
     "featuresTitle": "王国を支配するために必要なすべて",
     "featuresText": "プレイヤーとギルドリーダーのための強力なツール",
     "features": [
-      { "title": "ギルドを管理", "text": "メンバー、役職、募集などを管理する完全なツール。" },
-      { "title": "プレイヤープロフィール", "text": "プロフィールを作成し、実績を共有して評価を築きましょう。" },
-      { "title": "実績とXP", "text": "チャレンジを完了し、XPを獲得し、実績を解除してランキングを上げましょう。" },
-      { "title": "DKPシステム", "text": "ポイントを分配し、戦利品を記録し、ギルドの進行状況を透明に保ちます。" },
-      { "title": "グローバルコミュニティ", "text": "世界中のプレイヤーとつながり、より大きな何かの一部になりましょう。" },
-      { "title": "ランキング", "text": "プレイヤーやギルドと競い合い、グローバルランキングの頂点を目指しましょう。" }
+      {
+        "title": "ギルドを管理",
+        "text": "メンバー、役職、募集などを管理する完全なツール。"
+      },
+      {
+        "title": "プレイヤープロフィール",
+        "text": "プロフィールを作成し、実績を共有して評価を築きましょう。"
+      },
+      {
+        "title": "実績とXP",
+        "text": "チャレンジを完了し、XPを獲得し、実績を解除してランキングを上げましょう。"
+      },
+      {
+        "title": "DKPシステム",
+        "text": "ポイントを分配し、戦利品を記録し、ギルドの進行状況を透明に保ちます。"
+      },
+      {
+        "title": "グローバルコミュニティ",
+        "text": "世界中のプレイヤーとつながり、より大きな何かの一部になりましょう。"
+      },
+      {
+        "title": "ランキング",
+        "text": "プレイヤーやギルドと競い合い、グローバルランキングの頂点を目指しましょう。"
+      }
     ],
     "leaderPains": [
-      { "title": "計画に費やす時間", "text": "レイド、ロスター、イベントの編成に、プレイに充てるべき時間が奪われます。" },
-      { "title": "果てしないスプレッドシート", "text": "メンバー、出欠、DKP、進捗が複数の書類に分散し、追跡が困難です。" },
-      { "title": "戦利品をめぐる争い", "text": "明確なルールと可視化された履歴がなければ、重要な決定が紛争の種になります。" },
-      { "title": "分散したコミュニケーション", "text": "告知がチャット、サーバー、チャンネル間で埋もれ、ギルドの方向性が揃いません。" }
+      {
+        "title": "計画に費やす時間",
+        "text": "レイド、ロスター、イベントの編成に、プレイに充てるべき時間が奪われます。"
+      },
+      {
+        "title": "果てしないスプレッドシート",
+        "text": "メンバー、出欠、DKP、進捗が複数の書類に分散し、追跡が困難です。"
+      },
+      {
+        "title": "戦利品をめぐる争い",
+        "text": "明確なルールと可視化された履歴がなければ、重要な決定が紛争の種になります。"
+      },
+      {
+        "title": "分散したコミュニケーション",
+        "text": "告知がチャット、サーバー、チャンネル間で埋もれ、ギルドの方向性が揃いません。"
+      }
     ],
     "supportedGames": [
-      { "name": "Throne and Liberty", "abbreviation": "TL", "genre": "MMORPG • PvP & PvE", "description": "同盟を組織し、領土を支配し、Solisium 最大の戦いにギルドを備えましょう。" },
-      { "name": "Aion 2", "abbreviation": "A2", "genre": "MMORPG • 派閥", "description": "軍団を集め、戦略を練り、Elyos と Asmodians の間で歴史を刻みましょう。" }
+      {
+        "name": "Throne and Liberty",
+        "abbreviation": "TL",
+        "genre": "MMORPG • PvP & PvE",
+        "description": "同盟を組織し、領土を支配し、Solisium 最大の戦いにギルドを備えましょう。"
+      },
+      {
+        "name": "Aion 2",
+        "abbreviation": "A2",
+        "genre": "MMORPG • 派閥",
+        "description": "軍団を集め、戦略を練り、Elyos と Asmodians の間で歴史を刻みましょう。"
+      }
     ],
     "plans": [
-      { "name": "冒険者", "price": "無料", "description": "探索し、コミュニティを見つけたいプレイヤー向け。", "features": ["プレイヤープロフィール", "ギルドに参加", "実績とランキング"], "cta": "今すぐ始める", "isFree": true },
-      { "name": "ギルドマスター", "price": "¥1,900", "description": "ギルドをより効率的に運営するためのすべて。", "features": ["最大100名のメンバー", "DKPと戦利品システム", "イベントとカレンダー", "ギルド分析"], "cta": "ギルドを作成", "featured": true },
-      { "name": "アライアンス", "price": "¥4,900", "description": "王国を征服するコミュニティのための高度な体制。", "features": ["無制限のメンバー", "アライアンス管理", "優先サポート", "完全カスタマイズ"], "cta": "チームに問い合わせ" }
+      {
+        "name": "冒険者",
+        "price": "無料",
+        "description": "探索し、コミュニティを見つけたいプレイヤー向け。",
+        "features": [
+          "プレイヤープロフィール",
+          "ギルドに参加",
+          "実績とランキング"
+        ],
+        "cta": "今すぐ始める",
+        "isFree": true
+      },
+      {
+        "name": "ギルドマスター",
+        "price": "¥1,900",
+        "description": "ギルドをより効率的に運営するためのすべて。",
+        "features": [
+          "最大100名のメンバー",
+          "DKPと戦利品システム",
+          "イベントとカレンダー",
+          "ギルド分析"
+        ],
+        "cta": "ギルドを作成",
+        "featured": true
+      },
+      {
+        "name": "アライアンス",
+        "price": "¥4,900",
+        "description": "王国を征服するコミュニティのための高度な体制。",
+        "features": [
+          "無制限のメンバー",
+          "アライアンス管理",
+          "優先サポート",
+          "完全カスタマイズ"
+        ],
+        "cta": "チームに問い合わせ"
+      }
     ],
     "gamesEyebrow": "対応ゲーム",
     "gamesTitle": "あなたの次の王国が待っています。",
@@ -77,20 +151,54 @@
     "asideTitle3": "始まります。",
     "asideText": "アカウントを作成して、MMORPGプレイヤーとギルドのための最大のグローバルプラットフォームに参加しましょう。",
     "benefits": [
-      { "title": "プレイヤーとつながる", "text": "同じ目標を持つギルド、プレイヤー、コミュニティを見つけましょう。" },
-      { "title": "進捗を追跡", "text": "実績、ランキング、統計をリアルタイムで確認できます。" },
-      { "title": "ギルドを管理", "text": "リーダーがギルドを頂点に導くための完全なツール。" }
+      {
+        "title": "プレイヤーとつながる",
+        "text": "同じ目標を持つギルド、プレイヤー、コミュニティを見つけましょう。"
+      },
+      {
+        "title": "進捗を追跡",
+        "text": "実績、ランキング、統計をリアルタイムで確認できます。"
+      },
+      {
+        "title": "ギルドを管理",
+        "text": "リーダーがギルドを頂点に導くための完全なツール。"
+      }
     ],
     "formTitle": "アカウントを作成",
     "formText": "以下の詳細を入力して、GuildRealmアカウントを作成してください。",
     "fields": [
-      { "label": "ニックネーム", "placeholder": "ニックネームを選択", "hint": "プラットフォーム上の公開名になります。", "isPassword": false },
-      { "label": "メールアドレス", "placeholder": "your@email.com", "hint": "確認メールが送信されます。", "isPassword": false },
-      { "label": "メール確認", "placeholder": "メールを確認", "hint": "メールアドレスをもう一度入力してください。", "isPassword": false },
-      { "label": "パスワード", "placeholder": "安全なパスワードを作成", "hint": "文字と数字を含む8文字以上。", "isPassword": true },
-      { "label": "パスワード確認", "placeholder": "パスワードを確認", "hint": "パスワードをもう一度入力してください。", "isPassword": true }
+      {
+        "label": "ニックネーム",
+        "placeholder": "ニックネームを選択",
+        "hint": "プラットフォーム上の公開名になります。",
+        "isPassword": false
+      },
+      {
+        "label": "メールアドレス",
+        "placeholder": "your@email.com",
+        "hint": "確認メールが送信されます。",
+        "isPassword": false
+      },
+      {
+        "label": "メール確認",
+        "placeholder": "メールを確認",
+        "hint": "メールアドレスをもう一度入力してください。",
+        "isPassword": false
+      },
+      {
+        "label": "パスワード",
+        "placeholder": "安全なパスワードを作成",
+        "hint": "文字と数字を含む8文字以上。",
+        "isPassword": true
+      },
+      {
+        "label": "パスワード確認",
+        "placeholder": "パスワードを確認",
+        "hint": "パスワードをもう一度入力してください。",
+        "isPassword": true
+      }
     ],
-"checkboxTerms": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します。",
+    "checkboxTerms": "<terms>利用規約</terms>および<privacy>プライバシーポリシー</privacy>に同意します。",
     "checkboxNews": "メールでお知らせを受け取りたい。",
     "checkboxAge": "13歳以上です。",
     "submit": "アカウントを作成",
@@ -103,28 +211,98 @@
     "heroTitle2": "カタログ",
     "heroText": "あなたにぴったりのギルドを見つけましょう。活発なコミュニティに参加し、壮大なレイドに挑み、頂点を目指しましょう。",
     "createGuild": "ギルドを作成",
-    "searchPlaceholder": "名前、タグ、GM、サーバーでギルドを検索...",
-    "selectFilters": [
-      { "label": "MMORPG", "value": "すべてのゲーム" },
-      { "label": "地域", "value": "すべての地域" },
-      { "label": "募集状態", "value": "すべてのステータス" },
-      { "label": "プレイスタイル", "value": "すべてのスタイル" }
-    ],
-    "advancedFilters": "詳細フィルター",
+    "searchPlaceholder": "ギルド名で検索...",
+    "filterGame": "ゲーム",
+    "filterRegion": "地域",
+    "filterRecruitment": "募集",
+    "filterAnyGame": "すべてのゲーム",
+    "filterAnyRegion": "すべての地域",
+    "filterAnyRecruitment": "すべて",
+    "noGuilds": "ギルドが見つかりません。",
     "resultsFound": "{count}件のギルドが見つかりました",
-    "sortBy": "並び替え:",
-    "popularity": "人気順",
     "viewGuild": "ギルドを見る",
     "apply": "申請する",
     "members": "{count} メンバー",
-    "onlineNow": "オンライン中",
-    "rank": "ランク #{rank}",
     "gmLabel": "GM: {name}",
-    "guilds": [
-      { "name": "DragonSlayers BR", "tag": "DSBR", "rank": 1, "game": "World of Warcraft", "gm": "ValkyriePrime", "members": 128, "tone": "gold", "statusType": "open", "status": "募集中", "tags": ["レイド", "PvP", "競技", "M+"], "description": "World of Warcraft で最大かつ最も組織された競技ブラジル人ギルド。Mythic Raiding、PvP、M+ に焦点。" },
-      { "name": "Eternal Guardians", "tag": "ETG", "rank": 2, "game": "Final Fantasy XIV", "gm": "Kaelthas_BR", "members": 96, "tone": "silver", "statusType": "invite", "status": "招待制", "tags": ["レイド", "PvE", "カジュアル-ハードコア", "イベント"], "description": "成熟した活発なコミュニティと共に、高レベルPvEコンテンツに焦点を当てたギルド。" },
-      { "name": "Horde United", "tag": "HORDE", "rank": 3, "game": "Albion Online", "gm": "DarkEclipse", "members": 74, "tone": "red", "statusType": "open", "status": "募集中", "tags": ["GvG", "PvP", "Zerg", "領土"], "description": "領土戦争、GvG、ゾーンコントロールの専門家。力と誇りによって団結！" },
-      { "name": "Lunar Eclipse", "tag": "LUNAR", "rank": 4, "game": "Black Desert Online", "gm": "Lunaris", "members": 58, "tone": "violet", "statusType": "invite", "status": "招待制", "tags": ["生活スキル", "Node War", "交流", "PvE"], "description": "生活スキル、Node War、着実な成長に焦点を当てた交流型ギルド。何よりも尊重と友情。" }
+    "recruiting": "募集中",
+    "closedRecruitment": "募集終了",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "regions": [
+      {
+        "value": "na",
+        "label": "北米"
+      },
+      {
+        "value": "sa",
+        "label": "南米"
+      },
+      {
+        "value": "asia",
+        "label": "アジア"
+      },
+      {
+        "value": "europe",
+        "label": "ヨーロッパ"
+      },
+      {
+        "value": "oceania",
+        "label": "オセアニア"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "ポルトガル語"
+      },
+      {
+        "value": "en",
+        "label": "英語"
+      },
+      {
+        "value": "es",
+        "label": "スペイン語"
+      },
+      {
+        "value": "fr",
+        "label": "フランス語"
+      },
+      {
+        "value": "de",
+        "label": "ドイツ語"
+      },
+      {
+        "value": "it",
+        "label": "イタリア語"
+      },
+      {
+        "value": "pl",
+        "label": "ポーランド語"
+      },
+      {
+        "value": "ru",
+        "label": "ロシア語"
+      },
+      {
+        "value": "ja",
+        "label": "日本語"
+      },
+      {
+        "value": "ko",
+        "label": "韓国語"
+      },
+      {
+        "value": "zh",
+        "label": "中国語（簡体字）"
+      },
+      {
+        "value": "tr",
+        "label": "トルコ語"
+      }
     ]
   },
   "Terms": {
@@ -150,27 +328,132 @@
     "next": "次へ",
     "nextTitle": "定義",
     "sections": [
-      {"id":"introduction","num":"1","title":"はじめに","content":"<p><b>GuildRealm</b>へようこそ！本利用規約は、GuildRealmプラットフォームへのアクセスおよび利用を規定します。</p><p>アカウントを作成または本プラットフォームのいずれかを利用することで、本規約に同意したものとみなされます。</p>"},
-      {"id":"definitions","num":"2","title":"定義","content":"<p>本規約で使用される主な用語の定義：</p><table><thead><tr><th>用語</th><th>定義</th></tr></thead><tbody><tr><td><b>ユーザー</b></td><td>アカウントを作成し、GuildRealmを利用するすべての方。</td></tr><tr><td><b>アカウント</b></td><td>ユーザーがサービスを利用するための個人プロフィール。</td></tr><tr><td><b>ギルド</b></td><td>GuildRealm内で作成・管理されるプレイヤーのグループ。</td></tr><tr><td><b>コンテンツ</b></td><td>プラットフォーム上に公開されるすべての情報、テキスト、画像。</td></tr><tr><td><b>サービス</b></td><td>GuildRealmが提供するすべての機能とリソース。</td></tr><tr><td><b>モデレーション</b></td><td>プラットフォームの安全と正常な運営のために取られる措置。</td></tr></tbody></table>"},
-      {"id":"acceptance","num":"3","title":"規約の同意","content":"<p>GuildRealmにアクセスすることで、本規約および<b>プライバシーポリシー</b>に同意したものとみなされます。</p>"},
-      {"id":"eligibility","num":"4","title":"利用資格","content":"<p>GuildRealmを利用するには<b>13歳以上</b>である必要があります。</p><ul><li>提供された情報は正確です</li><li>パスワードを安全に管理します</li><li>不正使用を報告します</li></ul>"},
-      {"id":"account","num":"5","title":"ユーザーアカウント","content":"<p>各ユーザーは<b>1つのアカウント</b>のみ保有できます。</p><p>ニックネームに offensive な言葉や無許可の商標使用は禁止されています。</p>"},
-      {"id":"profile","num":"6","title":"公開プロフィール","content":"<p>アカウントには公開プロフィールが含まれます。プライバシーコントロールで視認性を管理できます。</p>"},
-      {"id":"guilds","num":"7","title":"ギルド","content":"<p>すべてのユーザーはギルドを作成できます。リーダーはメンバーとコンテンツに責任を負います。</p>"},
-      {"id":"content","num":"8","title":"ユーザーコンテンツ","content":"<p>コンテンツの<b>所有者</b>は投稿者自身です。GuildRealmにはプラットフォーム内での表示・配布のライセンスが付与されます。</p><p><b>禁止コンテンツ：</b>違法コンテンツ、差別的コンテンツ、スパム、フィッシングなど。</p>"},
-      {"id":"messages","num":"9","title":"プライベートメッセージ","content":"<p>プライベートメッセージは機密です。報告や法的要請がある場合に限りアクセスされることがあります。</p>"},
-      {"id":"conduct","num":"10","title":"コミュニティ行動規範","content":"<p><b>禁止行為：</b></p><ul><li>スパム、ボット、無許可の自動化</li><li>ハラスメント、ヘイトスピーチ</li><li>詐欺、フィッシング</li><li>ランキング操作</li></ul>"},
-      {"id":"reports","num":"11","title":"報告とモデレーション","content":"<p>すべてのユーザーは規約違反を報告できます。違反の重大性に応じて、警告から永久BANまで処罰が適用されます。</p>"},
-      {"id":"achievements","num":"12","title":"実績とランキング","content":"<p>実績・XP・バッジ・ランキングには金銭的価値がなく、譲渡・販売はできません。</p>"},
-      {"id":"sweepstakes","num":"13","title":"抽選イベント","content":"<p>GuildRealmは景品付きの抽選やイベントを開催する場合があります。</p>"},
-      {"id":"ip","num":"14","title":"知的財産","content":"<p>GuildRealmのすべての視覚要素、コード、デザイン、ロゴはプラットフォームの独占財産です。</p>"},
-      {"id":"thirdparty","num":"15","title":"サードパーティゲーム","content":"<p>GuildRealmは登録されたゲームの開発者・パブリッシャーとの提携関係はありません（公式パートナーシップを除く）。</p>"},
-      {"id":"availability","num":"16","title":"プラットフォームの可用性","content":"<p>プラットフォームの連続的な利用可能性を保証するものではありません。</p>"},
-      {"id":"suspension","num":"17","title":"停止と終了","content":"<p>重大な規約違反がある場合、アカウントが停止または終了される場合があります。</p>"},
-      {"id":"liability","num":"18","title":"責任の制限","content":"<p>GuildRealmはプラットフォームの利用に起因する直接的・間接的損害について責任を負いません。</p>"},
-      {"id":"changes","num":"19","title":"規約の変更","content":"<p>本規約は随時変更される場合があります。変更は30日後に発効します。</p>"},
-      {"id":"law","num":"20","title":"準拠法と管轄","content":"<p>本利用規約はブラジル連邦共和国の法律に準拠します。</p><p>GuildRealmの利用に起因する紛争で友好的に解決できない場合、リオグランデ・ド・スル州ノボ・ハンブルゴの裁判所が管轄となります。</p>"},
-      {"id":"contact","num":"21","title":"お問い合わせ","content":"<p>contato@guildrealm.com | privacy@guildrealm.com | legal@guildrealm.com</p>"}
+      {
+        "id": "introduction",
+        "num": "1",
+        "title": "はじめに",
+        "content": "<p><b>GuildRealm</b>へようこそ！本利用規約は、GuildRealmプラットフォームへのアクセスおよび利用を規定します。</p><p>アカウントを作成または本プラットフォームのいずれかを利用することで、本規約に同意したものとみなされます。</p>"
+      },
+      {
+        "id": "definitions",
+        "num": "2",
+        "title": "定義",
+        "content": "<p>本規約で使用される主な用語の定義：</p><table><thead><tr><th>用語</th><th>定義</th></tr></thead><tbody><tr><td><b>ユーザー</b></td><td>アカウントを作成し、GuildRealmを利用するすべての方。</td></tr><tr><td><b>アカウント</b></td><td>ユーザーがサービスを利用するための個人プロフィール。</td></tr><tr><td><b>ギルド</b></td><td>GuildRealm内で作成・管理されるプレイヤーのグループ。</td></tr><tr><td><b>コンテンツ</b></td><td>プラットフォーム上に公開されるすべての情報、テキスト、画像。</td></tr><tr><td><b>サービス</b></td><td>GuildRealmが提供するすべての機能とリソース。</td></tr><tr><td><b>モデレーション</b></td><td>プラットフォームの安全と正常な運営のために取られる措置。</td></tr></tbody></table>"
+      },
+      {
+        "id": "acceptance",
+        "num": "3",
+        "title": "規約の同意",
+        "content": "<p>GuildRealmにアクセスすることで、本規約および<b>プライバシーポリシー</b>に同意したものとみなされます。</p>"
+      },
+      {
+        "id": "eligibility",
+        "num": "4",
+        "title": "利用資格",
+        "content": "<p>GuildRealmを利用するには<b>13歳以上</b>である必要があります。</p><ul><li>提供された情報は正確です</li><li>パスワードを安全に管理します</li><li>不正使用を報告します</li></ul>"
+      },
+      {
+        "id": "account",
+        "num": "5",
+        "title": "ユーザーアカウント",
+        "content": "<p>各ユーザーは<b>1つのアカウント</b>のみ保有できます。</p><p>ニックネームに offensive な言葉や無許可の商標使用は禁止されています。</p>"
+      },
+      {
+        "id": "profile",
+        "num": "6",
+        "title": "公開プロフィール",
+        "content": "<p>アカウントには公開プロフィールが含まれます。プライバシーコントロールで視認性を管理できます。</p>"
+      },
+      {
+        "id": "guilds",
+        "num": "7",
+        "title": "ギルド",
+        "content": "<p>すべてのユーザーはギルドを作成できます。リーダーはメンバーとコンテンツに責任を負います。</p>"
+      },
+      {
+        "id": "content",
+        "num": "8",
+        "title": "ユーザーコンテンツ",
+        "content": "<p>コンテンツの<b>所有者</b>は投稿者自身です。GuildRealmにはプラットフォーム内での表示・配布のライセンスが付与されます。</p><p><b>禁止コンテンツ：</b>違法コンテンツ、差別的コンテンツ、スパム、フィッシングなど。</p>"
+      },
+      {
+        "id": "messages",
+        "num": "9",
+        "title": "プライベートメッセージ",
+        "content": "<p>プライベートメッセージは機密です。報告や法的要請がある場合に限りアクセスされることがあります。</p>"
+      },
+      {
+        "id": "conduct",
+        "num": "10",
+        "title": "コミュニティ行動規範",
+        "content": "<p><b>禁止行為：</b></p><ul><li>スパム、ボット、無許可の自動化</li><li>ハラスメント、ヘイトスピーチ</li><li>詐欺、フィッシング</li><li>ランキング操作</li></ul>"
+      },
+      {
+        "id": "reports",
+        "num": "11",
+        "title": "報告とモデレーション",
+        "content": "<p>すべてのユーザーは規約違反を報告できます。違反の重大性に応じて、警告から永久BANまで処罰が適用されます。</p>"
+      },
+      {
+        "id": "achievements",
+        "num": "12",
+        "title": "実績とランキング",
+        "content": "<p>実績・XP・バッジ・ランキングには金銭的価値がなく、譲渡・販売はできません。</p>"
+      },
+      {
+        "id": "sweepstakes",
+        "num": "13",
+        "title": "抽選イベント",
+        "content": "<p>GuildRealmは景品付きの抽選やイベントを開催する場合があります。</p>"
+      },
+      {
+        "id": "ip",
+        "num": "14",
+        "title": "知的財産",
+        "content": "<p>GuildRealmのすべての視覚要素、コード、デザイン、ロゴはプラットフォームの独占財産です。</p>"
+      },
+      {
+        "id": "thirdparty",
+        "num": "15",
+        "title": "サードパーティゲーム",
+        "content": "<p>GuildRealmは登録されたゲームの開発者・パブリッシャーとの提携関係はありません（公式パートナーシップを除く）。</p>"
+      },
+      {
+        "id": "availability",
+        "num": "16",
+        "title": "プラットフォームの可用性",
+        "content": "<p>プラットフォームの連続的な利用可能性を保証するものではありません。</p>"
+      },
+      {
+        "id": "suspension",
+        "num": "17",
+        "title": "停止と終了",
+        "content": "<p>重大な規約違反がある場合、アカウントが停止または終了される場合があります。</p>"
+      },
+      {
+        "id": "liability",
+        "num": "18",
+        "title": "責任の制限",
+        "content": "<p>GuildRealmはプラットフォームの利用に起因する直接的・間接的損害について責任を負いません。</p>"
+      },
+      {
+        "id": "changes",
+        "num": "19",
+        "title": "規約の変更",
+        "content": "<p>本規約は随時変更される場合があります。変更は30日後に発効します。</p>"
+      },
+      {
+        "id": "law",
+        "num": "20",
+        "title": "準拠法と管轄",
+        "content": "<p>本利用規約はブラジル連邦共和国の法律に準拠します。</p><p>GuildRealmの利用に起因する紛争で友好的に解決できない場合、リオグランデ・ド・スル州ノボ・ハンブルゴの裁判所が管轄となります。</p>"
+      },
+      {
+        "id": "contact",
+        "num": "21",
+        "title": "お問い合わせ",
+        "content": "<p>contato@guildrealm.com | privacy@guildrealm.com | legal@guildrealm.com</p>"
+      }
     ]
   },
   "Privacy": {
@@ -204,23 +487,108 @@
     "next": "次へ",
     "nextTitle": "お問い合わせ",
     "sections": [
-      {"id":"intro","num":"1","title":"はじめに","content":"<p>GuildRealm（<b>「当社」</b>、<b>「当社の」</b>、または<b>「プラットフォーム」</b>）は、お客様のプライバシーと個人データを保護することに専念しています。本プライバシーポリシーでは、お客様が提供する情報、またはサービスのご利用時に自動的に収集する情報を、どのように収集、使用、保存、保護するかを説明します。</p>"},
-      {"id":"who","num":"2","title":"当社について","content":"<p>GuildRealmは、プラットフォームを通じて処理される個人データの管理者です。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>商号</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>住所</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – ブラジル – CEP 93510-000</td></tr><tr><td><b>メール</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>DPO / 担当者</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"},
-      {"id":"data","num":"3","title":"収集するデータ","content":"<p>最高のGuildRealm体験を提供するために、さまざまな種類のデータを収集します。</p><h4>ユーザーが提供するデータ</h4><ul><li><b>名前</b> — プロフィールのパーソナライズに使用</li><li><b>ニックネーム</b> — プラットフォーム上の公開識別子</li><li><b>メール</b> — アカウント作成およびパスワード復旧用</li><li><b>パスワード</b> — 暗号化された状態（ハッシュ）で保存</li><li><b>写真 / アバター</b> — 公開的にお客様を表す画像</li><li><b>バナー</b> — プロフィール背景画像</li><li><b>自己紹介</b> — お客様についての説明テキスト</li><li><b>国と言語</b> — ローカライズされたコンテンツ用</li><li><b>SNSリンク</b> — 自発的に共有</li><li><b>公開コンテンツ</b> — テキスト、コメント、投稿、ガイド</li></ul><h4>使用中に生成されるデータ</h4><ul><li><b>ギルド</b> — 作成または参加するギルド</li><li><b>実績とバッジ</b> — メダルと表彰</li><li><b>プライベートメッセージ</b> — 他のユーザーと交換するコンテンツ</li><li><b>フレンドリスト</b> — 確立された接続</li><li><b>通知</b> — 通知の記録</li><li><b>コメントといいね</b> — コンテンツのやり取り</li><li><b>ログイン履歴</b> — アクセス日時</li></ul><h4>自動で収集されるデータ</h4><ul><li><b>IPアドレス</b> — セキュリティと分析用</li><li><b>ブラウザとOS</b> — 技術的識別</li><li><b>言語とタイムゾーン</b> — パーソナライズ用</li><li><b>デバイスタイプ</b> — デスクトップ、タブレットまたはモバイル</li><li><b>Cookieと識別子</b> — 機能性とセキュリティ用</li><li><b>サーバーログ</b> — 自動技術記録</li></ul>"},
-      {"id":"usage","num":"4","title":"データの使用方法","content":"<p>各収集データには特定の目的があります：</p><table><thead><tr><th>目的</th><th>説明</th></tr></thead><tbody><tr><td><b>アカウントの作成と管理</b></td><td>登録、ログイン、アカウントの維持管理を可能にする</td></tr><tr><td><b>本人確認</b></td><td>本人であることを確認する</td></tr><tr><td><b>詐欺防止</b></td><td>疑わしい活動を特定してブロックする</td></tr><tr><td><b>パーソナライズされた体験</b></td><td>お客様の言語でコンテンツを表示し、ギルドを推薦する</td></tr><tr><td><b>モデレーション</b></td><td>報告を分析し、ルールを適用する</td></tr><tr><td><b>セキュリティ</b></td><td>アクセスを監視し、侵入を検出する</td></tr><tr><td><b>統計</b></td><td>プラットフォームの使用方法を理解する</td></tr><tr><td><b>サポート</b></td><td>質問に答え、問題を解決する</td></tr><tr><td><b>コミュニケーション</b></td><td>重要な変更を通知する</td></tr><tr><td><b>法的義務</b></td><td>法的要件を満たす</td></tr></tbody></table><p>同意なしに、重要な自動化された決定や広告プロファイルのためにデータを使用し<b>ません</b>。</p>"},
-      {"id":"legal","num":"5","title":"法的根拠（LGPD）","content":"<p>GuildRealmは<b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>に準拠してデータを処理します。</p><table><thead><tr><th>法的根拠</th><th>適用</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>ポリシーおよび非必須Cookieを受け入れた場合</td></tr><tr><td><b>契約の履行</b>（art. 7º, V）</td><td>アカウントを作成し、サービスを提供するため</td></tr><tr><td><b>法的義務</b>（art. 7º, II）</td><td>法的および司法的要件を満たすため</td></tr><tr><td><b>権利の行使</b>（art. 7º, VI）</td><td>GuildRealmおよびユーザーの権利を保護するため</td></tr><tr><td><b>正当な利益</b>（art. 7º, IX）</td><td>セキュリティ、詐欺防止、サービス改善のため</td></tr></tbody></table><p>いつでも同意を撤回できます。</p>"},
-      {"id":"sharing","num":"6","title":"データの共有","content":"<p>GuildRealmはお客様の個人データを第三者に<b>販売しません</b>。</p><p>以下の状況でデータを共有する場合があります：</p><ul><li><b>サービスプロバイダー</b> — プラットフォームの運営を支援する企業</li><li><b>公共機関</b> — 法律や裁判所の命令により要求された場合</li><li><b>同意に基づく</b> — 明示的に許可した場合</li><li><b>企業譲渡</b> — 合併や買収の場合</li></ul>"},
-      {"id":"thirdparty","num":"7","title":"第三者サービス","content":"<p>GuildRealmは運営のために第三者サービスを使用しています：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage、Hosting</li><li><b>Cloudflare</b> — DDoS保護、CDN、ネットワークセキュリティ</li><li><b>Google Analytics</b> — 使用統計（有効な場合）</li><li><b>Google reCAPTCHA</b> — ボット保護</li><li><b>Resend</b> — トランザクショナルメール送信</li></ul>"},
-      {"id":"cookies","num":"8","title":"Cookie","content":"<p>Cookieはブラウザに保存される小さなファイルです。</p><table><thead><tr><th>種類</th><th>目的</th></tr></thead><tbody><tr><td><b>必須</b></td><td>プラットフォームの機能に不可欠</td></tr><tr><td><b>機能的</b></td><td>設定を記憶（言語、設定）</td></tr><tr><td><b>パフォーマンス</b></td><td>プラットフォームの改善に役立つ（Google Analytics）</td></tr><tr><td><b>マーケティング</b></td><td>現在は使用していません</td></tr></tbody></table><p>ブラウザ設定でCookieを管理できます。</p>"},
-      {"id":"retention","num":"9","title":"データの保持","content":"<p>データは本ポリシーに記載された目的を達成するために必要な期間保持されます。</p><ul><li><b>サービスの必要性</b> — アカウントがアクティブな間</li><li><b>法的義務</b> — 法律で定められた期限</li><li><b>セキュリティ</b> — 調査のためにログを保持</li></ul><p>アカウント削除後、個人データは最大<b>30日</b>以内に削除されます。バックアップには最大90日間データが含まれる場合があります。</p>"},
-      {"id":"rights","num":"10","title":"お客様の権利（LGPD）","content":"<p>データ主体として、以下の権利があります：</p><ul><li><b>確認およびアクセス</b> — データのコピーを要求する</li><li><b>訂正</b> — 不正確なデータの訂正を要求する</li><li><b>更新</b> — プラットフォーム上の情報を更新する</li><li><b>匿名化、ブロックまたは削除</b> — データの除去を要求する</li><li><b>データポータビリティ</b> — 別のサービスへの転送を要求する</li><li><b>同意の撤回</b> — いつでも</li><li><b>共有情報</b> — 誰と共有しているかを知る</li><li><b>異議申立</b> — 正当な利益に基づく処理に異議を唱える</li></ul><p><b>privacy@guildrealm.com</b>までご連絡ください。<b>15日</b>以内に回答いたします。</p>"},
-      {"id":"deletion","num":"11","title":"アカウントの削除","content":"<p>削除を要求すると：</p><ul><li>プロフィールと個人データが削除または匿名化されます</li><li>ギルド、実績、ランキングのリンクが解除されます</li><li>プライベートメッセージは他のユーザーに表示される場合があります</li><li>ギルドコンテンツは識別なしに残る場合があります</li></ul><p>法的義務により保持されたデータ（例：6ヶ月間のアクセス記録）は必要な期間残る場合があります。</p>"},
-      {"id":"security","num":"12","title":"データのセキュリティ","content":"<p>GuildRealmが採用する措置：</p><ul><li><b>暗号化</b> — 全送信でHTTPS（SSL/TLS）</li><li><b>アクセス制御</b> — 制限された認証済みアクセス</li><li><b>監視</b> — アクセスおよび侵入試行ログ</li><li><b>Firebase Security</b> — データベースセキュリティルール</li><li><b>Cloudflare</b> — DDoS保護</li><li><b>定期バックアップ</b> — データの整合性を確保</li><li><b>暗号化パスワード</b> — bcryptアルゴリズム</li></ul>"},
-      {"id":"children","num":"13","title":"子どもと青少年","content":"<p>GuildRealmは13歳未満の子どもを対象としていません。</p><p>13歳から18歳の場合は、保護者にこのポリシーを把握することをお勧めします。</p><p>13歳未満の子どものデータを意図的に収集しません。この年齢層のアカウントを特定した場合、データを削除し、アカウントを終了します。</p>"},
-      {"id":"transfer","num":"14","title":"国際転送","content":"<p>一部のプロバイダーは他の国にデータを保存する場合があります（例：米国のGoogle FirebaseとCloudflare）。</p><p>適切な保護を確保するために、標準契約条項や定期的なプロバイダー評価などの措置を講じています。</p>"},
-      {"id":"changes-priv","num":"15","title":"本ポリシーの変更","content":"<p>本ポリシーを定期的に更新する場合があります。</p><ul><li>更新版はプラットフォームに公開されます</li><li>重要な変更はメールで通知されます</li><li>変更は<b>30日</b>後に発効します</li></ul><p>発効後の継続使用は受諾を構成します。</p>"},
-      {"id":"contact-priv","num":"16","title":"お問い合わせ","content":"<p>プライバシーやデータ保護に関するご質問：</p><ul><li><b>プライバシー:</b> privacy@guildrealm.com</li><li><b>法務:</b> legal@guildrealm.com</li><li><b>一般:</b> contato@guildrealm.com</li></ul>"},
-      {"id":"law-priv","num":"17","title":"準拠法","content":"<p>本ポリシーは<b>ブラジル連邦共和国</b>の法律、特に<b>LGPD（Lei nº 13.709/2018）</b>および<b>Marco Civil da Internet（Lei nº 12.965/2014）</b>に準拠します。</p><p>紛争はRio Grande do Sul州Novo Hamburgoの裁判所で解決されます。</p>"}
+      {
+        "id": "intro",
+        "num": "1",
+        "title": "はじめに",
+        "content": "<p>GuildRealm（<b>「当社」</b>、<b>「当社の」</b>、または<b>「プラットフォーム」</b>）は、お客様のプライバシーと個人データを保護することに専念しています。本プライバシーポリシーでは、お客様が提供する情報、またはサービスのご利用時に自動的に収集する情報を、どのように収集、使用、保存、保護するかを説明します。</p>"
+      },
+      {
+        "id": "who",
+        "num": "2",
+        "title": "当社について",
+        "content": "<p>GuildRealmは、プラットフォームを通じて処理される個人データの管理者です。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>商号</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>住所</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – ブラジル – CEP 93510-000</td></tr><tr><td><b>メール</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>DPO / 担当者</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"
+      },
+      {
+        "id": "data",
+        "num": "3",
+        "title": "収集するデータ",
+        "content": "<p>最高のGuildRealm体験を提供するために、さまざまな種類のデータを収集します。</p><h4>ユーザーが提供するデータ</h4><ul><li><b>名前</b> — プロフィールのパーソナライズに使用</li><li><b>ニックネーム</b> — プラットフォーム上の公開識別子</li><li><b>メール</b> — アカウント作成およびパスワード復旧用</li><li><b>パスワード</b> — 暗号化された状態（ハッシュ）で保存</li><li><b>写真 / アバター</b> — 公開的にお客様を表す画像</li><li><b>バナー</b> — プロフィール背景画像</li><li><b>自己紹介</b> — お客様についての説明テキスト</li><li><b>国と言語</b> — ローカライズされたコンテンツ用</li><li><b>SNSリンク</b> — 自発的に共有</li><li><b>公開コンテンツ</b> — テキスト、コメント、投稿、ガイド</li></ul><h4>使用中に生成されるデータ</h4><ul><li><b>ギルド</b> — 作成または参加するギルド</li><li><b>実績とバッジ</b> — メダルと表彰</li><li><b>プライベートメッセージ</b> — 他のユーザーと交換するコンテンツ</li><li><b>フレンドリスト</b> — 確立された接続</li><li><b>通知</b> — 通知の記録</li><li><b>コメントといいね</b> — コンテンツのやり取り</li><li><b>ログイン履歴</b> — アクセス日時</li></ul><h4>自動で収集されるデータ</h4><ul><li><b>IPアドレス</b> — セキュリティと分析用</li><li><b>ブラウザとOS</b> — 技術的識別</li><li><b>言語とタイムゾーン</b> — パーソナライズ用</li><li><b>デバイスタイプ</b> — デスクトップ、タブレットまたはモバイル</li><li><b>Cookieと識別子</b> — 機能性とセキュリティ用</li><li><b>サーバーログ</b> — 自動技術記録</li></ul>"
+      },
+      {
+        "id": "usage",
+        "num": "4",
+        "title": "データの使用方法",
+        "content": "<p>各収集データには特定の目的があります：</p><table><thead><tr><th>目的</th><th>説明</th></tr></thead><tbody><tr><td><b>アカウントの作成と管理</b></td><td>登録、ログイン、アカウントの維持管理を可能にする</td></tr><tr><td><b>本人確認</b></td><td>本人であることを確認する</td></tr><tr><td><b>詐欺防止</b></td><td>疑わしい活動を特定してブロックする</td></tr><tr><td><b>パーソナライズされた体験</b></td><td>お客様の言語でコンテンツを表示し、ギルドを推薦する</td></tr><tr><td><b>モデレーション</b></td><td>報告を分析し、ルールを適用する</td></tr><tr><td><b>セキュリティ</b></td><td>アクセスを監視し、侵入を検出する</td></tr><tr><td><b>統計</b></td><td>プラットフォームの使用方法を理解する</td></tr><tr><td><b>サポート</b></td><td>質問に答え、問題を解決する</td></tr><tr><td><b>コミュニケーション</b></td><td>重要な変更を通知する</td></tr><tr><td><b>法的義務</b></td><td>法的要件を満たす</td></tr></tbody></table><p>同意なしに、重要な自動化された決定や広告プロファイルのためにデータを使用し<b>ません</b>。</p>"
+      },
+      {
+        "id": "legal",
+        "num": "5",
+        "title": "法的根拠（LGPD）",
+        "content": "<p>GuildRealmは<b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>に準拠してデータを処理します。</p><table><thead><tr><th>法的根拠</th><th>適用</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>ポリシーおよび非必須Cookieを受け入れた場合</td></tr><tr><td><b>契約の履行</b>（art. 7º, V）</td><td>アカウントを作成し、サービスを提供するため</td></tr><tr><td><b>法的義務</b>（art. 7º, II）</td><td>法的および司法的要件を満たすため</td></tr><tr><td><b>権利の行使</b>（art. 7º, VI）</td><td>GuildRealmおよびユーザーの権利を保護するため</td></tr><tr><td><b>正当な利益</b>（art. 7º, IX）</td><td>セキュリティ、詐欺防止、サービス改善のため</td></tr></tbody></table><p>いつでも同意を撤回できます。</p>"
+      },
+      {
+        "id": "sharing",
+        "num": "6",
+        "title": "データの共有",
+        "content": "<p>GuildRealmはお客様の個人データを第三者に<b>販売しません</b>。</p><p>以下の状況でデータを共有する場合があります：</p><ul><li><b>サービスプロバイダー</b> — プラットフォームの運営を支援する企業</li><li><b>公共機関</b> — 法律や裁判所の命令により要求された場合</li><li><b>同意に基づく</b> — 明示的に許可した場合</li><li><b>企業譲渡</b> — 合併や買収の場合</li></ul>"
+      },
+      {
+        "id": "thirdparty",
+        "num": "7",
+        "title": "第三者サービス",
+        "content": "<p>GuildRealmは運営のために第三者サービスを使用しています：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage、Hosting</li><li><b>Cloudflare</b> — DDoS保護、CDN、ネットワークセキュリティ</li><li><b>Google Analytics</b> — 使用統計（有効な場合）</li><li><b>Google reCAPTCHA</b> — ボット保護</li><li><b>Resend</b> — トランザクショナルメール送信</li></ul>"
+      },
+      {
+        "id": "cookies",
+        "num": "8",
+        "title": "Cookie",
+        "content": "<p>Cookieはブラウザに保存される小さなファイルです。</p><table><thead><tr><th>種類</th><th>目的</th></tr></thead><tbody><tr><td><b>必須</b></td><td>プラットフォームの機能に不可欠</td></tr><tr><td><b>機能的</b></td><td>設定を記憶（言語、設定）</td></tr><tr><td><b>パフォーマンス</b></td><td>プラットフォームの改善に役立つ（Google Analytics）</td></tr><tr><td><b>マーケティング</b></td><td>現在は使用していません</td></tr></tbody></table><p>ブラウザ設定でCookieを管理できます。</p>"
+      },
+      {
+        "id": "retention",
+        "num": "9",
+        "title": "データの保持",
+        "content": "<p>データは本ポリシーに記載された目的を達成するために必要な期間保持されます。</p><ul><li><b>サービスの必要性</b> — アカウントがアクティブな間</li><li><b>法的義務</b> — 法律で定められた期限</li><li><b>セキュリティ</b> — 調査のためにログを保持</li></ul><p>アカウント削除後、個人データは最大<b>30日</b>以内に削除されます。バックアップには最大90日間データが含まれる場合があります。</p>"
+      },
+      {
+        "id": "rights",
+        "num": "10",
+        "title": "お客様の権利（LGPD）",
+        "content": "<p>データ主体として、以下の権利があります：</p><ul><li><b>確認およびアクセス</b> — データのコピーを要求する</li><li><b>訂正</b> — 不正確なデータの訂正を要求する</li><li><b>更新</b> — プラットフォーム上の情報を更新する</li><li><b>匿名化、ブロックまたは削除</b> — データの除去を要求する</li><li><b>データポータビリティ</b> — 別のサービスへの転送を要求する</li><li><b>同意の撤回</b> — いつでも</li><li><b>共有情報</b> — 誰と共有しているかを知る</li><li><b>異議申立</b> — 正当な利益に基づく処理に異議を唱える</li></ul><p><b>privacy@guildrealm.com</b>までご連絡ください。<b>15日</b>以内に回答いたします。</p>"
+      },
+      {
+        "id": "deletion",
+        "num": "11",
+        "title": "アカウントの削除",
+        "content": "<p>削除を要求すると：</p><ul><li>プロフィールと個人データが削除または匿名化されます</li><li>ギルド、実績、ランキングのリンクが解除されます</li><li>プライベートメッセージは他のユーザーに表示される場合があります</li><li>ギルドコンテンツは識別なしに残る場合があります</li></ul><p>法的義務により保持されたデータ（例：6ヶ月間のアクセス記録）は必要な期間残る場合があります。</p>"
+      },
+      {
+        "id": "security",
+        "num": "12",
+        "title": "データのセキュリティ",
+        "content": "<p>GuildRealmが採用する措置：</p><ul><li><b>暗号化</b> — 全送信でHTTPS（SSL/TLS）</li><li><b>アクセス制御</b> — 制限された認証済みアクセス</li><li><b>監視</b> — アクセスおよび侵入試行ログ</li><li><b>Firebase Security</b> — データベースセキュリティルール</li><li><b>Cloudflare</b> — DDoS保護</li><li><b>定期バックアップ</b> — データの整合性を確保</li><li><b>暗号化パスワード</b> — bcryptアルゴリズム</li></ul>"
+      },
+      {
+        "id": "children",
+        "num": "13",
+        "title": "子どもと青少年",
+        "content": "<p>GuildRealmは13歳未満の子どもを対象としていません。</p><p>13歳から18歳の場合は、保護者にこのポリシーを把握することをお勧めします。</p><p>13歳未満の子どものデータを意図的に収集しません。この年齢層のアカウントを特定した場合、データを削除し、アカウントを終了します。</p>"
+      },
+      {
+        "id": "transfer",
+        "num": "14",
+        "title": "国際転送",
+        "content": "<p>一部のプロバイダーは他の国にデータを保存する場合があります（例：米国のGoogle FirebaseとCloudflare）。</p><p>適切な保護を確保するために、標準契約条項や定期的なプロバイダー評価などの措置を講じています。</p>"
+      },
+      {
+        "id": "changes-priv",
+        "num": "15",
+        "title": "本ポリシーの変更",
+        "content": "<p>本ポリシーを定期的に更新する場合があります。</p><ul><li>更新版はプラットフォームに公開されます</li><li>重要な変更はメールで通知されます</li><li>変更は<b>30日</b>後に発効します</li></ul><p>発効後の継続使用は受諾を構成します。</p>"
+      },
+      {
+        "id": "contact-priv",
+        "num": "16",
+        "title": "お問い合わせ",
+        "content": "<p>プライバシーやデータ保護に関するご質問：</p><ul><li><b>プライバシー:</b> privacy@guildrealm.com</li><li><b>法務:</b> legal@guildrealm.com</li><li><b>一般:</b> contato@guildrealm.com</li></ul>"
+      },
+      {
+        "id": "law-priv",
+        "num": "17",
+        "title": "準拠法",
+        "content": "<p>本ポリシーは<b>ブラジル連邦共和国</b>の法律、特に<b>LGPD（Lei nº 13.709/2018）</b>および<b>Marco Civil da Internet（Lei nº 12.965/2014）</b>に準拠します。</p><p>紛争はRio Grande do Sul州Novo Hamburgoの裁判所で解決されます。</p>"
+      }
     ]
   },
   "Login": {
@@ -237,10 +605,22 @@
     "noAccount": "アカウントをお持ちでないですか？",
     "signupLink": "無料アカウントを作成 →",
     "badges": [
-      {"title": "安全で信頼できる", "text": "高度な暗号化でデータを保護します。"},
-      {"title": "エピックコミュニティ", "text": "世界中のギルドとプレイヤーを見つけましょう。"},
-      {"title": "実績", "text": "ランキングを上げて支配力を示しましょう。"},
-      {"title": "ゲーマー向け", "text": "ギルドに必要なすべてのツールを提供します。"}
+      {
+        "title": "安全で信頼できる",
+        "text": "高度な暗号化でデータを保護します。"
+      },
+      {
+        "title": "エピックコミュニティ",
+        "text": "世界中のギルドとプレイヤーを見つけましょう。"
+      },
+      {
+        "title": "実績",
+        "text": "ランキングを上げて支配力を示しましょう。"
+      },
+      {
+        "title": "ゲーマー向け",
+        "text": "ギルドに必要なすべてのツールを提供します。"
+      }
     ]
   },
   "ForgotPassword": {
@@ -257,10 +637,544 @@
     "tipsTitle": "メールが届きませんか？",
     "tipsSub": "以下の可能性をご確認ください：",
     "tips": [
-      {"title": "迷惑メールフォルダを確認", "text": "メールが迷惑メールに振り分けられた可能性があります。"},
-      {"title": "数分お待ちください", "text": "メールの到着に数分かかる場合があります。"},
-      {"title": "入力したメールを確認", "text": "入力したメールアドレスが正しいか確認してください。"},
-      {"title": "再送信してください", "text": "まだ届いていない場合は、手順を再送信してください。"}
+      {
+        "title": "迷惑メールフォルダを確認",
+        "text": "メールが迷惑メールに振り分けられた可能性があります。"
+      },
+      {
+        "title": "数分お待ちください",
+        "text": "メールの到着に数分かかる場合があります。"
+      },
+      {
+        "title": "入力したメールを確認",
+        "text": "入力したメールアドレスが正しいか確認してください。"
+      },
+      {
+        "title": "再送信してください",
+        "text": "まだ届いていない場合は、手順を再送信してください。"
+      }
     ]
+  },
+  "Dashboard": {
+    "welcomeBack": "おかえりなさい、",
+    "adventurer": "冒険者",
+    "subtitle": "あなたの王国の概要：キャラクターとギルドをひとつの場所で。",
+    "createCharacter": "キャラクターを作成",
+    "createCharacterSub": "英雄を作り上げ、冒険を始めよう",
+    "createGuild": "ギルドを作成",
+    "createGuildSub": "仲間を集め、伝説を築こう",
+    "openGuildPanel": "ギルドパネルを開く",
+    "charactersTitle": "自分のキャラクター",
+    "guildsTitle": "自分のギルド",
+    "charactersEmpty": "まだキャラクターを作成していません。",
+    "guildsEmpty": "まだどのギルドにも所属していません。",
+    "level": "レベル",
+    "leaderRole": "リーダー",
+    "memberRole": "メンバー",
+    "membersCount": "{count}人のメンバー",
+    "loading": "王国を読み込み中...",
+    "loadError": "データを読み込めませんでした。もう一度お試しください。",
+    "retry": "再試行",
+    "createFirstCharacter": "最初のキャラクターを作成",
+    "createFirstGuild": "最初のギルドを作成",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "classes": [
+      {
+        "value": "warrior",
+        "label": "ウォリアー"
+      },
+      {
+        "value": "mage",
+        "label": "メイジ"
+      },
+      {
+        "value": "rogue",
+        "label": "ローグ"
+      },
+      {
+        "value": "ranger",
+        "label": "レンジャー"
+      },
+      {
+        "value": "cleric",
+        "label": "クレリック"
+      }
+    ]
+  },
+  "CharacterCreate": {
+    "title": "キャラクター作成",
+    "subtitle": "英雄を作り上げ、冒険に備えましょう。",
+    "nameLabel": "キャラクター名",
+    "namePlaceholder": "例: Ragnar、Lyra、Thalos",
+    "gameLabel": "ゲーム",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "classes": [
+      {
+        "value": "warrior",
+        "label": "ウォリアー"
+      },
+      {
+        "value": "mage",
+        "label": "メイジ"
+      },
+      {
+        "value": "rogue",
+        "label": "ローグ"
+      },
+      {
+        "value": "ranger",
+        "label": "レンジャー"
+      },
+      {
+        "value": "cleric",
+        "label": "クレリック"
+      }
+    ],
+    "classLabel": "クラス",
+    "levelLabel": "開始レベル",
+    "submit": "キャラクターを作成",
+    "creating": "作成中...",
+    "nameRequired": "キャラクター名を入力してください。",
+    "createError": "キャラクターを作成できませんでした。もう一度お試しください。",
+    "cancel": "キャンセル"
+  },
+  "GuildCreate": {
+    "title": "ギルド作成",
+    "subtitle": "仲間を集め、王国に伝説を築きましょう。",
+    "nameLabel": "ギルド名",
+    "namePlaceholder": "例: 炎の竜",
+    "submit": "ギルドを作成",
+    "creating": "作成中...",
+    "nameRequired": "ギルド名を入力してください。",
+    "createError": "ギルドを作成できませんでした。もう一度お試しください。",
+    "cancel": "キャンセル",
+    "gameLabel": "ゲーム",
+    "logoLabel": "ギルドロゴ",
+    "logoSub": "PNG、JPG、WEBP。最大2MBまで。",
+    "logoUpload": "ロゴをアップロード",
+    "logoChange": "ロゴを変更",
+    "logoRemove": "ロゴを削除",
+    "logoInvalid": "画像形式が無効です。PNG、JPG、WEBPを使用してください。",
+    "logoTooLarge": "画像が大きすぎます。上限は2MBです。",
+    "logoUploading": "ロゴをアップロード中...",
+    "factionLabel": "勢力",
+    "recruitmentLabel": "募集",
+    "recruitmentOpen": "募集受付中",
+    "recruitmentClosed": "募集停止中",
+    "recruiting": "募集中",
+    "closedRecruitment": "募集終了",
+    "regionLabel": "地域",
+    "languagesLabel": "ギルドの言語",
+    "languagesHint": "1つ以上の言語を選択してください。",
+    "previewTitle": "ギルドのプレビュー",
+    "previewSub": "ギルドの表示を確認できます。問題なければ作成を確定してください。",
+    "editInfo": "情報を編集",
+    "confirmCreate": "作成を確定",
+    "createdTitle": "ギルドを作成しました！",
+    "createdSub": "ギルドが公開されました。リンクを共有して募集を始めましょう。",
+    "guildLink": "ギルドのリンク",
+    "copyLink": "リンクをコピー",
+    "linkCopied": "リンクをコピーしました！",
+    "goToPanel": "ギルドパネルへ",
+    "leaderRole": "リーダー",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "regions": [
+      {
+        "value": "na",
+        "label": "北米"
+      },
+      {
+        "value": "sa",
+        "label": "南米"
+      },
+      {
+        "value": "asia",
+        "label": "アジア"
+      },
+      {
+        "value": "europe",
+        "label": "ヨーロッパ"
+      },
+      {
+        "value": "oceania",
+        "label": "オセアニア"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "ポルトガル語"
+      },
+      {
+        "value": "en",
+        "label": "英語"
+      },
+      {
+        "value": "es",
+        "label": "スペイン語"
+      },
+      {
+        "value": "fr",
+        "label": "フランス語"
+      },
+      {
+        "value": "de",
+        "label": "ドイツ語"
+      },
+      {
+        "value": "it",
+        "label": "イタリア語"
+      },
+      {
+        "value": "pl",
+        "label": "ポーランド語"
+      },
+      {
+        "value": "ru",
+        "label": "ロシア語"
+      },
+      {
+        "value": "ja",
+        "label": "日本語"
+      },
+      {
+        "value": "ko",
+        "label": "韓国語"
+      },
+      {
+        "value": "zh",
+        "label": "中国語（簡体字）"
+      },
+      {
+        "value": "tr",
+        "label": "トルコ語"
+      }
+    ]
+  },
+  "GuildPage": {
+    "notFound": "ギルドが見つかりませんでした。",
+    "backToHome": "ホームページに戻る",
+    "recruiting": "募集中",
+    "closedRecruitment": "募集終了",
+    "leader": "リーダー",
+    "membersCount": "{count}人のメンバー",
+    "gameLabel": "ゲーム",
+    "factionLabel": "勢力",
+    "regionLabel": "地域",
+    "languagesLabel": "言語",
+    "recruitmentLabel": "募集",
+    "regions": [
+      {
+        "value": "na",
+        "label": "北米"
+      },
+      {
+        "value": "sa",
+        "label": "南米"
+      },
+      {
+        "value": "asia",
+        "label": "アジア"
+      },
+      {
+        "value": "europe",
+        "label": "ヨーロッパ"
+      },
+      {
+        "value": "oceania",
+        "label": "オセアニア"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "ポルトガル語"
+      },
+      {
+        "value": "en",
+        "label": "英語"
+      },
+      {
+        "value": "es",
+        "label": "スペイン語"
+      },
+      {
+        "value": "fr",
+        "label": "フランス語"
+      },
+      {
+        "value": "de",
+        "label": "ドイツ語"
+      },
+      {
+        "value": "it",
+        "label": "イタリア語"
+      },
+      {
+        "value": "pl",
+        "label": "ポーランド語"
+      },
+      {
+        "value": "ru",
+        "label": "ロシア語"
+      },
+      {
+        "value": "ja",
+        "label": "日本語"
+      },
+      {
+        "value": "ko",
+        "label": "韓国語"
+      },
+      {
+        "value": "zh",
+        "label": "中国語（簡体字）"
+      },
+      {
+        "value": "tr",
+        "label": "トルコ語"
+      }
+    ]
+  },
+  "GuildPanel": {
+    "backToDashboard": "ダッシュボードに戻る",
+    "title": "ギルドパネル",
+    "subtitle": "ここからギルドを管理できます。",
+    "menuOverview": "概要",
+    "menuCalendar": "カレンダー",
+    "menuMembers": "メンバー",
+    "timezoneLabel": "タイムゾーン",
+    "createEvent": "イベントを作成",
+    "eventTitle": "イベント名",
+    "eventTitlePlaceholder": "例: 日曜レイド",
+    "eventDay": "日",
+    "eventHour": "時間",
+    "eventSubmit": "作成",
+    "close": "閉じる",
+    "eventNameRequired": "イベント名を入力してください。",
+    "eventCreateError": "イベントを作成できませんでした。もう一度お試しください。",
+    "noEvents": "今週のイベントはありません。",
+    "notFound": "ギルドが見つかりませんでした。",
+    "membersTitle": "メンバー",
+    "infoTitle": "ギルド情報",
+    "leader": "リーダー",
+    "membersCount": "{count}人のメンバー",
+    "gameLabel": "ゲーム",
+    "factionLabel": "勢力",
+    "regionLabel": "地域",
+    "recruitmentLabel": "募集",
+    "recruiting": "募集中",
+    "closedRecruitment": "募集終了",
+    "languagesLabel": "言語",
+    "regions": [
+      {
+        "value": "na",
+        "label": "北米"
+      },
+      {
+        "value": "sa",
+        "label": "南米"
+      },
+      {
+        "value": "asia",
+        "label": "アジア"
+      },
+      {
+        "value": "europe",
+        "label": "ヨーロッパ"
+      },
+      {
+        "value": "oceania",
+        "label": "オセアニア"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "ポルトガル語"
+      },
+      {
+        "value": "en",
+        "label": "英語"
+      },
+      {
+        "value": "es",
+        "label": "スペイン語"
+      },
+      {
+        "value": "fr",
+        "label": "フランス語"
+      },
+      {
+        "value": "de",
+        "label": "ドイツ語"
+      },
+      {
+        "value": "it",
+        "label": "イタリア語"
+      },
+      {
+        "value": "pl",
+        "label": "ポーランド語"
+      },
+      {
+        "value": "ru",
+        "label": "ロシア語"
+      },
+      {
+        "value": "ja",
+        "label": "日本語"
+      },
+      {
+        "value": "ko",
+        "label": "韓国語"
+      },
+      {
+        "value": "zh",
+        "label": "中国語（簡体字）"
+      },
+      {
+        "value": "tr",
+        "label": "トルコ語"
+      }
+    ],
+    "menuGroups": "グループ"
+  },
+  "GuildCalendar": {
+    "today": "今日",
+    "month": "月",
+    "week": "週間",
+    "day": "日",
+    "createEvent": "イベント作成",
+    "newEvent": "新規イベント",
+    "title": "タイトル",
+    "titlePlaceholder": "例: 日曜のレイド",
+    "titleRequired": "イベントのタイトルを入力してください。",
+    "description": "説明",
+    "descriptionPlaceholder": "イベントを説明してください...",
+    "eventType": "イベント種類",
+    "date": "日付",
+    "startTime": "開始",
+    "endTime": "終了",
+    "invalidTime": "終了時間は開始時間以後でなければなりません。",
+    "location": "場所",
+    "locationPlaceholder": "例: Discord、ゲーム内...",
+    "maxParticipants": "最大参加者数",
+    "unlimited": "無限",
+    "allowRegistration": "登録を許可",
+    "cancel": "キャンセル",
+    "create": "作成",
+    "createError": "イベントを作成できませんでした。もう一度試してください。",
+    "deleteEvent": "イベント削除",
+    "confirmDelete": "削除を確認",
+    "leaveEvent": "イベントから離れる",
+    "joinEvent": "参加する",
+    "eventFull": "イベント満員",
+    "participants": "参加者",
+    "participantsList": "参加者一覧",
+    "emptyTitle": "予定されたイベントはありません",
+    "emptyDescription": "ガイルドの活動を整理するために、最初のイベントを作成してください。",
+    "RAID": "レイド",
+    "DUNGEON": "ダンジョン",
+    "WORLD_BOSS": "ワールドボス",
+    "GUILD_WAR": "ガイルド戦争",
+    "PVP": "PvP",
+    "TOURNAMENT": "トーナメント",
+    "MEETING": "会議",
+    "TRAINING": "トレーニング",
+    "OTHER": "その他"
+  },
+  "GuildGroups": {
+    "tabGroups": "グループ",
+    "tabPresets": "テンプレート",
+    "manageRoles": "役割",
+    "newGroup": "新規グループ",
+    "editGroup": "グループを編集",
+    "deleteGroup": "削除",
+    "deleteGroupTitle": "グループを削除",
+    "deleteGroupMessage": "すべてのメンバーがグループから削除されます。この操作は取り消せません。",
+    "delete": "削除",
+    "confirm": "確認",
+    "cancel": "キャンセル",
+    "processing": "処理中...",
+    "errorGroupFull": "このグループは満員です。",
+    "errorAlreadyInGroup": "このメンバーはすでに別のグループにいます。",
+    "errorGeneric": "操作を完了できませんでした。もう一度お試しください。",
+    "availableMembers": "空きメンバー",
+    "searchAvailable": "メンバーを検索...",
+    "noAvailableMembers": "すべてのメンバーが割り当てられています。",
+    "dragHintText": "メンバーをグループにドラッグして割り当てます。グループのヘッダーをドラッグして並べ替えます。",
+    "dragHint": "ドラッグして移動",
+    "dragGroupHint": "ドラッグして並べ替え",
+    "loading": "読み込み中...",
+    "noGroups": "グループはまだ作成されていません。",
+    "createFirstGroup": "最初のグループを作成",
+    "dropHint": "ここにメンバーをドロップ",
+    "noRoleLabel": "役割なし",
+    "noRole": "役割なし",
+    "setRole": "役割を設定",
+    "removeMember": "グループから外す",
+    "type_PVE": "PvE",
+    "type_PVP": "PvP",
+    "type_RAID": "レイド",
+    "type_DUNGEON": "ダンジョン",
+    "type_WAR": "戦争",
+    "type_TOURNAMENT": "トーナメント",
+    "type_OTHER": "その他",
+    "name": "名前",
+    "groupNameRequired": "グループ名を入力してください。",
+    "groupNamePlaceholder": "例: アルファ小隊",
+    "type": "タイプ",
+    "size": "最大人数",
+    "groupSizeInvalid": "有効な人数を入力してください。",
+    "headerColor": "ヘッダーの色",
+    "create": "作成",
+    "save": "保存",
+    "saveError": "保存できませんでした。もう一度お試しください。",
+    "newPreset": "新規テンプレート",
+    "editPreset": "テンプレートを編集",
+    "deletePreset": "テンプレートを削除",
+    "deletePresetTitle": "テンプレートを削除",
+    "deletePresetMessage": "この操作は取り消せません。",
+    "filterAll": "すべて",
+    "noPresets": "テンプレートはまだ作成されていません。",
+    "groupsCount": "グループ",
+    "usePreset": "テンプレートを使用",
+    "presetNameRequired": "テンプレート名を入力してください。",
+    "presetGroupsRequired": "テンプレートにグループを1つ以上追加してください。",
+    "presetNamePlaceholder": "例: 日曜ファーム",
+    "presetDescriptionPlaceholder": "テンプレートを説明...",
+    "description": "説明",
+    "icon": "アイコン",
+    "groupsBuilder": "テンプレートのグループ",
+    "addGroup": "グループを追加",
+    "noGroupsInPreset": "グループはまだ追加されていません。",
+    "quantity": "数量",
+    "addRoleToGroup": "役割を追加",
+    "summary": "サマリー",
+    "totalPlayersLabel": "合計プレイヤー",
+    "roleNameRequired": "役割名を入力してください。",
+    "roleNamePlaceholder": "例: サポート",
+    "roleIcon": "アイコン",
+    "roleColor": "色",
+    "defaultRole": "デフォルト",
+    "editRole": "役割を編集",
+    "deleteRole": "役割を削除",
+    "newRole": "新しい役割"
   }
 }

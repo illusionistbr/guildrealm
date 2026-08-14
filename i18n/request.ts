@@ -24,7 +24,19 @@ export default getRequestConfig(async () => {
       Terms: { ...englishMessages.Terms, ...localeMessages.Terms },
       Privacy: { ...englishMessages.Privacy, ...localeMessages.Privacy },
       Login: { ...englishMessages.Login, ...localeMessages.Login },
-      ForgotPassword: { ...englishMessages.ForgotPassword, ...localeMessages.ForgotPassword },
+      ForgotPassword: {
+        ...englishMessages.ForgotPassword,
+        ...localeMessages.ForgotPassword,
+      },
+      Dashboard: { ...englishMessages.Dashboard, ...localeMessages.Dashboard },
+      CharacterCreate: {
+        ...englishMessages.CharacterCreate,
+        ...localeMessages.CharacterCreate,
+      },
+      GuildCreate: {
+        ...englishMessages.GuildCreate,
+        ...localeMessages.GuildCreate,
+      },
     },
   };
 });

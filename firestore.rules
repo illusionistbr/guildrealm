@@ -1,4 +1,3 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -20,18 +19,42 @@ service cloud.firestore {
       return hasRole(['super_admin', 'admin', 'moderator', 'editor', 'support']);
     }
 
-    // ============ USUÃRIOS ============
+    function isGuildOwner(guildId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/guilds/$(guildId))
+          .data.ownerId == request.auth.uid;
+    }
+
+    function isGuildMember(guildId) {
+      return isSignedIn() &&
+        request.auth.uid in
+        get(/databases/$(database)/documents/guilds/$(guildId))
+          .data.members;
+    }
+
+    // ============ USUARIOS ============
     match /users/{userId} {
-      allow read: if isSignedIn(); // perfis podem exigir login
+      allow read: if isSignedIn();
       allow create: if isSignedIn() && request.auth.uid == userId;
       allow update: if isSignedIn() &&
         (request.auth.uid == userId || isStaff());
       allow delete: if isAdmin();
     }
 
+    // ============ PERSONAGENS ============
+    match /characters/{characterId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn() &&
+        resource.data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() &&
+        resource.data.ownerId == request.auth.uid;
+    }
+
     // ============ GUILDS ============
     match /guilds/{guildId} {
-      allow read: if true; // listagem pÃºblica
+      allow read: if true;
       allow create: if isSignedIn() &&
         request.resource.data.ownerId == request.auth.uid;
       allow update: if isSignedIn() &&
@@ -42,7 +65,72 @@ service cloud.firestore {
         (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
-    // ============ CONTEÃšDO PÃšBLICO (leitura livre, escrita de staff) ============
+    // ============ GRUPOS DE GUILD ============
+    match /guilds/{guildId}/roles/{roleId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow create, update: if isSignedIn() &&
+        (isGuildOwner(guildId));
+      allow delete: if isSignedIn() &&
+        (isGuildOwner(guildId)) &&
+        !resource.data.isDefault;
+    }
+
+    match /guilds/{guildId}/presets/{presetId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow create, update, delete: if isSignedIn() &&
+        (isGuildOwner(guildId));
+    }
+
+    match /guilds/{guildId}/groups/{groupId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow create: if isSignedIn() &&
+        (isGuildOwner(guildId)) &&
+        request.resource.data.guildId == guildId;
+      allow update: if isSignedIn() &&
+        (isGuildOwner(guildId));
+      allow delete: if isSignedIn() &&
+        (isGuildOwner(guildId));
+
+match /members/{userId} {
+        allow read: if isSignedIn() && isGuildMember(guildId);
+        allow create: if isSignedIn() &&
+          isGuildOwner(guildId) &&
+          request.auth.uid != userId &&
+          (request.resource.data.roleId is string ||
+           !('roleId' in request.resource.data)) &&
+          get(/databases/$(database)/documents/guilds/$(guildId)/groups/$(groupId))
+            .data.memberCount <
+          get(/databases/$(database)/documents/guilds/$(guildId)/groups/$(groupId))
+            .data.maxPlayers;
+        allow update: if isSignedIn() &&
+          isGuildOwner(guildId);
+        allow delete: if isSignedIn() &&
+          isGuildOwner(guildId);
+      }
+    }
+
+    // ============ EVENTOS DE GUILD (calendario) ============
+    match /guild_events/{eventId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.createdBy == request.auth.uid &&
+        isGuildOwner(request.resource.data.guildId);
+      allow update: if isSignedIn() &&
+        (resource.data.createdBy == request.auth.uid ||
+         isGuildOwner(resource.data.guildId));
+      allow delete: if isSignedIn() &&
+        (resource.data.createdBy == request.auth.uid ||
+         isGuildOwner(resource.data.guildId));
+
+      // Participantes do evento
+      match /participants/{userId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.auth.uid == userId;
+        allow delete: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+
+    // ============ CONTEUDO PUBLICO (leitura livre, escrita de staff) ============
     match /games/{id} {
       allow read: if true;
       allow write: if hasRole(['super_admin', 'admin', 'editor']);
@@ -83,14 +171,14 @@ service cloud.firestore {
     // ============ MARKETPLACE ============
     match /marketplace_products/{id} {
       allow read: if true;
-      allow write: if hasRole(['super_admin', 'admin']); // marketplace:manage
+      allow write: if hasRole(['super_admin', 'admin']);
     }
     match /marketplace_coupons/{id} {
-      allow read: if isStaff(); // cupons nÃ£o sÃ£o pÃºblicos
+      allow read: if isStaff();
       allow write: if isAdmin();
     }
 
-    // ============ NOTIFICAÃ‡Ã•ES (somente do prÃ³prio usuÃ¡rio) ============
+    // ============ NOTIFICACOES (somente do proprio usuario) ============
     match /notifications/{notificationId} {
       allow read: if isSignedIn() &&
         (request.auth.uid == notificationId ||
@@ -105,9 +193,9 @@ service cloud.firestore {
         resource.data.uid == request.auth.uid;
     }
 
-    // ============ MODERAÃ‡ÃƒO ============
+    // ============ MODERACAO ============
     match /reports/{reportId} {
-      allow create: if isSignedIn(); // qualquer usuÃ¡rio pode denunciar
+      allow create: if isSignedIn();
       allow read: if hasRole(['super_admin', 'admin', 'moderator']);
       allow update: if hasRole(['super_admin', 'admin', 'moderator']);
       allow delete: if isAdmin();
@@ -115,7 +203,6 @@ service cloud.firestore {
 
     // ============ ADMIN ============
     match /admin_roles/{userId} {
-      // leitura do prÃ³prio doc para montar sessÃ£o (getAdminProfile)
       allow read: if isSignedIn() && request.auth.uid == userId;
       allow create, update: if isAdmin();
       allow delete: if hasRole(['super_admin']);
@@ -127,18 +214,17 @@ service cloud.firestore {
 
     match /admin_sessions/{sessionId} {
       allow read: if hasRole(['super_admin']);
-      allow create: if isStaff(); // criaÃ§Ã£o da sessÃ£o
+      allow create: if isStaff();
       allow update: if hasRole(['super_admin', 'admin']);
       allow delete: if hasRole(['super_admin', 'admin']);
     }
 
     match /admin_settings/{id} {
       allow read: if isStaff();
-      allow write: if isAdmin(); // settings:manage
+      allow write: if isAdmin();
     }
 
     match /admin_logs/{logId} {
-      // logs sÃ£o criados pelo client (createAuditLog/recordAdminLogin)
       allow create: if isStaff();
       allow read: if hasRole(['super_admin', 'admin', 'moderator']);
       allow update: if hasRole(['super_admin', 'admin']);

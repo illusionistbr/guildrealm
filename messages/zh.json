@@ -36,27 +36,101 @@
     "featuresTitle": "统御你的王国所需的一切",
     "featuresText": "为玩家和公会领袖打造的强大工具",
     "features": [
-      { "title": "管理你的公会", "text": "管理成员、职位、招募等事务的完整工具。" },
-      { "title": "玩家档案", "text": "创建你的档案，分享成就，建立声誉。" },
-      { "title": "成就与经验", "text": "完成任务，获取经验，解锁成就，冲击排行榜。" },
-      { "title": "DKP 系统", "text": "分配点数，记录战利品，保持公会的进度透明。" },
-      { "title": "全球社区", "text": "与来自世界各地的玩家联系，成为更大事业的一部分。" },
-      { "title": "排行榜", "text": "与玩家和公会竞争，征服全球排行榜的顶峰。" }
+      {
+        "title": "管理你的公会",
+        "text": "管理成员、职位、招募等事务的完整工具。"
+      },
+      {
+        "title": "玩家档案",
+        "text": "创建你的档案，分享成就，建立声誉。"
+      },
+      {
+        "title": "成就与经验",
+        "text": "完成任务，获取经验，解锁成就，冲击排行榜。"
+      },
+      {
+        "title": "DKP 系统",
+        "text": "分配点数，记录战利品，保持公会的进度透明。"
+      },
+      {
+        "title": "全球社区",
+        "text": "与来自世界各地的玩家联系，成为更大事业的一部分。"
+      },
+      {
+        "title": "排行榜",
+        "text": "与玩家和公会竞争，征服全球排行榜的顶峰。"
+      }
     ],
     "leaderPains": [
-      { "title": "数小时的规划", "text": "组织团本、名单和活动占用了应该用来玩游戏的时间。" },
-      { "title": "无尽的电子表格", "text": "成员、出勤、DKP 和进度分散在难以追踪的文档中。" },
-      { "title": "装备分配纠纷", "text": "没有明确的规则和可见的历史记录，重要决策成为冲突的根源。" },
-      { "title": "分散的沟通", "text": "公告在聊天、服务器和频道之间丢失，导致公会缺乏协调。" }
+      {
+        "title": "数小时的规划",
+        "text": "组织团本、名单和活动占用了应该用来玩游戏的时间。"
+      },
+      {
+        "title": "无尽的电子表格",
+        "text": "成员、出勤、DKP 和进度分散在难以追踪的文档中。"
+      },
+      {
+        "title": "装备分配纠纷",
+        "text": "没有明确的规则和可见的历史记录，重要决策成为冲突的根源。"
+      },
+      {
+        "title": "分散的沟通",
+        "text": "公告在聊天、服务器和频道之间丢失，导致公会缺乏协调。"
+      }
     ],
     "supportedGames": [
-      { "name": "Throne and Liberty", "abbreviation": "TL", "genre": "MMORPG • PvP 与 PvE", "description": "组织联盟，征服领土，让你的公会为 Solisium 最伟大的战斗做好准备。" },
-      { "name": "Aion 2", "abbreviation": "A2", "genre": "MMORPG • 阵营", "description": "召集你的军团，协调战略，在 Elyos 和 Asmodians 之间书写你的历史。" }
+      {
+        "name": "Throne and Liberty",
+        "abbreviation": "TL",
+        "genre": "MMORPG • PvP 与 PvE",
+        "description": "组织联盟，征服领土，让你的公会为 Solisium 最伟大的战斗做好准备。"
+      },
+      {
+        "name": "Aion 2",
+        "abbreviation": "A2",
+        "genre": "MMORPG • 阵营",
+        "description": "召集你的军团，协调战略，在 Elyos 和 Asmodians 之间书写你的历史。"
+      }
     ],
     "plans": [
-      { "name": "冒险者", "price": "免费", "description": "适合想要探索并找到归属社区的玩家。", "features": ["玩家档案", "加入公会", "成就与排行榜"], "cta": "立即开始", "isFree": true },
-      { "name": "公会会长", "price": "¥19", "description": "高效组织公会所需的一切。", "features": ["最多100名成员", "DKP与战利品系统", "活动与日历", "公会分析"], "cta": "创建我的公会", "featured": true },
-      { "name": "联盟", "price": "¥49", "description": "适合征服王国的社区的高级架构。", "features": ["无限制成员", "联盟管理", "优先支持", "完全自定义"], "cta": "联系团队" }
+      {
+        "name": "冒险者",
+        "price": "免费",
+        "description": "适合想要探索并找到归属社区的玩家。",
+        "features": [
+          "玩家档案",
+          "加入公会",
+          "成就与排行榜"
+        ],
+        "cta": "立即开始",
+        "isFree": true
+      },
+      {
+        "name": "公会会长",
+        "price": "¥19",
+        "description": "高效组织公会所需的一切。",
+        "features": [
+          "最多100名成员",
+          "DKP与战利品系统",
+          "活动与日历",
+          "公会分析"
+        ],
+        "cta": "创建我的公会",
+        "featured": true
+      },
+      {
+        "name": "联盟",
+        "price": "¥49",
+        "description": "适合征服王国的社区的高级架构。",
+        "features": [
+          "无限制成员",
+          "联盟管理",
+          "优先支持",
+          "完全自定义"
+        ],
+        "cta": "联系团队"
+      }
     ],
     "gamesEyebrow": "支持的游戏",
     "gamesTitle": "你的下一个王国已经准备就绪。",
@@ -77,20 +151,54 @@
     "asideTitle3": "这里开始。",
     "asideText": "创建你的账户，加入这个为 MMORPG 玩家和公会打造的全球最大平台。",
     "benefits": [
-      { "title": "与玩家联系", "text": "寻找与你目标相同的公会、玩家和社区。" },
-      { "title": "追踪你的进度", "text": "实时监控成就、排名和统计数据。" },
-      { "title": "管理你的公会", "text": "为领导者提供的完整工具，带领你的公会登上顶峰。" }
+      {
+        "title": "与玩家联系",
+        "text": "寻找与你目标相同的公会、玩家和社区。"
+      },
+      {
+        "title": "追踪你的进度",
+        "text": "实时监控成就、排名和统计数据。"
+      },
+      {
+        "title": "管理你的公会",
+        "text": "为领导者提供的完整工具，带领你的公会登上顶峰。"
+      }
     ],
     "formTitle": "创建你的账户",
     "formText": "填写以下信息以创建你的 GuildRealm 账户。",
     "fields": [
-      { "label": "昵称", "placeholder": "选择一个昵称", "hint": "这将是你在平台上的公开名称。", "isPassword": false },
-      { "label": "邮箱", "placeholder": "your@email.com", "hint": "你将收到一封确认邮件。", "isPassword": false },
-      { "label": "确认邮箱", "placeholder": "确认你的邮箱", "hint": "请再次输入你的邮箱。", "isPassword": false },
-      { "label": "密码", "placeholder": "创建一个安全密码", "hint": "至少8个字符，包含字母和数字。", "isPassword": true },
-      { "label": "确认密码", "placeholder": "确认你的密码", "hint": "请再次输入你的密码。", "isPassword": true }
+      {
+        "label": "昵称",
+        "placeholder": "选择一个昵称",
+        "hint": "这将是你在平台上的公开名称。",
+        "isPassword": false
+      },
+      {
+        "label": "邮箱",
+        "placeholder": "your@email.com",
+        "hint": "你将收到一封确认邮件。",
+        "isPassword": false
+      },
+      {
+        "label": "确认邮箱",
+        "placeholder": "确认你的邮箱",
+        "hint": "请再次输入你的邮箱。",
+        "isPassword": false
+      },
+      {
+        "label": "密码",
+        "placeholder": "创建一个安全密码",
+        "hint": "至少8个字符，包含字母和数字。",
+        "isPassword": true
+      },
+      {
+        "label": "确认密码",
+        "placeholder": "确认你的密码",
+        "hint": "请再次输入你的密码。",
+        "isPassword": true
+      }
     ],
-"checkboxTerms": "我同意<terms>使用条款</terms>和<privacy>隐私政策</privacy>。",
+    "checkboxTerms": "我同意<terms>使用条款</terms>和<privacy>隐私政策</privacy>。",
     "checkboxNews": "我想通过邮件接收最新消息。",
     "checkboxAge": "我已年满13岁。",
     "submit": "创建我的账户",
@@ -103,28 +211,98 @@
     "heroTitle2": "目录",
     "heroText": "找到最适合你的公会。加入活跃的社区，参与史诗般的团本，征服顶峰。",
     "createGuild": "创建公会",
-    "searchPlaceholder": "按名称、标签、GM 或服务器搜索公会...",
-    "selectFilters": [
-      { "label": "MMORPG 游戏", "value": "所有游戏" },
-      { "label": "地区", "value": "所有地区" },
-      { "label": "招募状态", "value": "所有状态" },
-      { "label": "游戏风格", "value": "所有风格" }
-    ],
-    "advancedFilters": "高级筛选",
+    "searchPlaceholder": "按公会名称搜索...",
+    "filterGame": "游戏",
+    "filterRegion": "地区",
+    "filterRecruitment": "招募",
+    "filterAnyGame": "所有游戏",
+    "filterAnyRegion": "所有地区",
+    "filterAnyRecruitment": "全部",
+    "noGuilds": "未找到公会。",
     "resultsFound": "找到 {count} 个公会",
-    "sortBy": "排序：",
-    "popularity": "人气",
     "viewGuild": "查看公会",
     "apply": "申请加入",
     "members": "{count} 名成员",
-    "onlineNow": "在线",
-    "rank": "排名 #{rank}",
     "gmLabel": "GM：{name}",
-    "guilds": [
-      { "name": "DragonSlayers BR", "tag": "DSBR", "rank": 1, "game": "World of Warcraft", "gm": "ValkyriePrime", "members": 128, "tone": "gold", "statusType": "open", "status": "招募中", "tags": ["团本", "PvP", "竞技", "M+"], "description": "World of Warcraft 中最大、最有组织的巴西竞技公会。专注于 Mythic Raiding、PvP 和 M+。" },
-      { "name": "Eternal Guardians", "tag": "ETG", "rank": 2, "game": "Final Fantasy XIV", "gm": "Kaelthas_BR", "members": 96, "tone": "silver", "statusType": "invite", "status": "仅限邀请", "tags": ["团本", "PvE", "休闲-硬核", "活动"], "description": "专注于高难度 PvE 内容的公会，拥有成熟活跃的社区。" },
-      { "name": "Horde United", "tag": "HORDE", "rank": 3, "game": "Albion Online", "gm": "DarkEclipse", "members": 74, "tone": "red", "statusType": "open", "status": "招募中", "tags": ["GvG", "PvP", "Zerg", "领土"], "description": "领土战争、GvG 和区域控制的专家。以力量和荣誉团结一致！" },
-      { "name": "Lunar Eclipse", "tag": "LUNAR", "rank": 4, "game": "Black Desert Online", "gm": "Lunaris", "members": 58, "tone": "violet", "statusType": "invite", "status": "仅限邀请", "tags": ["生活技能", "Node War", "社交", "PvE"], "description": "专注于生活技能、Node War 和稳步发展的社交型公会。尊重与友谊高于一切。" }
+    "recruiting": "招募中",
+    "closedRecruitment": "招募已关闭",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "regions": [
+      {
+        "value": "na",
+        "label": "北美"
+      },
+      {
+        "value": "sa",
+        "label": "南美"
+      },
+      {
+        "value": "asia",
+        "label": "亚洲"
+      },
+      {
+        "value": "europe",
+        "label": "欧洲"
+      },
+      {
+        "value": "oceania",
+        "label": "大洋洲"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "葡萄牙语"
+      },
+      {
+        "value": "en",
+        "label": "英语"
+      },
+      {
+        "value": "es",
+        "label": "西班牙语"
+      },
+      {
+        "value": "fr",
+        "label": "法语"
+      },
+      {
+        "value": "de",
+        "label": "德语"
+      },
+      {
+        "value": "it",
+        "label": "意大利语"
+      },
+      {
+        "value": "pl",
+        "label": "波兰语"
+      },
+      {
+        "value": "ru",
+        "label": "俄语"
+      },
+      {
+        "value": "ja",
+        "label": "日语"
+      },
+      {
+        "value": "ko",
+        "label": "韩语"
+      },
+      {
+        "value": "zh",
+        "label": "简体中文"
+      },
+      {
+        "value": "tr",
+        "label": "土耳其语"
+      }
     ]
   },
   "Terms": {
@@ -150,27 +328,132 @@
     "next": "下一页",
     "nextTitle": "定义",
     "sections": [
-      {"id":"introduction","num":"1","title":"简介","content":"<p>欢迎使用 <b>GuildRealm</b>！本使用条款规范您对 GuildRealm 平台的访问和使用。</p><p>创建账户或使用平台即表示您同意本条款。</p>"},
-      {"id":"definitions","num":"2","title":"定义","content":"<p>本文件中使用的主要术语定义：</p><table><thead><tr><th>术语</th><th>定义</th></tr></thead><tbody><tr><td><b>用户</b></td><td>创建账户或使用 GuildRealm 平台的任何人。</td></tr><tr><td><b>账户</b></td><td>用户为访问服务而创建的个人资料。</td></tr><tr><td><b>公会</b></td><td>在 GuildRealm 内创建和管理的玩家群体。</td></tr><tr><td><b>内容</b></td><td>在平台上发布的所有信息、文本、图片或材料。</td></tr><tr><td><b>服务</b></td><td>GuildRealm 提供的所有功能和资源。</td></tr><tr><td><b>管理</b></td><td>为确保平台安全和正常运行而采取的措施。</td></tr></tbody></table>"},
-      {"id":"acceptance","num":"3","title":"接受条款","content":"<p>访问 GuildRealm 即表示您确认已阅读并同意本条款和<b>隐私政策</b>。</p>"},
-      {"id":"eligibility","num":"4","title":"资格和注册","content":"<p>使用 GuildRealm 您必须年满 <b>13 岁</b>。</p><ul><li>提供的信息准确无误</li><li>妥善保管密码</li><li>报告任何未经授权的使用</li></ul>"},
-      {"id":"account","num":"5","title":"用户账户","content":"<p>每个用户只能拥有 <b>一个账户</b>。</p><p>昵称不得包含冒犯性词语或未经授权使用商标。</p>"},
-      {"id":"profile","num":"6","title":"公开资料","content":"<p>您的账户包含公开资料，包括用户名、头像、公会、成就和排名。隐私设置可供管理可见性。</p>"},
-      {"id":"guilds","num":"7","title":"公会","content":"<p>任何用户都可以创建公会。会长对成员和内容负责。</p>"},
-      {"id":"content","num":"8","title":"用户内容","content":"<p>您仍然是发布内容的<b>所有者</b>。</p><p><b>禁止内容：</b>非法、歧视、垃圾邮件、恶意软件等。</p>"},
-      {"id":"messages","num":"9","title":"私信","content":"<p>私信是保密的。仅在举报或法律要求时可能被访问。</p>"},
-      {"id":"conduct","num":"10","title":"社区行为准则","content":"<p><b>禁止行为：</b></p><ul><li>垃圾邮件、机器人、未经授权的自动化</li><li>骚扰、仇恨言论</li><li>欺诈、钓鱼</li><li>操纵排名</li></ul>"},
-      {"id":"reports","num":"11","title":"举报和管理","content":"<p>任何用户都可以举报违规行为。根据严重程度，处罚从警告到永久封禁不等。</p>"},
-      {"id":"achievements","num":"12","title":"成就和排名","content":"<p>成就、XP、徽章和排名系统没有金钱价值，不能转让或出售。</p>"},
-      {"id":"sweepstakes","num":"13","title":"抽奖活动","content":"<p>GuildRealm 可举办有奖抽奖和活动。</p>"},
-      {"id":"ip","num":"14","title":"知识产权","content":"<p>GuildRealm 的所有视觉元素、代码、设计、徽标均为平台专有财产。</p>"},
-      {"id":"thirdparty","num":"15","title":"第三方游戏","content":"<p>GuildRealm 与已注册游戏的开发商或发行商没有关联（官方合作伙伴关系除外）。</p>"},
-      {"id":"availability","num":"16","title":"平台可用性","content":"<p>不保证平台的持续可用性。</p>"},
-      {"id":"suspension","num":"17","title":"暂停和终止","content":"<p>严重违反条款的账户可能被暂停或终止。</p>"},
-      {"id":"liability","num":"18","title":"责任限制","content":"<p>GuildRealm 不对因使用平台而产生的直接或间接损害承担责任。</p>"},
-      {"id":"changes","num":"19","title":"条款变更","content":"<p>本条款可能会定期变更。变更在发布后 30 天生效。</p>"},
-      {"id":"law","num":"20","title":"适用法律","content":"<p>本使用条款受巴西联邦共和国法律管辖。</p><p>因使用 GuildRealm 平台而产生的任何争议，如无法友好解决，由南里奥格兰德州新汉堡法院管辖。</p>"},
-      {"id":"contact","num":"21","title":"联系方式","content":"<p>contato@guildrealm.com | privacy@guildrealm.com | legal@guildrealm.com</p>"}
+      {
+        "id": "introduction",
+        "num": "1",
+        "title": "简介",
+        "content": "<p>欢迎使用 <b>GuildRealm</b>！本使用条款规范您对 GuildRealm 平台的访问和使用。</p><p>创建账户或使用平台即表示您同意本条款。</p>"
+      },
+      {
+        "id": "definitions",
+        "num": "2",
+        "title": "定义",
+        "content": "<p>本文件中使用的主要术语定义：</p><table><thead><tr><th>术语</th><th>定义</th></tr></thead><tbody><tr><td><b>用户</b></td><td>创建账户或使用 GuildRealm 平台的任何人。</td></tr><tr><td><b>账户</b></td><td>用户为访问服务而创建的个人资料。</td></tr><tr><td><b>公会</b></td><td>在 GuildRealm 内创建和管理的玩家群体。</td></tr><tr><td><b>内容</b></td><td>在平台上发布的所有信息、文本、图片或材料。</td></tr><tr><td><b>服务</b></td><td>GuildRealm 提供的所有功能和资源。</td></tr><tr><td><b>管理</b></td><td>为确保平台安全和正常运行而采取的措施。</td></tr></tbody></table>"
+      },
+      {
+        "id": "acceptance",
+        "num": "3",
+        "title": "接受条款",
+        "content": "<p>访问 GuildRealm 即表示您确认已阅读并同意本条款和<b>隐私政策</b>。</p>"
+      },
+      {
+        "id": "eligibility",
+        "num": "4",
+        "title": "资格和注册",
+        "content": "<p>使用 GuildRealm 您必须年满 <b>13 岁</b>。</p><ul><li>提供的信息准确无误</li><li>妥善保管密码</li><li>报告任何未经授权的使用</li></ul>"
+      },
+      {
+        "id": "account",
+        "num": "5",
+        "title": "用户账户",
+        "content": "<p>每个用户只能拥有 <b>一个账户</b>。</p><p>昵称不得包含冒犯性词语或未经授权使用商标。</p>"
+      },
+      {
+        "id": "profile",
+        "num": "6",
+        "title": "公开资料",
+        "content": "<p>您的账户包含公开资料，包括用户名、头像、公会、成就和排名。隐私设置可供管理可见性。</p>"
+      },
+      {
+        "id": "guilds",
+        "num": "7",
+        "title": "公会",
+        "content": "<p>任何用户都可以创建公会。会长对成员和内容负责。</p>"
+      },
+      {
+        "id": "content",
+        "num": "8",
+        "title": "用户内容",
+        "content": "<p>您仍然是发布内容的<b>所有者</b>。</p><p><b>禁止内容：</b>非法、歧视、垃圾邮件、恶意软件等。</p>"
+      },
+      {
+        "id": "messages",
+        "num": "9",
+        "title": "私信",
+        "content": "<p>私信是保密的。仅在举报或法律要求时可能被访问。</p>"
+      },
+      {
+        "id": "conduct",
+        "num": "10",
+        "title": "社区行为准则",
+        "content": "<p><b>禁止行为：</b></p><ul><li>垃圾邮件、机器人、未经授权的自动化</li><li>骚扰、仇恨言论</li><li>欺诈、钓鱼</li><li>操纵排名</li></ul>"
+      },
+      {
+        "id": "reports",
+        "num": "11",
+        "title": "举报和管理",
+        "content": "<p>任何用户都可以举报违规行为。根据严重程度，处罚从警告到永久封禁不等。</p>"
+      },
+      {
+        "id": "achievements",
+        "num": "12",
+        "title": "成就和排名",
+        "content": "<p>成就、XP、徽章和排名系统没有金钱价值，不能转让或出售。</p>"
+      },
+      {
+        "id": "sweepstakes",
+        "num": "13",
+        "title": "抽奖活动",
+        "content": "<p>GuildRealm 可举办有奖抽奖和活动。</p>"
+      },
+      {
+        "id": "ip",
+        "num": "14",
+        "title": "知识产权",
+        "content": "<p>GuildRealm 的所有视觉元素、代码、设计、徽标均为平台专有财产。</p>"
+      },
+      {
+        "id": "thirdparty",
+        "num": "15",
+        "title": "第三方游戏",
+        "content": "<p>GuildRealm 与已注册游戏的开发商或发行商没有关联（官方合作伙伴关系除外）。</p>"
+      },
+      {
+        "id": "availability",
+        "num": "16",
+        "title": "平台可用性",
+        "content": "<p>不保证平台的持续可用性。</p>"
+      },
+      {
+        "id": "suspension",
+        "num": "17",
+        "title": "暂停和终止",
+        "content": "<p>严重违反条款的账户可能被暂停或终止。</p>"
+      },
+      {
+        "id": "liability",
+        "num": "18",
+        "title": "责任限制",
+        "content": "<p>GuildRealm 不对因使用平台而产生的直接或间接损害承担责任。</p>"
+      },
+      {
+        "id": "changes",
+        "num": "19",
+        "title": "条款变更",
+        "content": "<p>本条款可能会定期变更。变更在发布后 30 天生效。</p>"
+      },
+      {
+        "id": "law",
+        "num": "20",
+        "title": "适用法律",
+        "content": "<p>本使用条款受巴西联邦共和国法律管辖。</p><p>因使用 GuildRealm 平台而产生的任何争议，如无法友好解决，由南里奥格兰德州新汉堡法院管辖。</p>"
+      },
+      {
+        "id": "contact",
+        "num": "21",
+        "title": "联系方式",
+        "content": "<p>contato@guildrealm.com | privacy@guildrealm.com | legal@guildrealm.com</p>"
+      }
     ]
   },
   "Privacy": {
@@ -204,23 +487,108 @@
     "next": "下一步",
     "nextTitle": "联系我们",
     "sections": [
-      {"id":"intro","num":"1","title":"简介","content":"<p>GuildRealm（<b>\"我们\"</b>、<b>\"我们的\"</b>或<b>\"平台\"</b>）致力于保护您的隐私和个人数据。本隐私政策解释我们如何收集、使用、存储和保护您提供的信息或在使用我们的服务时自动收集的信息。</p>"},
-      {"id":"who","num":"2","title":"关于我们","content":"<p>GuildRealm 是通过平台处理的个人数据的控制者。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>公司名称</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>地址</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – 巴西 – CEP 93510-000</td></tr><tr><td><b>电子邮件</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>数据保护官</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"},
-      {"id":"data","num":"3","title":"我们收集的数据","content":"<p>我们收集不同类型的數據以提供最佳的 GuildRealm 体验。</p><h4>用户提供的数据</h4><ul><li><b>姓名</b> — 用于个性化您的个人资料</li><li><b>昵称</b> — 您在平台上的公开标识符</li><li><b>电子邮件</b> — 用于创建账户和找回密码</li><li><b>密码</b> — 以加密形式（哈希）存储</li><li><b>照片 / 头像</b> — 公开代表您的图像</li><li><b>横幅</b> — 个人资料背景图像</li><li><b>个人简介</b> — 关于您的描述性文本</li><li><b>国家和语言</b> — 用于本地化内容</li><li><b>社交媒体链接</b> — 自愿分享</li><li><b>发布的内容</b> — 文本、评论、帖子和指南</li></ul><h4>使用过程中生成的数据</h4><ul><li><b>公会</b> — 您创建或参与的公会</li><li><b>成就和徽章</b> — 奖章和认可</li><li><b>私信</b> — 与其他用户交换的内容</li><li><b>好友列表</b> — 已建立的连接</li><li><b>通知</b> — 通知记录</li><li><b>评论和点赞</b> — 内容互动</li><li><b>登录历史</b> — 访问日期和时间</li></ul><h4>自动收集的数据</h4><ul><li><b>IP 地址</b> — 用于安全和分析</li><li><b>浏览器和操作系统</b> — 技术标识</li><li><b>语言和时区</b> — 用于个性化</li><li><b>设备类型</b> — 桌面、平板或移动设备</li><li><b>Cookies 和标识符</b> — 用于功能和安全</li><li><b>服务器日志</b> — 自动技术记录</li></ul>"},
-      {"id":"usage","num":"4","title":"我们如何使用您的数据","content":"<p>每项收集的数据都有特定用途：</p><table><thead><tr><th>用途</th><th>描述</th></tr></thead><tbody><tr><td><b>创建和管理您的账户</b></td><td>允许您注册、登录和维护账户</td></tr><tr><td><b>身份验证</b></td><td>确保您是本人</td></tr><tr><td><b>防止欺诈</b></td><td>识别和阻止可疑活动</td></tr><tr><td><b>个性化体验</b></td><td>以您的语言显示内容并推荐公会</td></tr><tr><td><b>内容审核</b></td><td>分析举报并应用规则</td></tr><tr><td><b>安全</b></td><td>监控访问并检测入侵</td></tr><tr><td><b>统计</b></td><td>了解平台的使用情况</td></tr><tr><td><b>客户支持</b></td><td>回答问题并解决问题</td></tr><tr><td><b>通信</b></td><td>通知重要更改</td></tr><tr><td><b>法律义务</b></td><td>满足法律要求</td></tr></tbody></table><p>未经同意，我们<b>不会</b>将您的数据用于重大自动化决策或广告档案。</p>"},
-      {"id":"legal","num":"5","title":"法律依据（LGPD）","content":"<p>GuildRealm 根据 <b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>处理您的数据。</p><table><thead><tr><th>法律依据</th><th>适用情况</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>当您接受我们的政策和非必要 Cookie 时</td></tr><tr><td><b>合同履行</b>（art. 7º, V）</td><td>创建账户并提供服务</td></tr><tr><td><b>法律义务</b>（art. 7º, II）</td><td>遵守法律和司法要求</td></tr><tr><td><b>权利行使</b>（art. 7º, VI）</td><td>保护 GuildRealm 和用户的权利</td></tr><tr><td><b>正当利益</b>（art. 7º, IX）</td><td>用于安全、防止欺诈和服务改进</td></tr></tbody></table><p>您可以随时撤回同意。</p>"},
-      {"id":"sharing","num":"6","title":"数据共享","content":"<p>GuildRealm <b>不出售</b>您的个人数据给第三方。</p><p>在以下情况下可能共享数据：</p><ul><li><b>服务提供商</b> — 帮助我们运营平台的公司</li><li><b>公共机构</b> — 法律或法院命令要求时</li><li><b>经同意</b> — 您明确授权时</li><li><b>企业转让</b> — 合并或收购情况</li></ul>"},
-      {"id":"thirdparty","num":"7","title":"第三方服务","content":"<p>GuildRealm 使用第三方服务运营：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage 和 Hosting</li><li><b>Cloudflare</b> — DDoS 防护、CDN 和网络安全</li><li><b>Google Analytics</b> — 使用统计（启用时）</li><li><b>Google reCAPTCHA</b> — 机器人防护</li><li><b>Resend</b> — 事务性邮件发送</li></ul>"},
-      {"id":"cookies","num":"8","title":"Cookies","content":"<p>Cookies 是存储在浏览器中的小文件。</p><table><thead><tr><th>类型</th><th>用途</th></tr></thead><tbody><tr><td><b>必要</b></td><td>平台功能必不可少</td></tr><tr><td><b>功能</b></td><td>记住您的偏好设置（语言、设置）</td></tr><tr><td><b>性能</b></td><td>帮助改进平台（Google Analytics）</td></tr><tr><td><b>营销</b></td><td>目前未使用</td></tr></tbody></table><p>您可以在浏览器设置中管理 Cookies。</p>"},
-      {"id":"retention","num":"9","title":"数据保留","content":"<p>您的数据将保留实现本政策所述目的所需的时间。</p><ul><li><b>服务需要</b> — 账户激活期间</li><li><b>法律义务</b> — 法律规定的期限</li><li><b>安全</b> — 保留日志用于调查</li></ul><p>删除账户后，个人数据将在 <b>30 天</b>内删除。备份可能包含数据长达 90 天。</p>"},
-      {"id":"rights","num":"10","title":"您的权利（LGPD）","content":"<p>作为数据主体，您可以：</p><ul><li><b>确认和访问</b> — 请求数据副本</li><li><b>更正</b> — 请求更正不正确的数据</li><li><b>更新</b> — 更新平台上的信息</li><li><b>匿名化、屏蔽或删除</b> — 请求删除数据</li><li><b>数据可携带性</b> — 请求转移到其他服务</li><li><b>撤回同意</b> — 随时</li><li><b>共享信息</b> — 了解与谁共享</li><li><b>反对</b> — 反对基于正当利益的处理</li></ul><p>请通过 <b>privacy@guildrealm.com</b> 联系我们。我们将在 <b>15 天</b>内回复。</p>"},
-      {"id":"deletion","num":"11","title":"账户删除","content":"<p>请求删除时：</p><ul><li>个人资料和个人数据将被删除或匿名化</li><li>公会、成就和排名将解除关联</li><li>私人消息可能仍对其他人可见</li><li>公会内容可能在没有身份识别的情况下保留</li></ul><p>因法律义务保留的数据（例如：6 个月的访问记录）可能在所需期限内保留。</p>"},
-      {"id":"security","num":"12","title":"数据安全","content":"<p>GuildRealm 采取的措施：</p><ul><li><b>加密</b> — 所有传输使用 HTTPS（SSL/TLS）</li><li><b>访问控制</b> — 受限和授权访问</li><li><b>监控</b> — 访问和入侵尝试日志</li><li><b>Firebase 安全</b> — 数据库安全规则</li><li><b>Cloudflare</b> — DDoS 防护</li><li><b>定期备份</b> — 确保数据完整性</li><li><b>加密密码</b> — bcrypt 算法</li></ul>"},
-      {"id":"children","num":"13","title":"儿童和青少年","content":"<p>GuildRealm 不针对 13 岁以下的儿童。</p><p>如果您在 13 至 18 岁之间，我们建议您的父母或监护人了解本政策。</p><p>我们不会故意收集 13 岁以下儿童的数据。如果我们发现此年龄段的账户，我们将删除数据并关闭账户。</p>"},
-      {"id":"transfer","num":"14","title":"国际传输","content":"<p>某些提供商可能在其他国家存储数据（例如：美国的 Google Firebase 和 Cloudflare）。</p><p>我们采取标准合同条款和定期提供商评估等措施以确保充分保护。</p>"},
-      {"id":"changes-priv","num":"15","title":"本政策的变更","content":"<p>我们可能会定期更新本政策。</p><ul><li>更新版本将在平台上发布</li><li>重大变更将通过电子邮件通知</li><li>变更在 <b>30 天</b>后生效</li></ul><p>生效后继续使用即表示接受。</p>"},
-      {"id":"contact-priv","num":"16","title":"联系我们","content":"<p>有关隐私和数据保护的问题：</p><ul><li><b>隐私：</b> privacy@guildrealm.com</li><li><b>法务：</b> legal@guildrealm.com</li><li><b>一般：</b> contato@guildrealm.com</li></ul>"},
-      {"id":"law-priv","num":"17","title":"适用法律","content":"<p>本政策受<b>巴西联邦共和国</b>法律管辖，特别是 <b>LGPD（Lei nº 13.709/2018）</b>和 <b>Marco Civil da Internet（Lei nº 12.965/2014）</b>。</p><p>争议将在南里奥格兰德州新汉堡法院解决。</p>"}
+      {
+        "id": "intro",
+        "num": "1",
+        "title": "简介",
+        "content": "<p>GuildRealm（<b>\"我们\"</b>、<b>\"我们的\"</b>或<b>\"平台\"</b>）致力于保护您的隐私和个人数据。本隐私政策解释我们如何收集、使用、存储和保护您提供的信息或在使用我们的服务时自动收集的信息。</p>"
+      },
+      {
+        "id": "who",
+        "num": "2",
+        "title": "关于我们",
+        "content": "<p>GuildRealm 是通过平台处理的个人数据的控制者。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>公司名称</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>地址</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – 巴西 – CEP 93510-000</td></tr><tr><td><b>电子邮件</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>数据保护官</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"
+      },
+      {
+        "id": "data",
+        "num": "3",
+        "title": "我们收集的数据",
+        "content": "<p>我们收集不同类型的數據以提供最佳的 GuildRealm 体验。</p><h4>用户提供的数据</h4><ul><li><b>姓名</b> — 用于个性化您的个人资料</li><li><b>昵称</b> — 您在平台上的公开标识符</li><li><b>电子邮件</b> — 用于创建账户和找回密码</li><li><b>密码</b> — 以加密形式（哈希）存储</li><li><b>照片 / 头像</b> — 公开代表您的图像</li><li><b>横幅</b> — 个人资料背景图像</li><li><b>个人简介</b> — 关于您的描述性文本</li><li><b>国家和语言</b> — 用于本地化内容</li><li><b>社交媒体链接</b> — 自愿分享</li><li><b>发布的内容</b> — 文本、评论、帖子和指南</li></ul><h4>使用过程中生成的数据</h4><ul><li><b>公会</b> — 您创建或参与的公会</li><li><b>成就和徽章</b> — 奖章和认可</li><li><b>私信</b> — 与其他用户交换的内容</li><li><b>好友列表</b> — 已建立的连接</li><li><b>通知</b> — 通知记录</li><li><b>评论和点赞</b> — 内容互动</li><li><b>登录历史</b> — 访问日期和时间</li></ul><h4>自动收集的数据</h4><ul><li><b>IP 地址</b> — 用于安全和分析</li><li><b>浏览器和操作系统</b> — 技术标识</li><li><b>语言和时区</b> — 用于个性化</li><li><b>设备类型</b> — 桌面、平板或移动设备</li><li><b>Cookies 和标识符</b> — 用于功能和安全</li><li><b>服务器日志</b> — 自动技术记录</li></ul>"
+      },
+      {
+        "id": "usage",
+        "num": "4",
+        "title": "我们如何使用您的数据",
+        "content": "<p>每项收集的数据都有特定用途：</p><table><thead><tr><th>用途</th><th>描述</th></tr></thead><tbody><tr><td><b>创建和管理您的账户</b></td><td>允许您注册、登录和维护账户</td></tr><tr><td><b>身份验证</b></td><td>确保您是本人</td></tr><tr><td><b>防止欺诈</b></td><td>识别和阻止可疑活动</td></tr><tr><td><b>个性化体验</b></td><td>以您的语言显示内容并推荐公会</td></tr><tr><td><b>内容审核</b></td><td>分析举报并应用规则</td></tr><tr><td><b>安全</b></td><td>监控访问并检测入侵</td></tr><tr><td><b>统计</b></td><td>了解平台的使用情况</td></tr><tr><td><b>客户支持</b></td><td>回答问题并解决问题</td></tr><tr><td><b>通信</b></td><td>通知重要更改</td></tr><tr><td><b>法律义务</b></td><td>满足法律要求</td></tr></tbody></table><p>未经同意，我们<b>不会</b>将您的数据用于重大自动化决策或广告档案。</p>"
+      },
+      {
+        "id": "legal",
+        "num": "5",
+        "title": "法律依据（LGPD）",
+        "content": "<p>GuildRealm 根据 <b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>处理您的数据。</p><table><thead><tr><th>法律依据</th><th>适用情况</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>当您接受我们的政策和非必要 Cookie 时</td></tr><tr><td><b>合同履行</b>（art. 7º, V）</td><td>创建账户并提供服务</td></tr><tr><td><b>法律义务</b>（art. 7º, II）</td><td>遵守法律和司法要求</td></tr><tr><td><b>权利行使</b>（art. 7º, VI）</td><td>保护 GuildRealm 和用户的权利</td></tr><tr><td><b>正当利益</b>（art. 7º, IX）</td><td>用于安全、防止欺诈和服务改进</td></tr></tbody></table><p>您可以随时撤回同意。</p>"
+      },
+      {
+        "id": "sharing",
+        "num": "6",
+        "title": "数据共享",
+        "content": "<p>GuildRealm <b>不出售</b>您的个人数据给第三方。</p><p>在以下情况下可能共享数据：</p><ul><li><b>服务提供商</b> — 帮助我们运营平台的公司</li><li><b>公共机构</b> — 法律或法院命令要求时</li><li><b>经同意</b> — 您明确授权时</li><li><b>企业转让</b> — 合并或收购情况</li></ul>"
+      },
+      {
+        "id": "thirdparty",
+        "num": "7",
+        "title": "第三方服务",
+        "content": "<p>GuildRealm 使用第三方服务运营：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage 和 Hosting</li><li><b>Cloudflare</b> — DDoS 防护、CDN 和网络安全</li><li><b>Google Analytics</b> — 使用统计（启用时）</li><li><b>Google reCAPTCHA</b> — 机器人防护</li><li><b>Resend</b> — 事务性邮件发送</li></ul>"
+      },
+      {
+        "id": "cookies",
+        "num": "8",
+        "title": "Cookies",
+        "content": "<p>Cookies 是存储在浏览器中的小文件。</p><table><thead><tr><th>类型</th><th>用途</th></tr></thead><tbody><tr><td><b>必要</b></td><td>平台功能必不可少</td></tr><tr><td><b>功能</b></td><td>记住您的偏好设置（语言、设置）</td></tr><tr><td><b>性能</b></td><td>帮助改进平台（Google Analytics）</td></tr><tr><td><b>营销</b></td><td>目前未使用</td></tr></tbody></table><p>您可以在浏览器设置中管理 Cookies。</p>"
+      },
+      {
+        "id": "retention",
+        "num": "9",
+        "title": "数据保留",
+        "content": "<p>您的数据将保留实现本政策所述目的所需的时间。</p><ul><li><b>服务需要</b> — 账户激活期间</li><li><b>法律义务</b> — 法律规定的期限</li><li><b>安全</b> — 保留日志用于调查</li></ul><p>删除账户后，个人数据将在 <b>30 天</b>内删除。备份可能包含数据长达 90 天。</p>"
+      },
+      {
+        "id": "rights",
+        "num": "10",
+        "title": "您的权利（LGPD）",
+        "content": "<p>作为数据主体，您可以：</p><ul><li><b>确认和访问</b> — 请求数据副本</li><li><b>更正</b> — 请求更正不正确的数据</li><li><b>更新</b> — 更新平台上的信息</li><li><b>匿名化、屏蔽或删除</b> — 请求删除数据</li><li><b>数据可携带性</b> — 请求转移到其他服务</li><li><b>撤回同意</b> — 随时</li><li><b>共享信息</b> — 了解与谁共享</li><li><b>反对</b> — 反对基于正当利益的处理</li></ul><p>请通过 <b>privacy@guildrealm.com</b> 联系我们。我们将在 <b>15 天</b>内回复。</p>"
+      },
+      {
+        "id": "deletion",
+        "num": "11",
+        "title": "账户删除",
+        "content": "<p>请求删除时：</p><ul><li>个人资料和个人数据将被删除或匿名化</li><li>公会、成就和排名将解除关联</li><li>私人消息可能仍对其他人可见</li><li>公会内容可能在没有身份识别的情况下保留</li></ul><p>因法律义务保留的数据（例如：6 个月的访问记录）可能在所需期限内保留。</p>"
+      },
+      {
+        "id": "security",
+        "num": "12",
+        "title": "数据安全",
+        "content": "<p>GuildRealm 采取的措施：</p><ul><li><b>加密</b> — 所有传输使用 HTTPS（SSL/TLS）</li><li><b>访问控制</b> — 受限和授权访问</li><li><b>监控</b> — 访问和入侵尝试日志</li><li><b>Firebase 安全</b> — 数据库安全规则</li><li><b>Cloudflare</b> — DDoS 防护</li><li><b>定期备份</b> — 确保数据完整性</li><li><b>加密密码</b> — bcrypt 算法</li></ul>"
+      },
+      {
+        "id": "children",
+        "num": "13",
+        "title": "儿童和青少年",
+        "content": "<p>GuildRealm 不针对 13 岁以下的儿童。</p><p>如果您在 13 至 18 岁之间，我们建议您的父母或监护人了解本政策。</p><p>我们不会故意收集 13 岁以下儿童的数据。如果我们发现此年龄段的账户，我们将删除数据并关闭账户。</p>"
+      },
+      {
+        "id": "transfer",
+        "num": "14",
+        "title": "国际传输",
+        "content": "<p>某些提供商可能在其他国家存储数据（例如：美国的 Google Firebase 和 Cloudflare）。</p><p>我们采取标准合同条款和定期提供商评估等措施以确保充分保护。</p>"
+      },
+      {
+        "id": "changes-priv",
+        "num": "15",
+        "title": "本政策的变更",
+        "content": "<p>我们可能会定期更新本政策。</p><ul><li>更新版本将在平台上发布</li><li>重大变更将通过电子邮件通知</li><li>变更在 <b>30 天</b>后生效</li></ul><p>生效后继续使用即表示接受。</p>"
+      },
+      {
+        "id": "contact-priv",
+        "num": "16",
+        "title": "联系我们",
+        "content": "<p>有关隐私和数据保护的问题：</p><ul><li><b>隐私：</b> privacy@guildrealm.com</li><li><b>法务：</b> legal@guildrealm.com</li><li><b>一般：</b> contato@guildrealm.com</li></ul>"
+      },
+      {
+        "id": "law-priv",
+        "num": "17",
+        "title": "适用法律",
+        "content": "<p>本政策受<b>巴西联邦共和国</b>法律管辖，特别是 <b>LGPD（Lei nº 13.709/2018）</b>和 <b>Marco Civil da Internet（Lei nº 12.965/2014）</b>。</p><p>争议将在南里奥格兰德州新汉堡法院解决。</p>"
+      }
     ]
   },
   "Login": {
@@ -237,10 +605,22 @@
     "noAccount": "还没有账户？",
     "signupLink": "免费创建账户 →",
     "badges": [
-      {"title": "安全可靠", "text": "使用高级加密保护您的数据。"},
-      {"title": "史诗级社区", "text": "找到来自世界各地的公会和玩家。"},
-      {"title": "真实成就", "text": "提升排名，展示您的统治力。"},
-      {"title": "为玩家打造", "text": "公会需要的所有工具。"}
+      {
+        "title": "安全可靠",
+        "text": "使用高级加密保护您的数据。"
+      },
+      {
+        "title": "史诗级社区",
+        "text": "找到来自世界各地的公会和玩家。"
+      },
+      {
+        "title": "真实成就",
+        "text": "提升排名，展示您的统治力。"
+      },
+      {
+        "title": "为玩家打造",
+        "text": "公会需要的所有工具。"
+      }
     ]
   },
   "ForgotPassword": {
@@ -257,10 +637,544 @@
     "tipsTitle": "没有收到邮件？",
     "tipsSub": "请检查以下可能性：",
     "tips": [
-      {"title": "检查垃圾邮件文件夹", "text": "邮件可能已被转到垃圾邮件。"},
-      {"title": "等待几分钟", "text": "邮件到达可能需要几分钟时间。"},
-      {"title": "检查输入的邮箱", "text": "请确保输入的邮箱地址正确。"},
-      {"title": "再次尝试", "text": "仍未收到？请重新发送说明。"}
+      {
+        "title": "检查垃圾邮件文件夹",
+        "text": "邮件可能已被转到垃圾邮件。"
+      },
+      {
+        "title": "等待几分钟",
+        "text": "邮件到达可能需要几分钟时间。"
+      },
+      {
+        "title": "检查输入的邮箱",
+        "text": "请确保输入的邮箱地址正确。"
+      },
+      {
+        "title": "再次尝试",
+        "text": "仍未收到？请重新发送说明。"
+      }
     ]
+  },
+  "Dashboard": {
+    "welcomeBack": "欢迎回来，",
+    "adventurer": "冒险者",
+    "subtitle": "一览你的王国：角色与公会尽在一处。",
+    "createCharacter": "创建角色",
+    "createCharacterSub": "打造你的英雄，开启旅程",
+    "createGuild": "创建公会",
+    "createGuildSub": "集结盟友，铸就传奇",
+    "openGuildPanel": "访问公会面板",
+    "charactersTitle": "我的角色",
+    "guildsTitle": "我的公会",
+    "charactersEmpty": "你还未创建任何角色。",
+    "guildsEmpty": "你还未加入任何公会。",
+    "level": "等级",
+    "leaderRole": "会长",
+    "memberRole": "成员",
+    "membersCount": "{count} 名成员",
+    "loading": "正在加载你的王国...",
+    "loadError": "无法加载你的数据，请重试。",
+    "retry": "重试",
+    "createFirstCharacter": "创建第一个角色",
+    "createFirstGuild": "创建第一个公会",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "classes": [
+      {
+        "value": "warrior",
+        "label": "战士"
+      },
+      {
+        "value": "mage",
+        "label": "法师"
+      },
+      {
+        "value": "rogue",
+        "label": "盗贼"
+      },
+      {
+        "value": "ranger",
+        "label": "猎人"
+      },
+      {
+        "value": "cleric",
+        "label": "牧师"
+      }
+    ]
+  },
+  "CharacterCreate": {
+    "title": "创建角色",
+    "subtitle": "打造你的英雄，为冒险做好准备。",
+    "nameLabel": "角色名称",
+    "namePlaceholder": "例如：Ragnar、Lyra、Thalos",
+    "gameLabel": "游戏",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "classes": [
+      {
+        "value": "warrior",
+        "label": "战士"
+      },
+      {
+        "value": "mage",
+        "label": "法师"
+      },
+      {
+        "value": "rogue",
+        "label": "盗贼"
+      },
+      {
+        "value": "ranger",
+        "label": "猎人"
+      },
+      {
+        "value": "cleric",
+        "label": "牧师"
+      }
+    ],
+    "classLabel": "职业",
+    "levelLabel": "初始等级",
+    "submit": "创建角色",
+    "creating": "创建中...",
+    "nameRequired": "请输入角色名称。",
+    "createError": "无法创建角色，请重试。",
+    "cancel": "取消"
+  },
+  "GuildCreate": {
+    "title": "创建公会",
+    "subtitle": "集结盟友，在王国中铸就你的传奇。",
+    "nameLabel": "公会名称",
+    "namePlaceholder": "例如：烈焰之龙",
+    "submit": "创建公会",
+    "creating": "创建中...",
+    "nameRequired": "请输入公会名称。",
+    "createError": "无法创建公会，请重试。",
+    "cancel": "取消",
+    "gameLabel": "游戏",
+    "logoLabel": "公会标志",
+    "logoSub": "PNG、JPG 或 WEBP。最大 2MB。",
+    "logoUpload": "上传标志",
+    "logoChange": "更换标志",
+    "logoRemove": "移除标志",
+    "logoInvalid": "图片格式无效。请使用 PNG、JPG 或 WEBP。",
+    "logoTooLarge": "图片过大。上限为 2MB。",
+    "logoUploading": "正在上传标志...",
+    "factionLabel": "阵营",
+    "recruitmentLabel": "招募",
+    "recruitmentOpen": "开放",
+    "recruitmentClosed": "已关闭",
+    "recruiting": "招募中",
+    "closedRecruitment": "招募已关闭",
+    "regionLabel": "地区",
+    "languagesLabel": "公会语言",
+    "languagesHint": "请选择一个或多个语言。",
+    "previewTitle": "公会预览",
+    "previewSub": "查看公会的展示效果。确认无误后即可创建。",
+    "editInfo": "编辑信息",
+    "confirmCreate": "确认创建",
+    "createdTitle": "公会已创建！",
+    "createdSub": "公会已上线。分享链接，开始招募吧。",
+    "guildLink": "公会链接",
+    "copyLink": "复制链接",
+    "linkCopied": "链接已复制！",
+    "goToPanel": "前往公会面板",
+    "leaderRole": "会长",
+    "games": [
+      {
+        "value": "aion2",
+        "label": "Aion 2"
+      }
+    ],
+    "regions": [
+      {
+        "value": "na",
+        "label": "北美"
+      },
+      {
+        "value": "sa",
+        "label": "南美"
+      },
+      {
+        "value": "asia",
+        "label": "亚洲"
+      },
+      {
+        "value": "europe",
+        "label": "欧洲"
+      },
+      {
+        "value": "oceania",
+        "label": "大洋洲"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "葡萄牙语"
+      },
+      {
+        "value": "en",
+        "label": "英语"
+      },
+      {
+        "value": "es",
+        "label": "西班牙语"
+      },
+      {
+        "value": "fr",
+        "label": "法语"
+      },
+      {
+        "value": "de",
+        "label": "德语"
+      },
+      {
+        "value": "it",
+        "label": "意大利语"
+      },
+      {
+        "value": "pl",
+        "label": "波兰语"
+      },
+      {
+        "value": "ru",
+        "label": "俄语"
+      },
+      {
+        "value": "ja",
+        "label": "日语"
+      },
+      {
+        "value": "ko",
+        "label": "韩语"
+      },
+      {
+        "value": "zh",
+        "label": "简体中文"
+      },
+      {
+        "value": "tr",
+        "label": "土耳其语"
+      }
+    ]
+  },
+  "GuildPage": {
+    "notFound": "未找到公会。",
+    "backToHome": "返回首页",
+    "recruiting": "招募中",
+    "closedRecruitment": "招募已关闭",
+    "leader": "会长",
+    "membersCount": "{count} 名成员",
+    "gameLabel": "游戏",
+    "factionLabel": "阵营",
+    "regionLabel": "地区",
+    "languagesLabel": "语言",
+    "recruitmentLabel": "招募",
+    "regions": [
+      {
+        "value": "na",
+        "label": "北美"
+      },
+      {
+        "value": "sa",
+        "label": "南美"
+      },
+      {
+        "value": "asia",
+        "label": "亚洲"
+      },
+      {
+        "value": "europe",
+        "label": "欧洲"
+      },
+      {
+        "value": "oceania",
+        "label": "大洋洲"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "葡萄牙语"
+      },
+      {
+        "value": "en",
+        "label": "英语"
+      },
+      {
+        "value": "es",
+        "label": "西班牙语"
+      },
+      {
+        "value": "fr",
+        "label": "法语"
+      },
+      {
+        "value": "de",
+        "label": "德语"
+      },
+      {
+        "value": "it",
+        "label": "意大利语"
+      },
+      {
+        "value": "pl",
+        "label": "波兰语"
+      },
+      {
+        "value": "ru",
+        "label": "俄语"
+      },
+      {
+        "value": "ja",
+        "label": "日语"
+      },
+      {
+        "value": "ko",
+        "label": "韩语"
+      },
+      {
+        "value": "zh",
+        "label": "简体中文"
+      },
+      {
+        "value": "tr",
+        "label": "土耳其语"
+      }
+    ]
+  },
+  "GuildPanel": {
+    "backToDashboard": "返回控制台",
+    "title": "公会面板",
+    "subtitle": "在这里管理你的公会。",
+    "menuOverview": "概览",
+    "menuCalendar": "日历",
+    "menuMembers": "成员",
+    "timezoneLabel": "时区",
+    "createEvent": "创建活动",
+    "eventTitle": "活动标题",
+    "eventTitlePlaceholder": "例如：周日副本",
+    "eventDay": "日期",
+    "eventHour": "时间",
+    "eventSubmit": "创建",
+    "close": "关闭",
+    "eventNameRequired": "请输入活动标题。",
+    "eventCreateError": "无法创建活动，请重试。",
+    "noEvents": "本周暂无活动。",
+    "notFound": "未找到公会。",
+    "membersTitle": "成员",
+    "infoTitle": "公会信息",
+    "leader": "会长",
+    "membersCount": "{count} 名成员",
+    "gameLabel": "游戏",
+    "factionLabel": "阵营",
+    "regionLabel": "地区",
+    "recruitmentLabel": "招募",
+    "recruiting": "招募中",
+    "closedRecruitment": "招募已关闭",
+    "languagesLabel": "语言",
+    "regions": [
+      {
+        "value": "na",
+        "label": "北美"
+      },
+      {
+        "value": "sa",
+        "label": "南美"
+      },
+      {
+        "value": "asia",
+        "label": "亚洲"
+      },
+      {
+        "value": "europe",
+        "label": "欧洲"
+      },
+      {
+        "value": "oceania",
+        "label": "大洋洲"
+      }
+    ],
+    "languages": [
+      {
+        "value": "pt",
+        "label": "葡萄牙语"
+      },
+      {
+        "value": "en",
+        "label": "英语"
+      },
+      {
+        "value": "es",
+        "label": "西班牙语"
+      },
+      {
+        "value": "fr",
+        "label": "法语"
+      },
+      {
+        "value": "de",
+        "label": "德语"
+      },
+      {
+        "value": "it",
+        "label": "意大利语"
+      },
+      {
+        "value": "pl",
+        "label": "波兰语"
+      },
+      {
+        "value": "ru",
+        "label": "俄语"
+      },
+      {
+        "value": "ja",
+        "label": "日语"
+      },
+      {
+        "value": "ko",
+        "label": "韩语"
+      },
+      {
+        "value": "zh",
+        "label": "简体中文"
+      },
+      {
+        "value": "tr",
+        "label": "土耳其语"
+      }
+    ],
+    "menuGroups": "队伍"
+  },
+  "GuildCalendar": {
+    "today": "今天",
+    "month": "月",
+    "week": "周",
+    "day": "日",
+    "createEvent": "创建活动",
+    "newEvent": "新建活动",
+    "title": "标题",
+    "titlePlaceholder": "例如：周日团战",
+    "titleRequired": "请输入活动标题。",
+    "description": "描述",
+    "descriptionPlaceholder": "描述活动内容...",
+    "eventType": "活动类型",
+    "date": "日期",
+    "startTime": "开始",
+    "endTime": "结束",
+    "invalidTime": "结束时间必须在开始时间之后。",
+    "location": "地点",
+    "locationPlaceholder": "例如：Discord、游戏内...",
+    "maxParticipants": "最大参与人数",
+    "unlimited": "无限",
+    "allowRegistration": "允许报名",
+    "cancel": "取消",
+    "create": "创建",
+    "createError": "无法创建活动。请重试。",
+    "deleteEvent": "删除活动",
+    "confirmDelete": "确认删除",
+    "leaveEvent": "退出活动",
+    "joinEvent": "参加活动",
+    "eventFull": "活动已满",
+    "participants": "参与者",
+    "participantsList": "参与者列表",
+    "emptyTitle": "没有安排的活动",
+    "emptyDescription": "为您的公会创建第一个活动，开始组织活动。",
+    "RAID": "团战",
+    "DUNGEON": "地下室",
+    "WORLD_BOSS": "世界Boss",
+    "GUILD_WAR": "公会战争",
+    "PVP": "PvP",
+    "TOURNAMENT": "锦标赛",
+    "MEETING": "会议",
+    "TRAINING": "训练",
+    "OTHER": "其他"
+  },
+  "GuildGroups": {
+    "tabGroups": "队伍",
+    "tabPresets": "模板",
+    "manageRoles": "职能",
+    "newGroup": "新建队伍",
+    "editGroup": "编辑队伍",
+    "deleteGroup": "删除",
+    "deleteGroupTitle": "删除队伍",
+    "deleteGroupMessage": "所有成员将从队伍中移除。此操作无法撤销。",
+    "delete": "删除",
+    "confirm": "确认",
+    "cancel": "取消",
+    "processing": "处理中...",
+    "errorGroupFull": "该队伍已满。",
+    "errorAlreadyInGroup": "该成员已在其他队伍中。",
+    "errorGeneric": "无法完成操作。请重试。",
+    "availableMembers": "可分配成员",
+    "searchAvailable": "搜索成员...",
+    "noAvailableMembers": "所有成员均已分配。",
+    "dragHintText": "将成员拖入队伍进行分配。拖动队伍标题可调整顺序。",
+    "dragHint": "拖动以移动",
+    "dragGroupHint": "拖动以排序",
+    "loading": "加载中...",
+    "noGroups": "尚未创建队伍。",
+    "createFirstGroup": "创建第一个队伍",
+    "dropHint": "将成员拖放到这里",
+    "noRoleLabel": "无职能",
+    "noRole": "无职能",
+    "setRole": "设置职能",
+    "removeMember": "移出队伍",
+    "type_PVE": "PvE",
+    "type_PVP": "PvP",
+    "type_RAID": "团本",
+    "type_DUNGEON": "副本",
+    "type_WAR": "战争",
+    "type_TOURNAMENT": "锦标赛",
+    "type_OTHER": "其他",
+    "name": "名称",
+    "groupNameRequired": "请输入队伍名称。",
+    "groupNamePlaceholder": "例：阿尔法小队",
+    "type": "类型",
+    "size": "最大人数",
+    "groupSizeInvalid": "请输入有效人数。",
+    "headerColor": "标题颜色",
+    "create": "创建",
+    "save": "保存",
+    "saveError": "保存失败。请重试。",
+    "newPreset": "新建模板",
+    "editPreset": "编辑模板",
+    "deletePreset": "删除模板",
+    "deletePresetTitle": "删除模板",
+    "deletePresetMessage": "此操作无法撤销。",
+    "filterAll": "全部",
+    "noPresets": "尚未创建模板。",
+    "groupsCount": "队伍",
+    "usePreset": "使用模板",
+    "presetNameRequired": "请输入模板名称。",
+    "presetGroupsRequired": "请至少添加一个队伍到模板。",
+    "presetNamePlaceholder": "例：周日刷本",
+    "presetDescriptionPlaceholder": "描述模板...",
+    "description": "描述",
+    "icon": "图标",
+    "groupsBuilder": "模板队伍",
+    "addGroup": "添加队伍",
+    "noGroupsInPreset": "尚未添加队伍。",
+    "quantity": "数量",
+    "addRoleToGroup": "添加职能",
+    "summary": "概览",
+    "totalPlayersLabel": "总玩家数",
+    "roleNameRequired": "请输入职能名称。",
+    "roleNamePlaceholder": "例：辅助",
+    "roleIcon": "图标",
+    "roleColor": "颜色",
+    "defaultRole": "默认",
+    "editRole": "编辑职能",
+    "deleteRole": "删除职能",
+    "newRole": "新职能"
   }
 }

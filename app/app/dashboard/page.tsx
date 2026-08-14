@@ -1,23 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import { onAuthStateChanged } from 'firebase/auth';
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  where,
+  type QuerySnapshot,
+} from 'firebase/firestore';
+import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
+import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import { cn } from '@/lib/admin/utils/cn';
 import {
-  Shield,
-  Trophy,
-  Users,
-  Zap,
-  Star,
-  Calendar,
-  Activity,
   ChevronRight,
-  Sword,
-  Swords,
-  Medal,
-  TrendingUp,
+  LayoutDashboard,
   Plus,
+  Shield,
+  Sword,
+  Users,
 } from 'lucide-react';
 
 const fadeUp = {
@@ -29,7 +36,170 @@ const stagger = {
   animate: { transition: { staggerChildren: 0.06 } },
 };
 
+type CharacterDoc = {
+  id: string;
+  ownerId?: string;
+  name?: string;
+  className?: string;
+  game?: string;
+  level?: number;
+  createdAt?: { seconds: number };
+};
+
+type GuildDoc = {
+  id: string;
+  ownerId?: string;
+  name?: string;
+  tag?: string;
+  members?: string[];
+  createdAt?: { seconds: number };
+};
+
+type UserDoc = {
+  id: string;
+  displayName?: string;
+};
+
+type ClassOption = { value: string; label: string };
+
+const classBadges: Record<string, string> = {
+  warrior: 'bg-red-500/10 text-red-400',
+  mage: 'bg-violet-500/10 text-violet-400',
+  rogue: 'bg-yellow-500/10 text-yellow-400',
+  ranger: 'bg-emerald-500/10 text-emerald-400',
+  cleric: 'bg-sky-500/10 text-sky-400',
+};
+
 export default function UserDashboard() {
+  const t = useTranslations('Dashboard');
+  const router = useRouter();
+
+  const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
+  const [characters, setCharacters] = useState<CharacterDoc[]>([]);
+  const [guilds, setGuilds] = useState<GuildDoc[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const ownedGuildsRef = useRef<Map<string, GuildDoc>>(new Map());
+  const memberGuildsRef = useRef<Map<string, GuildDoc>>(new Map());
+
+  useEffect(() => {
+    let disposed = false;
+    const cleanups: (() => void)[] = [];
+
+    const unsubAuth = onAuthStateChanged(getFirebaseAuth(), async (user) => {
+      if (disposed) return;
+      if (!user) {
+        router.replace('/login');
+        return;
+      }
+
+      const db = getFirebaseDb();
+      setLoading(true);
+      setError(false);
+
+      try {
+        const userSnap = await getDoc(doc(db, COLLECTIONS.USERS, user.uid));
+        if (!disposed && userSnap.exists()) {
+          setUserDoc({ id: userSnap.id, ...userSnap.data() } as UserDoc);
+        }
+
+        const mergeCharacters = (snap: QuerySnapshot) => {
+          const map = new Map<string, CharacterDoc>();
+          snap.forEach((d) => {
+            map.set(d.id, { id: d.id, ...d.data() } as CharacterDoc);
+          });
+          setCharacters(
+            [...map.values()].sort(
+              (a, b) =>
+                (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+            ),
+          );
+        };
+
+        const mergeOwnedGuilds = (snap: QuerySnapshot) => {
+          const map = new Map<string, GuildDoc>();
+          snap.forEach((d) => {
+            map.set(d.id, { id: d.id, ...d.data() } as GuildDoc);
+          });
+          ownedGuildsRef.current = map;
+          applyGuilds();
+        };
+
+        const mergeMemberGuilds = (snap: QuerySnapshot) => {
+          const map = new Map<string, GuildDoc>();
+          snap.forEach((d) => {
+            map.set(d.id, { id: d.id, ...d.data() } as GuildDoc);
+          });
+          memberGuildsRef.current = map;
+          applyGuilds();
+        };
+
+        const applyGuilds = () => {
+          const merged = new Map<string, GuildDoc>(ownedGuildsRef.current);
+          memberGuildsRef.current.forEach((g, id) => merged.set(id, g));
+          setGuilds(
+            [...merged.values()].sort(
+              (a, b) =>
+                (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+            ),
+          );
+        };
+
+        cleanups.push(
+          onSnapshot(
+            query(
+              collection(db, COLLECTIONS.CHARACTERS),
+              where('ownerId', '==', user.uid),
+            ),
+            mergeCharacters,
+          ),
+          onSnapshot(
+            query(
+              collection(db, COLLECTIONS.GUILDS),
+              where('ownerId', '==', user.uid),
+            ),
+            mergeOwnedGuilds,
+          ),
+          onSnapshot(
+            query(
+              collection(db, COLLECTIONS.GUILDS),
+              where('members', 'array-contains', user.uid),
+            ),
+            mergeMemberGuilds,
+          ),
+        );
+
+        if (!disposed) setLoading(false);
+      } catch {
+        if (!disposed) {
+          setLoading(false);
+          setError(true);
+        }
+      }
+    });
+
+    cleanups.push(unsubAuth);
+
+    return () => {
+      disposed = true;
+      cleanups.forEach((fn) => fn());
+    };
+  }, [router, reloadKey]);
+
+  const classOptions = useMemo(() => t.raw('classes') as ClassOption[], [t]);
+
+  const gameOptions = useMemo(() => t.raw('games') as ClassOption[], [t]);
+
+  const classLabel = (value?: string) =>
+    classOptions.find((c) => c.value === value)?.label ?? value;
+
+  const gameLabel = (value?: string) =>
+    gameOptions.find((g) => g.value === value)?.label ?? value;
+
+  const displayName = userDoc?.displayName?.trim() || t('adventurer');
+
   return (
     <motion.div
       initial="initial"
@@ -37,329 +207,332 @@ export default function UserDashboard() {
       variants={stagger}
       className="space-y-8"
     >
-      {/* Header */}
-      <WelcomeSection />
-
-      {/* Stats Grid */}
-      <StatsGrid />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Active Guilds */}
-        <div className="lg:col-span-2">
-          <ActiveGuilds />
-        </div>
-
-        {/* Recent Activity */}
-        <div>
-          <RecentActivity />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Achievement Progress */}
-        <AchievementProgress />
-        {/* Upcoming Events */}
-        <UpcomingEvents />
-      </div>
-    </motion.div>
-  );
-}
-
-function WelcomeSection() {
-  return (
-    <motion.div variants={fadeUp} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
+      <motion.div variants={fadeUp}>
         <h1 className="text-2xl md:text-3xl font-heading font-bold text-white">
-          Bem-vindo de volta, <span className="text-accent">Aventureiro</span>
+          {t('welcomeBack')} <span className="text-accent">{displayName}</span>
         </h1>
-        <p className="text-muted mt-1">Você tem 3 notificações não lidas e 2 convites de guildas.</p>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="px-4 py-2 rounded-lg bg-[rgba(109,40,217,0.12)] border border-accent/20 flex items-center gap-2">
-          <Zap size={16} className="text-accent" />
-          <span className="text-white text-sm font-medium">XP Hoje: <span className="text-accent">+1,240</span></span>
+        <p className="text-muted mt-1">{t('subtitle')}</p>
+      </motion.div>
+
+      <CreateActions />
+
+      {error ? (
+        <ErrorState onRetry={() => setReloadKey((k) => k + 1)} />
+      ) : loading ? (
+        <SkeletonGrid />
+      ) : (
+        <div className="space-y-8">
+          <CharactersSection
+            characters={characters}
+            classLabel={classLabel}
+            gameLabel={gameLabel}
+            onCreateFirst={t('createFirstCharacter')}
+          />
+          <GuildsSection
+            guilds={guilds}
+            uid={userDoc?.id}
+            onCreateFirst={t('createFirstGuild')}
+          />
         </div>
-        <div className="px-4 py-2 rounded-lg bg-[rgba(245,158,11,0.12)] border border-[rgba(245,158,11,0.2)] flex items-center gap-2">
-          <Star size={16} className="text-yellow-400" />
-          <span className="text-white text-sm font-medium">Streak: <span className="text-yellow-400">7 dias</span></span>
-        </div>
-      </div>
+      )}
     </motion.div>
   );
 }
 
-function StatsGrid() {
-  const stats = [
-    { label: 'Nível', value: '42', icon: Zap, color: 'accent', sub: '2,340 / 5,000 XP' },
-    { label: 'Guildas', value: '3', icon: Shield, color: 'accent', sub: '2 cargos de liderança' },
-    { label: 'Conquistas', value: '18', icon: Trophy, color: 'yellow', sub: '5 de ouro • 7 de prata' },
-    { label: 'Amigos', value: '47', icon: Users, color: 'accent', sub: '12 online agora' },
-  ];
+function CreateActions() {
+  const t = useTranslations('Dashboard');
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, i) => (
-        <motion.div
-          key={stat.label}
-          variants={fadeUp}
-          className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.8)] to-[rgba(10,18,32,0.6)] p-5 hover:border-accent/30 transition-all duration-300 group"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <stat.icon
-              size={22}
-              className={stat.color === 'accent' ? 'text-accent' : 'text-yellow-400'}
-            />
-            <span className={cn(
-              'text-xs font-medium px-2 py-0.5 rounded-full',
-              stat.color === 'accent' ? 'bg-accent/10 text-accent' : 'bg-yellow-400/10 text-yellow-400',
-            )}>
-              {stat.label}
-            </span>
+    <motion.div
+      variants={fadeUp}
+      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      <Link
+        href="/app/characters/new"
+        className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-accent to-accent-hover p-7 md:p-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:scale-[1.01]"
+      >
+        <div className="flex items-center gap-5">
+          <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <Sword size={28} className="text-white" />
           </div>
-          <p className="text-2xl font-bold text-white font-heading">{stat.value}</p>
-          <p className="text-xs text-muted mt-1">{stat.sub}</p>
-          {/* XP Bar for first stat */}
-          {i === 0 && (
-            <div className="mt-3 h-1.5 rounded-full bg-[rgba(38,51,86,0.5)] overflow-hidden">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-accent to-accent-hover transition-all duration-500"
-                style={{ width: '46%' }}
-              />
+          <div className="flex-1 min-w-0">
+            <p className="font-heading font-bold text-white text-xl md:text-2xl">
+              {t('createCharacter')}
+            </p>
+            <p className="text-white/70 text-sm mt-1">
+              {t('createCharacterSub')}
+            </p>
+          </div>
+          <ChevronRight
+            size={22}
+            className="text-white/60 group-hover:translate-x-1 group-hover:text-white transition-all shrink-0"
+          />
+        </div>
+      </Link>
+
+      <Link
+        href="/app/guilds/new"
+        className="group relative overflow-hidden rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.8)] to-[rgba(10,18,32,0.6)] p-7 md:p-8 transition-all duration-300 hover:border-accent/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)]"
+      >
+        <div className="flex items-center gap-5">
+          <div className="w-14 h-14 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <Shield size={28} className="text-accent" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-heading font-bold text-white text-xl md:text-2xl">
+              {t('createGuild')}
+            </p>
+            <p className="text-muted text-sm mt-1">{t('createGuildSub')}</p>
+          </div>
+          <ChevronRight
+            size={22}
+            className="text-muted group-hover:translate-x-1 group-hover:text-accent transition-all shrink-0"
+          />
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+function CharactersSection({
+  characters,
+  classLabel,
+  gameLabel,
+  onCreateFirst,
+}: {
+  characters: CharacterDoc[];
+  classLabel: (value?: string) => string | undefined;
+  gameLabel: (value?: string) => string | undefined;
+  onCreateFirst: string;
+}) {
+  const t = useTranslations('Dashboard');
+
+  return (
+    <motion.section variants={fadeUp}>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+          <Sword size={20} className="text-accent" /> {t('charactersTitle')}
+        </h2>
+        {characters.length > 0 && (
+          <Link
+            href="/app/characters/new"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/15 border border-accent/30 text-accent text-xs font-medium hover:bg-accent hover:text-white transition-all duration-200"
+          >
+            <Plus size={14} /> {t('createCharacter')}
+          </Link>
+        )}
+      </div>
+
+      {characters.length === 0 ? (
+        <EmptyState
+          icon={<Sword size={28} className="text-accent" />}
+          message={t('charactersEmpty')}
+          cta={onCreateFirst}
+          href="/app/characters/new"
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {characters.map((character) => (
+            <div
+              key={character.id}
+              className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5 hover:border-accent/30 transition-all duration-300 group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0">
+                  {character.name?.charAt(0) ?? '?'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium truncate">
+                    {character.name}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-muted">
+                      {t('level')} {character.level ?? 1}
+                    </span>
+                    {character.game && (
+                      <span className="text-xs px-1.5 py-0.5 rounded text-muted bg-[rgba(38,51,86,0.3)]">
+                        {gameLabel(character.game)}
+                      </span>
+                    )}
+                    {character.className && (
+                      <span
+                        className={cn(
+                          'text-xs px-1.5 py-0.5 rounded',
+                          classBadges[character.className] ??
+                            'text-muted bg-[rgba(38,51,86,0.3)]',
+                        )}
+                      >
+                        {classLabel(character.className)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-        </motion.div>
-      ))}
+          ))}
+        </div>
+      )}
+    </motion.section>
+  );
+}
+
+function GuildsSection({
+  guilds,
+  uid,
+  onCreateFirst,
+}: {
+  guilds: GuildDoc[];
+  uid?: string;
+  onCreateFirst: string;
+}) {
+  const t = useTranslations('Dashboard');
+
+  return (
+    <motion.section variants={fadeUp}>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+          <Shield size={20} className="text-accent" /> {t('guildsTitle')}
+        </h2>
+        {guilds.length > 0 && (
+          <Link
+            href="/app/guilds/new"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/15 border border-accent/30 text-accent text-xs font-medium hover:bg-accent hover:text-white transition-all duration-200"
+          >
+            <Plus size={14} /> {t('createGuild')}
+          </Link>
+        )}
+      </div>
+
+      {guilds.length === 0 ? (
+        <EmptyState
+          icon={<Shield size={28} className="text-accent" />}
+          message={t('guildsEmpty')}
+          cta={onCreateFirst}
+          href="/app/guilds/new"
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {guilds.map((guild) => {
+            const isLeader = guild.ownerId === uid;
+            return (
+              <div
+                key={guild.id}
+                className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5 hover:border-accent/30 hover:bg-[rgba(109,40,217,0.04)] transition-all duration-300 group"
+              >
+                <Link
+                  href={`/panel/guilds/${guild.id}`}
+                  className="flex items-center gap-4"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0">
+                    {guild.name?.charAt(0) ?? '?'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-white font-medium truncate">
+                        {guild.name}
+                      </p>
+                      {guild.tag && (
+                        <span className="text-xs text-muted truncate">
+                          [{guild.tag}]
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-xs text-muted flex items-center gap-1">
+                        <Users size={12} />{' '}
+                        {t('membersCount', {
+                          count: guild.members?.length ?? 0,
+                        })}
+                      </span>
+                      <span
+                        className={cn(
+                          'text-xs px-1.5 py-0.5 rounded',
+                          isLeader
+                            ? 'text-yellow-400 bg-yellow-400/10'
+                            : 'text-accent bg-accent/10',
+                        )}
+                      >
+                        {isLeader ? t('leaderRole') : t('memberRole')}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight
+                    size={18}
+                    className="text-muted group-hover:translate-x-1 group-hover:text-accent transition-all shrink-0"
+                  />
+                </Link>
+                <Link
+                  href={`/panel/guilds/${guild.id}`}
+                  className="mt-4 flex items-center justify-center gap-2 w-full h-10 rounded-lg bg-accent/15 border border-accent/30 text-accent text-sm font-medium hover:bg-accent hover:text-white transition-all duration-200"
+                >
+                  <LayoutDashboard size={16} /> {t('openGuildPanel')}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </motion.section>
+  );
+}
+
+function EmptyState({
+  icon,
+  message,
+  cta,
+  href,
+}: {
+  icon: ReactNode;
+  message: string;
+  cta: string;
+  href: string;
+}) {
+  return (
+    <div className="rounded-xl border border-dashed border-[rgba(38,51,86,0.5)] bg-[rgba(10,18,32,0.3)] p-8 flex flex-col items-center justify-center text-center">
+      <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mb-3">
+        {icon}
+      </div>
+      <p className="text-sm text-muted max-w-xs">{message}</p>
+      <Link
+        href={href}
+        className="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors"
+      >
+        <Plus size={16} /> {cta}
+      </Link>
     </div>
   );
 }
 
-function ActiveGuilds() {
-  const guilds = [
-    {
-      name: 'Dragões de Fogo',
-      members: 128,
-      rank: '#3',
-      role: 'Líder',
-      banner: 'from-red-600/20 to-orange-600/20 border-red-500/20',
-      iconBg: 'bg-red-500/20 text-red-400',
-      progress: 85,
-    },
-    {
-      name: 'Guardiões do Vale',
-      members: 94,
-      rank: '#12',
-      role: 'Oficial',
-      banner: 'from-blue-600/20 to-cyan-600/20 border-blue-500/20',
-      iconBg: 'bg-blue-500/20 text-blue-400',
-      progress: 62,
-    },
-    {
-      name: 'Irmandade Noturna',
-      members: 67,
-      rank: '#28',
-      role: 'Membro',
-      banner: 'from-purple-600/20 to-violet-600/20 border-purple-500/20',
-      iconBg: 'bg-purple-500/20 text-purple-400',
-      progress: 34,
-    },
-  ];
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const t = useTranslations('Dashboard');
 
   return (
-    <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-          <Shield size={20} className="text-accent" /> Suas Guildas
-        </h2>
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors">
-            <Plus size={14} /> Criar Guilda
-          </button>
-          <Link
-            href="/app/guilds"
-            className="text-xs text-accent hover:text-accent-hover transition-colors flex items-center gap-1"
-          >
-            Ver todas <ChevronRight size={14} />
-          </Link>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        {guilds.map((guild) => (
-          <div
-            key={guild.name}
-            className={cn(
-              'rounded-lg border p-4 transition-all duration-300 hover:border-accent/30 hover:bg-[rgba(109,40,217,0.04)]',
-              guild.banner,
-            )}
-          >
-            <div className="flex items-center gap-4">
-              <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm', guild.iconBg)}>
-                {guild.name.charAt(0)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-white font-medium truncate">{guild.name}</p>
-                  <span className="text-xs text-muted">{guild.rank}</span>
-                </div>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-xs text-muted flex items-center gap-1">
-                    <Users size={12} /> {guild.members}
-                  </span>
-                  <span className={cn(
-                    'text-xs px-1.5 py-0.5 rounded',
-                    guild.role === 'Líder' ? 'text-yellow-400 bg-yellow-400/10' :
-                    guild.role === 'Oficial' ? 'text-accent bg-accent/10' :
-                    'text-muted bg-[rgba(38,51,86,0.3)]',
-                  )}>
-                    {guild.role}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="text-xs text-muted">Contribuição</p>
-                  <p className="text-sm font-bold text-white">{guild.progress}%</p>
-                </div>
-                <Link
-                  href="/app/guilds"
-                  className="px-3 py-1.5 rounded-lg bg-accent/15 text-accent text-xs font-medium border border-accent/30 hover:bg-accent hover:text-white transition-all duration-200"
-                >
-                  Acessar
-                </Link>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    <motion.div
+      variants={fadeUp}
+      className="rounded-xl border border-red-500/20 bg-red-500/5 p-8 flex flex-col items-center justify-center text-center"
+    >
+      <p className="text-sm text-red-400 max-w-xs">{t('loadError')}</p>
+      <button
+        onClick={onRetry}
+        className="mt-4 px-4 py-2 rounded-lg border border-red-500/30 text-red-400 text-sm font-medium hover:bg-red-500/10 transition-colors"
+      >
+        {t('retry')}
+      </button>
     </motion.div>
   );
 }
 
-function RecentActivity() {
-  const activities = [
-    { text: 'Completou "Caçador de Sombras"', time: '2 min atrás', icon: Sword, color: 'text-yellow-400' },
-    { text: 'Subiu para Nível 42', time: '15 min atrás', icon: TrendingUp, color: 'text-accent' },
-    { text: 'Entrou em "Irmandade Noturna"', time: '1 h atrás', icon: Users, color: 'text-blue-400' },
-    { text: 'Ganhou medalha de ouro no evento', time: '3 h atrás', icon: Medal, color: 'text-yellow-400' },
-    { text: 'Derrotou chefe semanal', time: '5 h atrás', icon: Swords, color: 'text-red-400' },
-  ];
-
+function SkeletonGrid() {
   return (
-    <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-          <Activity size={20} className="text-accent" /> Atividade
-        </h2>
-        <span className="text-xs text-muted">Hoje</span>
+    <motion.div variants={fadeUp} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="h-32 rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] animate-pulse" />
+        <div className="h-32 rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] animate-pulse" />
       </div>
-
-      <div className="space-y-0">
-        {activities.map((a, i) => (
-          <div
-            key={i}
-            className={cn(
-              'flex items-start gap-3 py-3',
-              i < activities.length - 1 && 'border-b border-[rgba(38,51,86,0.3)]',
-            )}
-          >
-            <div className="w-8 h-8 rounded-lg bg-[rgba(38,51,86,0.3)] flex items-center justify-center shrink-0">
-              <a.icon size={16} className={a.color} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-white">{a.text}</p>
-              <p className="text-xs text-muted mt-0.5">{a.time}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-function AchievementProgress() {
-  const achievements = [
-    { name: 'Guerreiro Lendário', progress: 75, rarity: 'Lendário', color: 'text-orange-400' },
-    { name: 'Colecionador de Almas', progress: 45, rarity: 'Épico', color: 'text-purple-400' },
-    { name: 'Mestre Forjador', progress: 20, rarity: 'Raro', color: 'text-blue-400' },
-  ];
-
-  return (
-    <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-          <Trophy size={20} className="text-yellow-400" /> Conquistas em Andamento
-        </h2>
-        <Link
-          href="/app/achievements"
-          className="text-xs text-accent hover:text-accent-hover transition-colors flex items-center gap-1"
-        >
-          Ver todas <ChevronRight size={14} />
-        </Link>
-      </div>
-
-      <div className="space-y-4">
-        {achievements.map((a) => (
-          <div key={a.name}>
-            <div className="flex items-center justify-between mb-1.5">
-              <p className="text-sm text-white">{a.name}</p>
-              <span className={cn('text-xs font-medium', a.rarity === 'Lendário' ? 'text-orange-400' : a.rarity === 'Épico' ? 'text-purple-400' : 'text-blue-400')}>
-                {a.progress}%
-              </span>
-            </div>
-            <div className="h-2 rounded-full bg-[rgba(38,51,86,0.5)] overflow-hidden">
-              <div
-                className={cn(
-                  'h-full rounded-full transition-all duration-500',
-                  a.rarity === 'Lendário' ? 'bg-gradient-to-r from-orange-500 to-red-500' :
-                  a.rarity === 'Épico' ? 'bg-gradient-to-r from-purple-500 to-violet-500' :
-                  'bg-gradient-to-r from-blue-500 to-cyan-500',
-                )}
-                style={{ width: `${a.progress}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-function UpcomingEvents() {
-  const events = [
-    { name: 'Torneio de Arena', date: 'Hoje, 20:00', players: 128, icon: Swords },
-    { name: 'Caça ao Tesouro', date: 'Amanhã, 15:00', players: 64, icon: Trophy },
-    { name: 'Invasão Demoníaca', date: 'Sábado, 18:00', players: 256, icon: Calendar },
-  ];
-
-  return (
-    <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
-          <Calendar size={20} className="text-accent" /> Próximos Eventos
-        </h2>
-        <Link
-          href="/app/events"
-          className="text-xs text-accent hover:text-accent-hover transition-colors flex items-center gap-1"
-        >
-          Ver todos <ChevronRight size={14} />
-        </Link>
-      </div>
-
-      <div className="space-y-3">
-        {events.map((e) => (
-          <div
-            key={e.name}
-            className="flex items-center gap-3 p-3 rounded-lg border border-[rgba(38,51,86,0.3)] hover:border-accent/20 transition-all duration-300 bg-[rgba(10,18,32,0.4)]"
-          >
-            <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-              <e.icon size={18} className="text-accent" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-white font-medium">{e.name}</p>
-              <p className="text-xs text-muted">{e.date} • {e.players} jogadores</p>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="h-24 rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] animate-pulse" />
+        <div className="h-24 rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] animate-pulse" />
+        <div className="h-24 rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] animate-pulse" />
       </div>
     </motion.div>
   );

@@ -1,5 +1,6 @@
 const { onRequest } = require('firebase-functions/v2/https');
-const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { onDocumentCreated, onDocumentWritten, onDocumentDeleted } = require('firebase-functions/v2/firestore');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { onInit } = require('firebase-functions/v2/core');
 const admin = require('firebase-admin');
 
@@ -20,6 +21,8 @@ const CODE_TO_STATUS = {
   'permission-denied': 'PERMISSION_DENIED',
   'resource-exhausted': 'RESOURCE_EXHAUSTED',
   'failed-precondition': 'FAILED_PRECONDITION',
+  'group-full': 'GROUP_FULL',
+  'already-in-group': 'ALREADY_IN_GROUP',
   aborted: 'ABORTED',
   'out-of-range': 'OUT_OF_RANGE',
   unimplemented: 'UNIMPLEMENTED',
@@ -47,6 +50,8 @@ const STATUS_TO_HTTP = {
   UNAVAILABLE: 503,
   DATA_LOSS: 500,
   UNAUTHENTICATED: 401,
+  GROUP_FULL: 409,
+  ALREADY_IN_GROUP: 409,
 };
 
 class CallableError extends Error {
@@ -168,4 +173,268 @@ exports.createUserProfile = callable(async (data, context) => {
   );
 
   return { success: true };
+});
+
+// ============ GRUPOS DE GUILD (validação server-side) ============
+
+const fv = admin.firestore.FieldValue;
+
+function guildDoc(guildId) {
+  return admin.firestore().doc(`guilds/${guildId}`);
+}
+
+function groupDoc(guildId, groupId) {
+  return admin.firestore().doc(`guilds/${guildId}/groups/${groupId}`);
+}
+
+function groupMembersCol(guildId, groupId) {
+  return admin.firestore().collection(`guilds/${guildId}/groups/${groupId}/members`);
+}
+
+function guildGroupsCol(guildId) {
+  return admin.firestore().collection(`guilds/${guildId}/groups`);
+}
+
+async function requireGuildLeader(guildId, uid) {
+  const snap = await guildDoc(guildId).get();
+  if (!snap.exists) throw new CallableError('not-found', 'Guild not found');
+  const guild = snap.data();
+  if (guild.ownerId !== uid && !(guild.leaders ?? []).includes(uid)) {
+    throw new CallableError('permission-denied', 'Only guild leaders can manage members');
+  }
+  return guild;
+}
+
+// Verifica se o usuário já está em qualquer grupo da guild (exceto skipGroupId)
+async function findMemberGroup(guildId, userId, skipGroupId) {
+  const groups = await guildGroupsCol(guildId).get();
+  for (const g of groups.docs) {
+    if (g.id === skipGroupId) continue;
+    const memberSnap = await groupMembersCol(guildId, g.id).doc(userId).get();
+    if (memberSnap.exists) return g.id;
+  }
+  return null;
+}
+
+exports.assignGuildMember = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, userId, fromGroupId = null, toGroupId, roleId = null } = data ?? {};
+  if (!guildId || !userId || !toGroupId) {
+    throw new CallableError('invalid-argument', 'guildId, userId and toGroupId are required');
+  }
+
+  const guild = await requireGuildLeader(guildId, context.auth.uid);
+  const uid = context.auth.uid;
+
+  // O alvo da movimentação deve ser um membro real da guild
+  if (!(guild.members ?? []).includes(userId)) {
+    throw new CallableError('invalid-argument', 'User is not a guild member');
+  }
+
+  let targetGroupId = toGroupId;
+
+  await admin.firestore().runTransaction(async (tx) => {
+    // Remove do grupo de origem (se informado) ou do grupo onde já está
+    const groupsSnap = await tx.get(guildGroupsCol(guildId));
+    let currentGroupId = null;
+
+    // Determina o grupo atual do usuário (fora da transação não pode; aqui com reads de docs)
+    // Usa apenas refs de doc para leituras dentro da transação
+    for (const g of groupsSnap.docs) {
+      const memberSnap = await tx.get(groupMembersCol(guildId, g.id).doc(userId));
+      if (memberSnap.exists) {
+        currentGroupId = g.id;
+        break;
+      }
+    }
+
+    if (fromGroupId && fromGroupId !== currentGroupId && currentGroupId) {
+      throw new CallableError('invalid-argument', 'fromGroupId does not match current group');
+    }
+
+    // Unicidade: se já está em outro grupo e o destino é diferente, remove do atual
+    if (currentGroupId && currentGroupId !== targetGroupId) {
+      const srcGroupSnap = await tx.get(groupDoc(guildId, currentGroupId));
+      const srcCount = srcGroupSnap.exists ? (srcGroupSnap.data().memberCount ?? 1) : 1;
+      tx.delete(groupMembersCol(guildId, currentGroupId).doc(userId));
+      if (srcGroupSnap.exists) {
+        tx.update(groupDoc(guildId, currentGroupId), {
+          memberCount: Math.max(0, srcCount - 1),
+        });
+      }
+    }
+
+    // Capacidade do destino
+    const destGroupSnap = await tx.get(groupDoc(guildId, targetGroupId));
+    if (!destGroupSnap.exists) throw new CallableError('not-found', 'Target group not found');
+    const destGroup = destGroupSnap.data();
+    const destCount = destGroup.memberCount ?? 0;
+    if (destCount >= (destGroup.maxPlayers ?? Infinity) || destGroup.maxPlayers == null) {
+      throw new CallableError('group-full', 'Group is full');
+    }
+
+    // Insere no destino
+    const memberRef = groupMembersCol(guildId, targetGroupId).doc(userId);
+    tx.set(memberRef, {
+      roleId: roleId ?? null,
+      position: destCount,
+      joinedAt: fv.serverTimestamp(),
+    });
+    tx.update(groupDoc(guildId, targetGroupId), {
+      memberCount: destCount + 1,
+      updatedAt: fv.serverTimestamp(),
+    });
+  });
+
+  return { success: true, groupId: targetGroupId };
+});
+
+exports.removeGuildMember = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, groupId, userId } = data ?? {};
+  if (!guildId || !groupId || !userId) {
+    throw new CallableError('invalid-argument', 'guildId, groupId and userId are required');
+  }
+
+  await requireGuildLeader(guildId, context.auth.uid);
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const memberRef = groupMembersCol(guildId, groupId).doc(userId);
+    const memberSnap = await tx.get(memberRef);
+    if (!memberSnap.exists) return;
+
+    tx.delete(memberRef);
+
+    const groupSnap = await tx.get(groupDoc(guildId, groupId));
+    if (groupSnap.exists) {
+      const count = groupSnap.data().memberCount ?? 1;
+      tx.update(groupDoc(guildId, groupId), {
+        memberCount: Math.max(0, count - 1),
+        updatedAt: fv.serverTimestamp(),
+      });
+    }
+  });
+
+  return { success: true };
+});
+
+// Safety net: revalida toda escrita direta de membro em grupo
+// (capacity, unicidade e pertencimento à guild) e recalcula memberCount real.
+exports.validateGuildGroupMember = onDocumentWritten(
+  'guilds/{guildId}/groups/{groupId}/members/{userId}',
+  async (event) => {
+    const { guildId, groupId, userId } = event.params;
+    const before = event.data.before?.exists ? event.data.before.data() : null;
+    const after = event.data.after?.exists ? event.data.after.data() : null;
+
+    const syncCount = async () => {
+      const members = await groupMembersCol(guildId, groupId).get();
+      await groupDoc(guildId, groupId).update({ memberCount: members.size }).catch(() => {});
+    };
+
+    // Deleção: apenas recalcula o contador
+    if (!after) {
+      await syncCount();
+      return;
+    }
+
+    // Criação/atualização: valida invariantes
+    try {
+      const [guildSnap, groupSnap, memberSnap] = await Promise.all([
+        guildDoc(guildId).get(),
+        groupDoc(guildId, groupId).get(),
+        groupMembersCol(guildId, groupId).doc(userId).get(),
+      ]);
+
+      const memberRef = groupMembersCol(guildId, groupId).doc(userId);
+      let shouldRemove = false;
+
+      if (!guildSnap.exists || !groupSnap.exists) {
+        shouldRemove = true; // órfão (guild/grupo removidos)
+      } else {
+        const guild = guildSnap.data();
+        const group = groupSnap.data();
+
+        // 1. Pertencimento à guild
+        if (!(guild.members ?? []).includes(userId)) shouldRemove = true;
+        // 2. Capacidade (apenas na criação, evita remoção em updates de role/position)
+        else if (!before) {
+          const members = await groupMembersCol(guildId, groupId).get();
+          if (members.size > (group.maxPlayers ?? Infinity)) shouldRemove = true;
+        }
+        // 3. Unicidade (apenas na criação)
+        else if (!before) {
+          const existing = await findMemberGroup(guildId, userId, groupId);
+          if (existing) shouldRemove = true;
+        }
+      }
+
+      if (shouldRemove) {
+        console.warn(
+          `[validateGuildGroupMember] removendo membro inválido ${userId} do grupo ${groupId} (guild ${guildId})`
+        );
+        await memberRef.delete().catch(() => {});
+      }
+
+      await syncCount();
+    } catch (err) {
+      console.error('[validateGuildGroupMember] falha na validação:', err.message);
+      await syncCount().catch(() => {});
+    }
+  }
+);
+
+// Cleanup: remove membros órfãos quando o grupo é deletado
+exports.cleanupGroupMembersOnDelete = onDocumentDeleted(
+  'guilds/{guildId}/groups/{groupId}',
+  async (event) => {
+    const { guildId, groupId } = event.params;
+    try {
+      const members = await groupMembersCol(guildId, groupId).listDocuments();
+      const ops = members.map((doc) => doc.delete());
+      await Promise.all(ops);
+    } catch (err) {
+      console.error('[cleanupGroupMembersOnDelete]', err.message);
+    }
+  }
+);
+
+// Job agendado: reconcilia memberCount e remove membros duplicados/órfãos
+exports.reconcileGuildGroups = onSchedule('every 15 minutes', async () => {
+  const db = admin.firestore();
+  const guilds = await db.collection('guilds').where('groupsEnabled', 'in', [true]).get().catch(() => null);
+  // Fallback: varre guilds com grupos de qualquer forma via collectionGroup? Usa listagem simples.
+  const all = guilds ?? (await db.collection('guilds').get());
+
+  let fixed = 0;
+  for (const g of all.docs) {
+    const guildId = g.id;
+    const guild = g.data();
+    const memberIds = guild.members ?? [];
+
+    const groups = await guildGroupsCol(guildId).get();
+    for (const group of groups.docs) {
+      // Separa órfãos (não estão na guild) e conta o total real
+      const members = await groupMembersCol(guildId, group.id).get();
+      let realCount = 0;
+      for (const m of members.docs) {
+        if (!memberIds.includes(m.id)) {
+          await m.ref.delete();
+          fixed++;
+        } else {
+          realCount++;
+        }
+      }
+
+      const groupData = group.data();
+      if (realCount !== (groupData.memberCount ?? 0)) {
+        await group.ref.update({ memberCount: realCount });
+        fixed++;
+      }
+    }
+  }
+
+  console.log(`[reconcileGuildGroups] concluído. Itens corrigidos: ${fixed}`);
 });
