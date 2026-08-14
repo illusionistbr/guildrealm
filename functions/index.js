@@ -175,6 +175,156 @@ exports.createUserProfile = callable(async (data, context) => {
   return { success: true };
 });
 
+// ============ ENTRADA/SAIDA DE GUILD (por personagem) ============
+
+function characterDoc(characterId) {
+  return admin.firestore().doc(`characters/${characterId}`);
+}
+
+// Alista um personagem em uma guild (o personagem passa a ser o "membro")
+exports.joinGuild = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { characterId, guildId } = data ?? {};
+  if (!characterId || !guildId) {
+    throw new CallableError('invalid-argument', 'characterId and guildId are required');
+  }
+
+  const uid = context.auth.uid;
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const charSnap = await tx.get(characterDoc(characterId));
+    if (!charSnap.exists) {
+      throw new CallableError('not-found', 'Character not found');
+    }
+    const character = charSnap.data();
+    if (character.ownerId !== uid) {
+      throw new CallableError('permission-denied', 'Character does not belong to this user');
+    }
+    if (character.guildId) {
+      throw new CallableError('already-in-group', 'Character is already in a guild');
+    }
+
+    const guildSnap = await tx.get(guildDoc(guildId));
+    if (!guildSnap.exists) {
+      throw new CallableError('not-found', 'Guild not found');
+    }
+    const guild = guildSnap.data();
+    if (guild.recruitment === 'closed') {
+      throw new CallableError('failed-precondition', 'Guild is not recruiting');
+    }
+    if (guild.game && character.game && guild.game !== character.game) {
+      throw new CallableError('invalid-argument', 'Game does not match guild');
+    }
+    const members = guild.members ?? [];
+    if (members.includes(characterId)) {
+      throw new CallableError('already-in-group', 'Character is already a guild member');
+    }
+
+    const owners = guild.memberOwnerIds ?? [];
+    tx.update(guildDoc(guildId), {
+      members: [...members, characterId],
+      memberOwnerIds: owners.includes(uid) ? owners : [...owners, uid],
+      updatedAt: fv.serverTimestamp(),
+    });
+    tx.update(characterDoc(characterId), {
+      guildId,
+      updatedAt: fv.serverTimestamp(),
+    });
+  });
+
+  return { success: true };
+});
+
+// Remove o personagem da guild (deixa a guild e os grupos dela)
+exports.leaveGuild = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { characterId } = data ?? {};
+  if (!characterId) {
+    throw new CallableError('invalid-argument', 'characterId is required');
+  }
+
+  const uid = context.auth.uid;
+
+  const charSnap = await characterDoc(characterId).get();
+  if (!charSnap.exists) {
+    throw new CallableError('not-found', 'Character not found');
+  }
+  const character = charSnap.data();
+  if (character.ownerId !== uid) {
+    throw new CallableError('permission-denied', 'Character does not belong to this user');
+  }
+  if (!character.guildId) {
+    throw new CallableError('invalid-argument', 'Character is not in a guild');
+  }
+
+  const guildId = character.guildId;
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const guildSnap = await tx.get(guildDoc(guildId));
+    if (!guildSnap.exists) {
+      // Guild não existe mais: apenas limpa o personagem
+      tx.update(characterDoc(characterId), {
+        guildId: null,
+        updatedAt: fv.serverTimestamp(),
+      });
+      return;
+    }
+
+    const guild = guildSnap.data();
+    if (guild.ownerCharacterId === characterId) {
+      throw new CallableError('failed-precondition', 'Guild leader cannot leave the guild');
+    }
+
+    const members = (guild.members ?? []).filter((id) => id !== characterId);
+    tx.update(guildDoc(guildId), {
+      members,
+      updatedAt: fv.serverTimestamp(),
+    });
+
+    // Recalcula os donos de membros restantes (uid só sai se não sobrar personagem dele)
+    const remainingOwners = new Set(guild.memberOwnerIds ?? []);
+    if (members.length > 0) {
+      const chars = await Promise.all(
+        members.map((id) => characterDoc(id).get())
+      );
+      const present = new Set();
+      for (const c of chars) {
+        if (c.exists && c.data().ownerId) present.add(c.data().ownerId);
+      }
+      for (const owner of [...remainingOwners]) {
+        if (!present.has(owner)) remainingOwners.delete(owner);
+      }
+    } else {
+      remainingOwners.clear();
+    }
+    tx.update(guildDoc(guildId), {
+      memberOwnerIds: [...remainingOwners],
+    });
+
+    tx.update(characterDoc(characterId), {
+      guildId: null,
+      updatedAt: fv.serverTimestamp(),
+    });
+  });
+
+  // Remove o personagem de todos os grupos da guild
+  try {
+    const groups = await guildGroupsCol(guildId).get();
+    const deletes = [];
+    for (const g of groups.docs) {
+      const memberRef = groupMembersCol(guildId, g.id).doc(characterId);
+      deletes.push(memberRef.delete().catch(() => {}));
+    }
+    await Promise.all(deletes);
+  } catch (err) {
+    console.error('[leaveGuild] limpeza de grupos falhou:', err.message);
+  }
+
+  return { success: true };
+});
+
 // ============ GRUPOS DE GUILD (validação server-side) ============
 
 const fv = admin.firestore.FieldValue;

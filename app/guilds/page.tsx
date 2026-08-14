@@ -27,6 +27,7 @@ type GuildDoc = {
   id: string;
   ownerId?: string;
   ownerName?: string | null;
+  ownerCharacterName?: string | null;
   name?: string;
   game?: string;
   faction?: string;
@@ -246,7 +247,10 @@ export default function GuildsPage() {
         ) : (
           <div className="guild-grid">
             {filtered.map((guild, index) => {
-              const gmName = guild.ownerName ?? ownerNames[guild.ownerId ?? ''];
+              const gmName =
+                guild.ownerCharacterName ??
+                guild.ownerName ??
+                ownerNames[guild.ownerId ?? ''];
               const languageLabels = (guild.languages ?? [])
                 .map((v) => languages.find((l) => l.value === v)?.label)
                 .filter(Boolean) as string[];

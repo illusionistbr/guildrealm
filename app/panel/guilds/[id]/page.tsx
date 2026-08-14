@@ -43,6 +43,7 @@ const fadeUp = {
 };
 
 type Option = { value: string; label: string };
+type ClassOption = Option & { icon?: string };
 
 type View = 'overview' | 'calendar' | 'groups' | 'members';
 
@@ -57,11 +58,23 @@ type GuildDoc = {
   languages?: string[];
   logoUrl?: string | null;
   members?: string[];
+  memberOwnerIds?: string[];
+  ownerCharacterId?: string;
   timezone?: number;
   createdAt?: { seconds: number };
 };
 
+type CharacterDoc = {
+  id: string;
+  ownerId?: string;
+  name?: string;
+  className?: string;
+  game?: string;
+  level?: number;
+};
+
 type MemberNames = Record<string, string>;
+type MemberMeta = Record<string, { className?: string; level?: number }>;
 
 const FACIONS: Record<string, string> = {
   elyos: 'Elyos',
@@ -75,6 +88,7 @@ export default function GuildPanelPage() {
   const [uid, setUid] = useState<string | null>(null);
   const [guild, setGuild] = useState<GuildDoc | null>(null);
   const [memberNames, setMemberNames] = useState<MemberNames>({});
+  const [memberMeta, setMemberMeta] = useState<MemberMeta>({});
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<View>('overview');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -118,12 +132,27 @@ export default function GuildPanelPage() {
 
     const load = async () => {
       const names: Record<string, string> = {};
+      const meta: Record<string, { className?: string; level?: number }> = {};
       await Promise.all(
         ids.map(async (memberId) => {
           try {
-            const snap = await getDoc(doc(db, COLLECTIONS.USERS, memberId));
-            if (!disposed && snap.exists()) {
-              const data = snap.data() as { displayName?: string };
+            const charSnap = await getDoc(doc(db, COLLECTIONS.CHARACTERS, memberId));
+            if (charSnap.exists()) {
+              const data = charSnap.data() as CharacterDoc;
+              if (data.name) names[memberId] = data.name;
+              meta[memberId] = {
+                className: data.className,
+                level: data.level,
+              };
+              return;
+            }
+          } catch {
+            // segue para fallback de usuário
+          }
+          try {
+            const userSnap = await getDoc(doc(db, COLLECTIONS.USERS, memberId));
+            if (!disposed && userSnap.exists()) {
+              const data = userSnap.data() as { displayName?: string };
               if (data.displayName) names[memberId] = data.displayName;
             }
           } catch {
@@ -131,7 +160,10 @@ export default function GuildPanelPage() {
           }
         }),
       );
-      if (!disposed) setMemberNames(names);
+      if (!disposed) {
+        setMemberNames(names);
+        setMemberMeta(meta);
+      }
     };
 
     load();
@@ -256,7 +288,11 @@ export default function GuildPanelPage() {
                 {view === 'overview' && <OverviewView guild={guild} />}
 
                 {view === 'members' && (
-                  <MembersView guild={guild} memberNames={memberNames} />
+                  <MembersView
+                    guild={guild}
+                    memberNames={memberNames}
+                    memberMeta={memberMeta}
+                  />
                 )}
               </motion.div>
             </div>
@@ -589,11 +625,14 @@ function InfoSection({ guild }: { guild: GuildDoc }) {
 function MembersView({
   guild,
   memberNames,
+  memberMeta,
 }: {
   guild: GuildDoc;
   memberNames: MemberNames;
+  memberMeta: MemberMeta;
 }) {
   const t = useTranslations('GuildPanel');
+  const classOptions = useMemo(() => t.raw('classes') as ClassOption[], [t]);
 
   return (
     <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
@@ -602,21 +641,40 @@ function MembersView({
       </h2>
       <div className="space-y-2">
         {(guild.members ?? []).map((memberId) => {
-          const isLeader = memberId === guild.ownerId;
+          const isLeader = memberId === guild.ownerCharacterId;
           const displayName = memberNames[memberId] ?? memberId.slice(0, 8);
+          const meta = memberMeta[memberId];
+          const classOption = classOptions.find(
+            (c) => c.value === meta?.className,
+          );
           return (
             <div
               key={memberId}
               className="flex items-center gap-3 p-3 rounded-lg border border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)]"
             >
-              <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center shrink-0">
-                <User size={15} className="text-accent" />
+              <div className="w-8 h-8 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center overflow-hidden shrink-0">
+                {classOption?.icon ? (
+                  <img
+                    src={classOption.icon}
+                    alt={classOption.label}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={15} className="text-accent" />
+                )}
               </div>
-              <span className="text-sm text-white font-medium flex-1 min-w-0 truncate">
-                {displayName}
-              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white font-medium truncate">
+                  {displayName}
+                </p>
+                <p className="text-xs text-muted truncate">
+                  {classOption?.label ??
+                    (meta?.className ? meta.className : t('memberRole'))}
+                  {meta?.level != null && ` • ${t('level')} ${meta.level}`}
+                </p>
+              </div>
               {isLeader && (
-                <span className="text-xs px-2 py-0.5 rounded bg-yellow-400/10 text-yellow-400 flex items-center gap-1">
+                <span className="text-xs px-2 py-0.5 rounded bg-yellow-400/10 text-yellow-400 flex items-center gap-1 shrink-0">
                   <Crown size={12} /> {t('leader')}
                 </span>
               )}

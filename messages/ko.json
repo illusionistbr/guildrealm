@@ -685,26 +685,58 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "전사"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "마법사"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "도적"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "사냥꾼"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "성직자"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
-    ]
+    ],
+    "memberOfGuild": "{name} 길드 멤버",
+    "noGuild": "길드 없음",
+    "joinGuild": "길드 가입",
+    "manageGuild": "길드 관리",
+    "leaveGuild": "길드 탈퇴",
+    "joinModalTitle": "길드 가입",
+    "joinModalSub": "{name}을 위한 길드 선택",
+    "loadingGuilds": "길드 불러오는 중...",
+    "noOpenGuilds": "모집 중인 길드를 찾지 못했습니다.",
+    "join": "가입",
+    "joinError": "길드에 가입할 수 없습니다. 다시 시도해 주세요.",
+    "leaveError": "길드에서 탈퇴할 수 없습니다. 다시 시도해 주세요."
   },
   "CharacterCreate": {
     "title": "캐릭터 생성",
@@ -720,24 +752,44 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "전사"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "마법사"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "도적"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "사냥꾼"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "성직자"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ],
     "classLabel": "클래스",
@@ -863,6 +915,54 @@
       {
         "value": "tr",
         "label": "터키어"
+      }
+    ],
+    "leaderCharacterLabel": "리더 캐릭터",
+    "leaderCharacterHint": "리더가 되어 길드 멤버 목록에 표시됩니다.",
+    "leaderRequired": "길드를 이끌 캐릭터를 선택하세요.",
+    "noCharacters": "아직 캐릭터가 없습니다.",
+    "createCharacterFirst": "캐릭터 생성",
+    "loadingCharacters": "캐릭터 불러오는 중...",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ]
   },
@@ -1053,7 +1153,51 @@
         "label": "터키어"
       }
     ],
-    "menuGroups": "그룹"
+    "menuGroups": "그룹",
+    "level": "레벨",
+    "memberRole": "멤버",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
+    ]
   },
   "GuildCalendar": {
     "today": "오늘",

@@ -9,6 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
+import { cn } from '@/lib/admin/utils/cn';
 import { ChevronLeft, ChevronDown, Sword, AlertCircle } from 'lucide-react';
 
 const fadeUp = {
@@ -16,7 +17,7 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 };
 
-type ClassOption = { value: string; label: string };
+type ClassOption = { value: string; label: string; icon?: string };
 
 export default function CreateCharacterPage() {
   const t = useTranslations('CharacterCreate');
@@ -62,7 +63,7 @@ export default function CreateCharacterPage() {
       await addDoc(collection(getFirebaseDb(), COLLECTIONS.CHARACTERS), {
         ownerId: uid,
         name: name.trim(),
-        className: (className || classOptions[0]?.value) ?? 'warrior',
+        className: (className || classOptions[0]?.value) ?? 'gladiator',
         game: (game || gameOptions[0]?.value) ?? 'aion2',
         level: Math.max(1, level),
         createdAt: serverTimestamp(),
@@ -155,26 +156,32 @@ export default function CreateCharacterPage() {
               <label className="block text-sm text-muted mb-1.5">
                 {t('classLabel')}
               </label>
-              <div className="relative">
-                <select
-                  value={className}
-                  onChange={(e) => setClassName(e.target.value)}
-                  className="w-full h-11 pl-3 pr-9 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white focus:outline-none focus:border-accent/50 transition-colors appearance-none"
-                >
-                  {classOptions.map((c) => (
-                    <option
+              <div className="grid grid-cols-2 gap-2">
+                {classOptions.map((c) => {
+                  const selected = className === c.value;
+                  return (
+                    <button
                       key={c.value}
-                      value={c.value}
-                      className="bg-[#0a1122]"
+                      type="button"
+                      onClick={() => setClassName(c.value)}
+                      className={cn(
+                        'flex items-center gap-2.5 h-11 px-3 rounded-lg border text-sm transition-all duration-200',
+                        selected
+                          ? 'bg-accent/15 border-accent/40 text-white'
+                          : 'bg-[#0a1122] border-[rgba(38,51,86,0.5)] text-muted hover:text-white hover:border-accent/30',
+                      )}
                     >
-                      {c.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={16}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
-                />
+                      {c.icon && (
+                        <img
+                          src={c.icon}
+                          alt={c.label}
+                          className="w-7 h-7 rounded-md object-cover"
+                        />
+                      )}
+                      <span className="truncate">{c.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

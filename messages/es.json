@@ -685,26 +685,58 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "Guerrero"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "Mago"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "Pícaro"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "Cazador"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "Clérigo"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
-    ]
+    ],
+    "memberOfGuild": "Miembro de {name}",
+    "noGuild": "Sin gremio",
+    "joinGuild": "Unirse a un gremio",
+    "manageGuild": "Gestionar gremio",
+    "leaveGuild": "Salir del gremio",
+    "joinModalTitle": "Unirse a un gremio",
+    "joinModalSub": "Elige un gremio para {name}",
+    "loadingGuilds": "Cargando gremios...",
+    "noOpenGuilds": "No se encontró ningún gremio con reclutamiento abierto.",
+    "join": "Entrar",
+    "joinError": "No se pudo unir al gremio. Inténtalo de nuevo.",
+    "leaveError": "No se pudo salir del gremio. Inténtalo de nuevo."
   },
   "CharacterCreate": {
     "title": "Crear Personaje",
@@ -720,24 +752,44 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "Guerrero"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "Mago"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "Pícaro"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "Cazador"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "Clérigo"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ],
     "classLabel": "Clase",
@@ -863,6 +915,54 @@
       {
         "value": "tr",
         "label": "Turco"
+      }
+    ],
+    "leaderCharacterLabel": "Personaje líder",
+    "leaderCharacterHint": "Será el líder y aparecerá en la lista de miembros.",
+    "leaderRequired": "Selecciona un personaje para liderar el gremio.",
+    "noCharacters": "Todavía no tienes personajes.",
+    "createCharacterFirst": "Crear personaje",
+    "loadingCharacters": "Cargando personajes...",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ]
   },
@@ -1053,7 +1153,51 @@
         "label": "Turco"
       }
     ],
-    "menuGroups": "Grupos"
+    "menuGroups": "Grupos",
+    "level": "Nivel",
+    "memberRole": "Miembro",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
+    ]
   },
   "GuildCalendar": {
     "today": "Hoy",

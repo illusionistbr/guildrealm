@@ -29,7 +29,7 @@ service cloud.firestore {
       return isSignedIn() &&
         request.auth.uid in
         get(/databases/$(database)/documents/guilds/$(guildId))
-          .data.members;
+          .data.memberOwnerIds;
     }
 
     // ============ USUARIOS ============
@@ -56,7 +56,10 @@ service cloud.firestore {
     match /guilds/{guildId} {
       allow read: if true;
       allow create: if isSignedIn() &&
-        request.resource.data.ownerId == request.auth.uid;
+        request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.ownerCharacterId is string &&
+        get(/databases/$(database)/documents/characters/$(request.resource.data.ownerCharacterId))
+          .data.ownerId == request.auth.uid;
       allow update: if isSignedIn() &&
         (request.resource.data.ownerId == request.auth.uid ||
          resource.data.ownerId == request.auth.uid ||

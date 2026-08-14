@@ -685,26 +685,58 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "战士"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "法师"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "盗贼"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "猎人"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "牧师"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
-    ]
+    ],
+    "memberOfGuild": "{name} 的成员",
+    "noGuild": "无公会",
+    "joinGuild": "加入公会",
+    "manageGuild": "管理公会",
+    "leaveGuild": "退出公会",
+    "joinModalTitle": "加入公会",
+    "joinModalSub": "为 {name} 选择公会",
+    "loadingGuilds": "正在加载公会...",
+    "noOpenGuilds": "未找到正在招人的公会。",
+    "join": "加入",
+    "joinError": "无法加入公会。请重试。",
+    "leaveError": "无法退出公会。请重试。"
   },
   "CharacterCreate": {
     "title": "创建角色",
@@ -720,24 +752,44 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "战士"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "法师"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "盗贼"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "猎人"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "牧师"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ],
     "classLabel": "职业",
@@ -863,6 +915,54 @@
       {
         "value": "tr",
         "label": "土耳其语"
+      }
+    ],
+    "leaderCharacterLabel": "会长角色",
+    "leaderCharacterHint": "将成为会长并显示在成员列表中。",
+    "leaderRequired": "请选择领导公会的角色。",
+    "noCharacters": "您还没有角色。",
+    "createCharacterFirst": "创建角色",
+    "loadingCharacters": "正在加载角色...",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ]
   },
@@ -1053,7 +1153,51 @@
         "label": "土耳其语"
       }
     ],
-    "menuGroups": "队伍"
+    "menuGroups": "队伍",
+    "level": "等级",
+    "memberRole": "成员",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
+    ]
   },
   "GuildCalendar": {
     "today": "今天",

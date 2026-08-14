@@ -618,13 +618,28 @@
     "retry": "Try again",
     "createFirstCharacter": "Create your first character",
     "createFirstGuild": "Create your first guild",
+    "memberOfGuild": "Member of {name}",
+    "noGuild": "No guild",
+    "joinGuild": "Join a guild",
+    "manageGuild": "Manage guild",
+    "leaveGuild": "Leave guild",
+    "joinModalTitle": "Join a guild",
+    "joinModalSub": "Pick a guild for {name}",
+    "loadingGuilds": "Loading guilds...",
+    "noOpenGuilds": "No guild with open recruitment was found.",
+    "join": "Join",
+    "joinError": "Couldn't join the guild. Please try again.",
+    "leaveError": "Couldn't leave the guild. Please try again.",
     "games": [{ "value": "aion2", "label": "Aion 2" }],
     "classes": [
-      { "value": "warrior", "label": "Warrior" },
-      { "value": "mage", "label": "Mage" },
-      { "value": "rogue", "label": "Rogue" },
-      { "value": "ranger", "label": "Ranger" },
-      { "value": "cleric", "label": "Cleric" }
+      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
+      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
+      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
+      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
+      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
+      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
+      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
+      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
     ]
   },
   "CharacterCreate": {
@@ -635,11 +650,14 @@
     "gameLabel": "Game",
     "games": [{ "value": "aion2", "label": "Aion 2" }],
     "classes": [
-      { "value": "warrior", "label": "Warrior" },
-      { "value": "mage", "label": "Mage" },
-      { "value": "rogue", "label": "Rogue" },
-      { "value": "ranger", "label": "Ranger" },
-      { "value": "cleric", "label": "Cleric" }
+      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
+      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
+      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
+      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
+      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
+      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
+      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
+      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
     ],
     "classLabel": "Class",
     "levelLabel": "Starting level",
@@ -688,6 +706,12 @@
     "linkCopied": "Link copied!",
     "goToPanel": "Go to guild panel",
     "leaderRole": "Leader",
+    "leaderCharacterLabel": "Leader character",
+    "leaderCharacterHint": "Will lead the guild and appear in the member list.",
+    "leaderRequired": "Pick a character to lead the guild.",
+    "noCharacters": "You don't have any characters yet.",
+    "createCharacterFirst": "Create character",
+    "loadingCharacters": "Loading characters...",
     "games": [{ "value": "aion2", "label": "Aion 2" }],
     "regions": [
       { "value": "na", "label": "North America" },
@@ -709,6 +733,16 @@
       { "value": "ko", "label": "Korean" },
       { "value": "zh", "label": "Chinese (Simplified)" },
       { "value": "tr", "label": "Turkish" }
+    ],
+    "classes": [
+      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
+      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
+      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
+      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
+      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
+      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
+      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
+      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
     ]
   },
   "GuildPage": {
@@ -766,6 +800,18 @@
     "noEvents": "No events this week.",
     "notFound": "Guild not found.",
     "membersTitle": "Members",
+    "level": "Level",
+    "memberRole": "Member",
+    "classes": [
+      { "value": "gladiator", "label": "Gladiator", "icon": "/games/aion2/classes/Gladiator.webp" },
+      { "value": "templar", "label": "Templar", "icon": "/games/aion2/classes/Templar.webp" },
+      { "value": "assassin", "label": "Assassin", "icon": "/games/aion2/classes/Assassin.webp" },
+      { "value": "ranger", "label": "Ranger", "icon": "/games/aion2/classes/Ranger.webp" },
+      { "value": "sorcerer", "label": "Sorcerer", "icon": "/games/aion2/classes/Sorcerer.webp" },
+      { "value": "elementalist", "label": "Elementalist", "icon": "/games/aion2/classes/Elementalist.webp" },
+      { "value": "cleric", "label": "Cleric", "icon": "/games/aion2/classes/Cleric.webp" },
+      { "value": "chanter", "label": "Chanter", "icon": "/games/aion2/classes/Chanter.webp" }
+    ],
     "infoTitle": "Guild Information",
     "leader": "Leader",
     "membersCount": "{count} members",

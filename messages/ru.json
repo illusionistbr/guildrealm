@@ -685,26 +685,58 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "Воин"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "Маг"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "Разбойник"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "Охотник"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "Жрец"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
-    ]
+    ],
+    "memberOfGuild": "Участник {name}",
+    "noGuild": "Нет гильдии",
+    "joinGuild": "Вступить в гильдию",
+    "manageGuild": "Управлять гильдией",
+    "leaveGuild": "Покинуть гильдию",
+    "joinModalTitle": "Вступить в гильдию",
+    "joinModalSub": "Выберите гильдию для {name}",
+    "loadingGuilds": "Загрузка гильдий...",
+    "noOpenGuilds": "Гильдии с открытым набором не найдены.",
+    "join": "Вступить",
+    "joinError": "Не удалось вступить в гильдию. Попробуйте снова.",
+    "leaveError": "Не удалось покинуть гильдию. Попробуйте снова."
   },
   "CharacterCreate": {
     "title": "Создание персонажа",
@@ -720,24 +752,44 @@
     ],
     "classes": [
       {
-        "value": "warrior",
-        "label": "Воин"
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
       },
       {
-        "value": "mage",
-        "label": "Маг"
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
       },
       {
-        "value": "rogue",
-        "label": "Разбойник"
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
       },
       {
         "value": "ranger",
-        "label": "Охотник"
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
       },
       {
         "value": "cleric",
-        "label": "Жрец"
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ],
     "classLabel": "Класс",
@@ -863,6 +915,54 @@
       {
         "value": "tr",
         "label": "Турецкий"
+      }
+    ],
+    "leaderCharacterLabel": "Персонаж-лидер",
+    "leaderCharacterHint": "Станет лидером и появится в списке участников.",
+    "leaderRequired": "Выберите персонажа, который возглавит гильдию.",
+    "noCharacters": "У вас пока нет персонажей.",
+    "createCharacterFirst": "Создать персонажа",
+    "loadingCharacters": "Загрузка персонажей...",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
       }
     ]
   },
@@ -1053,7 +1153,51 @@
         "label": "Турецкий"
       }
     ],
-    "menuGroups": "Группы"
+    "menuGroups": "Группы",
+    "level": "Уровень",
+    "memberRole": "Участник",
+    "classes": [
+      {
+        "value": "gladiator",
+        "label": "Gladiator",
+        "icon": "/games/aion2/classes/Gladiator.webp"
+      },
+      {
+        "value": "templar",
+        "label": "Templar",
+        "icon": "/games/aion2/classes/Templar.webp"
+      },
+      {
+        "value": "assassin",
+        "label": "Assassin",
+        "icon": "/games/aion2/classes/Assassin.webp"
+      },
+      {
+        "value": "ranger",
+        "label": "Ranger",
+        "icon": "/games/aion2/classes/Ranger.webp"
+      },
+      {
+        "value": "sorcerer",
+        "label": "Sorcerer",
+        "icon": "/games/aion2/classes/Sorcerer.webp"
+      },
+      {
+        "value": "elementalist",
+        "label": "Elementalist",
+        "icon": "/games/aion2/classes/Elementalist.webp"
+      },
+      {
+        "value": "cleric",
+        "label": "Cleric",
+        "icon": "/games/aion2/classes/Cleric.webp"
+      },
+      {
+        "value": "chanter",
+        "label": "Chanter",
+        "icon": "/games/aion2/classes/Chanter.webp"
+      }
+    ]
   },
   "GuildCalendar": {
     "today": "Сегодня",

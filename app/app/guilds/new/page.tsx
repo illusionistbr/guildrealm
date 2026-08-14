@@ -2,11 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import {
   getDownloadURL,
   ref as storageRef,
@@ -28,6 +37,7 @@ import {
   Copy,
   ImagePlus,
   Shield,
+  Sword,
   Users,
   X,
 } from 'lucide-react';
@@ -57,15 +67,29 @@ type GuildForm = {
   languages: string[];
 };
 
+type CharacterOption = {
+  id: string;
+  name?: string;
+  className?: string;
+  game?: string;
+  level?: number;
+  guildId?: string;
+};
+
 const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 
 export default function CreateGuildPage() {
   const t = useTranslations('GuildCreate');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const characterParam = searchParams.get('character');
 
   const [uid, setUid] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [characters, setCharacters] = useState<CharacterOption[]>([]);
+  const [charactersLoading, setCharactersLoading] = useState(true);
+  const [leaderCharacter, setLeaderCharacter] = useState<string>('');
   const [step, setStep] = useState<'form' | 'preview' | 'created'>('form');
   const [form, setForm] = useState<GuildForm>({
     name: '',
@@ -100,6 +124,44 @@ export default function CreateGuildPage() {
     });
     return unsub;
   }, [router]);
+
+  useEffect(() => {
+    if (!uid) return;
+    let disposed = false;
+
+    const load = async () => {
+      setCharactersLoading(true);
+      try {
+        const snap = await getDocs(
+          query(
+            collection(getFirebaseDb(), COLLECTIONS.CHARACTERS),
+            where('ownerId', '==', uid),
+          ),
+        );
+        const list: CharacterOption[] = [];
+        snap.forEach((d) => {
+          list.push({ id: d.id, ...d.data() } as CharacterOption);
+        });
+        if (disposed) return;
+        setCharacters(list);
+        if (!leaderCharacter) {
+          const preferred = list.find((c) => c.id === characterParam);
+          setLeaderCharacter(
+            (preferred ?? list[0])?.id ?? '',
+          );
+        }
+      } catch {
+        // erro de carregamento: mantém lista vazia
+      }
+      if (!disposed) setCharactersLoading(false);
+    };
+
+    load();
+    return () => {
+      disposed = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid]);
 
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -142,11 +204,17 @@ export default function CreateGuildPage() {
       setError(t('nameRequired'));
       return;
     }
+    if (!leaderCharacter) {
+      setError(t('leaderRequired'));
+      return;
+    }
     setStep('preview');
   };
 
   const handleCreate = async () => {
-    if (!uid) return;
+    if (!uid || !leaderCharacter) return;
+    const leader = characters.find((c) => c.id === leaderCharacter);
+    if (!leader) return;
     setCreating(true);
     setError('');
 
@@ -170,6 +238,9 @@ export default function CreateGuildPage() {
       await setDoc(guildRef, {
         ownerId: uid,
         ownerName: getFirebaseAuth().currentUser?.displayName?.trim() || null,
+        ownerCharacterId: leader.id,
+        ownerCharacterName: leader.name?.trim() || null,
+        ownerCharacterClass: leader.className ?? null,
         name: form.name.trim(),
         game: form.game,
         faction: form.faction,
@@ -177,8 +248,14 @@ export default function CreateGuildPage() {
         region: form.region,
         languages: form.languages,
         logoUrl,
-        members: [uid],
+        members: [leader.id],
+        memberOwnerIds: [uid],
         createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      await updateDoc(doc(db, COLLECTIONS.CHARACTERS, leader.id), {
+        guildId: guildRef.id,
         updatedAt: serverTimestamp(),
       });
 
@@ -255,6 +332,10 @@ export default function CreateGuildPage() {
           error={error}
           ready={ready}
           logoInput={logoInput}
+          characters={characters}
+          charactersLoading={charactersLoading}
+          leaderCharacter={leaderCharacter}
+          onLeaderChange={setLeaderCharacter}
           onLogoSelect={handleLogoSelect}
           onLogoRemove={handleLogoRemove}
           onToggleLanguage={toggleLanguage}
@@ -270,6 +351,9 @@ export default function CreateGuildPage() {
           regions={regions}
           languages={languages}
           logoPreview={logoPreview}
+          leaderName={
+            characters.find((c) => c.id === leaderCharacter)?.name ?? ''
+          }
           creating={creating}
           error={error}
           onEdit={() => setStep('form')}
@@ -307,6 +391,10 @@ function FormStep({
   error,
   ready,
   logoInput,
+  characters,
+  charactersLoading,
+  leaderCharacter,
+  onLeaderChange,
   onLogoSelect,
   onLogoRemove,
   onToggleLanguage,
@@ -324,11 +412,18 @@ function FormStep({
   error: string;
   ready: boolean;
   logoInput: React.RefObject<HTMLInputElement | null>;
+  characters: CharacterOption[];
+  charactersLoading: boolean;
+  leaderCharacter: string;
+  onLeaderChange: (value: string) => void;
   onLogoSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onLogoRemove: () => void;
   onToggleLanguage: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }) {
+  const classOptions = useMemo(() => t.raw('classes') as Option[], [t]);
+  const leader = characters.find((c) => c.id === leaderCharacter);
+
   return (
     <motion.div
       variants={fadeUp}
@@ -341,6 +436,66 @@ function FormStep({
       )}
 
       <form onSubmit={onSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm text-muted mb-1.5">
+            {t('leaderCharacterLabel')}
+          </label>
+          {charactersLoading ? (
+            <div className="h-11 rounded-lg border border-[rgba(38,51,86,0.5)] bg-[#0a1122] flex items-center justify-center text-sm text-muted">
+              {t('loadingCharacters')}
+            </div>
+          ) : characters.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-[rgba(38,51,86,0.5)] bg-[#0a1122] p-4 flex flex-col items-center text-center">
+              <Sword size={20} className="text-muted mb-2" />
+              <p className="text-sm text-muted">{t('noCharacters')}</p>
+              <Link
+                href="/app/characters/new"
+                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors"
+              >
+                <Sword size={14} /> {t('createCharacterFirst')}
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="relative">
+                <select
+                  value={leaderCharacter}
+                  onChange={(e) => onLeaderChange(e.target.value)}
+                  className="w-full h-11 pl-3 pr-9 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white focus:outline-none focus:border-accent/50 transition-colors appearance-none"
+                >
+                  {characters.map((c) => (
+                    <option
+                      key={c.id}
+                      value={c.id}
+                      className="bg-[#0a1122]"
+                    >
+                      {c.name} — Lv. {c.level ?? 1}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                />
+              </div>
+              {leader && (
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-xs text-muted flex items-center gap-1">
+                    <Sword size={12} className="text-accent" />
+                    {leader.className
+                      ? (classOptions.find((c) => c.value === leader.className)?.label ??
+                        leader.className)
+                      : ''}
+                  </span>
+                  <span className="text-xs text-muted">
+                    {t('leaderCharacterHint')}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
         <div>
           <label className="block text-sm text-muted mb-1.5">
             {t('nameLabel')}
@@ -534,6 +689,7 @@ function PreviewStep({
   regions,
   languages,
   logoPreview,
+  leaderName,
   creating,
   error,
   onEdit,
@@ -545,6 +701,7 @@ function PreviewStep({
   regions: Option[];
   languages: Option[];
   logoPreview: string | null;
+  leaderName: string;
   creating: boolean;
   error: string;
   onEdit: () => void;
@@ -625,8 +782,8 @@ function PreviewStep({
             <span className="text-muted flex items-center gap-1.5">
               <Users size={14} /> 1
             </span>
-            <span className="text-yellow-400 text-xs px-2 py-0.5 rounded bg-yellow-400/10">
-              {t('leaderRole')}
+            <span className="text-yellow-400 text-xs px-2 py-0.5 rounded bg-yellow-400/10 flex items-center gap-1">
+              <Shield size={11} /> {leaderName || t('leaderRole')}
             </span>
           </div>
         </div>
