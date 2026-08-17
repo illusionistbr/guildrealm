@@ -18,11 +18,16 @@ Não há processo rodando 24/7, nem token de bot, nem custo extra.
 | Evento no sistema                    | Mensagem no Discord                     |
 | ------------------------------------ | --------------------------------------- |
 | Evento criado                        | 📅 Novo evento: {título}                |
+| Faltando 5 minutos para o início     | ⏰ {título} começa em 5 minutos!         |
+| Evento iniciado                      | 🚀 {título} iniciou!                    |
+| Evento finalizado                    | 🏁 {título} finalizou!                  |
 | Evento cancelado                     | 🚫 Evento cancelado: {título}           |
 | Evento concluído                     | ✅ Evento concluído: {título}           |
 | Jogador confirmou presença           | ✅ {jogador} confirmou presença         |
 | Jogador saiu do evento               | ↩️ {jogador} saiu do evento             |
-| Evento começa em 15 minutos (scheduler a cada 5 min) | ⏰ {título} começa em 15 minutos! |
+
+> As notificações de "iniciou" e "finalizou" são disparadas por horário
+> (scheduler a cada 5 minutos), comparando `start`/`end` do evento com o relógio.
 
 ## Configurar o webhook no Discord
 

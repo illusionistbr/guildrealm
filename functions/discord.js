@@ -15,7 +15,9 @@ const COLOR_GREEN = 0x22c55e;
 const COLOR_RED = 0xef4444;
 const COLOR_ORANGE = 0xf97316;
 
-const START_WINDOW_MINUTES = 15;
+const START_WINDOW_MINUTES = 5;
+const STARTED_WINDOW_MINUTES = 10;
+const ENDED_WINDOW_MINUTES = 30;
 
 function discordSettingsDoc(guildId) {
   return admin.firestore().doc(`guilds/${guildId}/settings/discord`);
@@ -163,6 +165,19 @@ exports.discordEventStatusChanged = onDocumentUpdated(
       webhook,
       buildEventEmbed(after, guildName, color, title),
     );
+    if (after.status === 'completed') {
+      await event.data.after.ref.update({
+        endedNotified: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } else if (after.status === 'cancelled') {
+      await event.data.after.ref.update({
+        startNotified: false,
+        startedNotified: false,
+        endedNotified: false,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
   },
 );
 
@@ -226,45 +241,127 @@ exports.discordParticipantLeft = onDocumentDeleted(
   },
 );
 
-// Lembrete: evento começa em 15 minutos (roda a cada 5 minutos)
+// Lembrete de início (5 min antes), início do evento e término do evento.
+// Roda a cada 5 minutos; cada notificação dispara uma única vez por evento
+// (flags startNotified / startedNotified / endedNotified no documento).
 exports.discordEventsStartingSoon = onSchedule('every 5 minutes', async () => {
   const now = admin.firestore.Timestamp.now();
-  const windowEnd = admin.firestore.Timestamp.fromMillis(
-    now.toMillis() + START_WINDOW_MINUTES * 60 * 1000,
-  );
-  let snap;
-  try {
-    snap = await admin
-      .firestore()
-      .collection('guild_events')
-      .where('start', '>=', now)
-      .where('start', '<=', windowEnd)
-      .get();
-  } catch (err) {
-    console.warn('discordEventsStartingSoon query error:', err.message);
-    return;
+  const guildNameCache = new Map();
+
+  async function queryEvents(startAfter, startBefore) {
+    try {
+      return await admin
+        .firestore()
+        .collection('guild_events')
+        .where('start', '>=', startAfter)
+        .where('start', '<=', startBefore)
+        .get();
+    } catch (err) {
+      console.warn('discordEventsStartingSoon query error:', err.message);
+      return null;
+    }
   }
 
-  for (const doc of snap.docs) {
-    const event = doc.data();
-    if (event.status !== 'active' || event.startNotified === true) continue;
-    const guildId = event.guildId;
-    if (!guildId) continue;
-    const webhook = await getGuildDiscordWebhook(guildId);
-    if (!webhook) continue;
-    const guildName = await getGuildName(guildId);
-    await sendDiscordWebhook(
-      webhook,
-      buildEventEmbed(
-        event,
-        guildName,
-        COLOR_ORANGE,
-        `⏰ ${event.title ?? 'Evento'} começa em ${START_WINDOW_MINUTES} minutos!`,
-      ),
-    );
-    await doc.ref.update({
-      startNotified: true,
+  async function queryEndedEvents(endAfter, endBefore) {
+    try {
+      return await admin
+        .firestore()
+        .collection('guild_events')
+        .where('end', '>=', endAfter)
+        .where('end', '<=', endBefore)
+        .get();
+    } catch (err) {
+      console.warn('discordEventsEnded query error:', err.message);
+      return null;
+    }
+  }
+
+  async function markNotified(docRef, flag) {
+    await docRef.update({
+      [flag]: true,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+  }
+
+  // 1) Lembrete: evento começa em 5 minutos
+  const remindBefore = admin.firestore.Timestamp.fromMillis(
+    now.toMillis() + START_WINDOW_MINUTES * 60 * 1000,
+  );
+  const upcoming = await queryEvents(now, remindBefore);
+  if (upcoming) {
+    for (const doc of upcoming.docs) {
+      const event = doc.data();
+      if (event.status !== 'active' || event.startNotified === true) continue;
+      const guildId = event.guildId;
+      if (!guildId) continue;
+      const webhook = await getGuildDiscordWebhook(guildId);
+      if (!webhook) continue;
+      if (!guildNameCache.has(guildId)) guildNameCache.set(guildId, await getGuildName(guildId));
+      await sendDiscordWebhook(
+        webhook,
+        buildEventEmbed(
+          event,
+          guildNameCache.get(guildId),
+          COLOR_ORANGE,
+          `⏰ ${event.title ?? 'Evento'} começa em ${START_WINDOW_MINUTES} minutos!`,
+        ),
+      );
+      await markNotified(doc.ref, 'startNotified');
+    }
+  }
+
+  // 2) Evento iniciado (start nos últimos minutos; evita notificar eventos
+  // antigos criados com data no passado)
+  const startedAfter = admin.firestore.Timestamp.fromMillis(
+    now.toMillis() - STARTED_WINDOW_MINUTES * 60 * 1000,
+  );
+  const started = await queryEvents(startedAfter, now);
+  if (started) {
+    for (const doc of started.docs) {
+      const event = doc.data();
+      if (event.status !== 'active' || event.startedNotified === true) continue;
+      const guildId = event.guildId;
+      if (!guildId) continue;
+      const webhook = await getGuildDiscordWebhook(guildId);
+      if (!webhook) continue;
+      if (!guildNameCache.has(guildId)) guildNameCache.set(guildId, await getGuildName(guildId));
+      await sendDiscordWebhook(
+        webhook,
+        buildEventEmbed(
+          event,
+          guildNameCache.get(guildId),
+          COLOR_GREEN,
+          `🚀 ${event.title ?? 'Evento'} iniciou!`,
+        ),
+      );
+      await markNotified(doc.ref, 'startedNotified');
+    }
+  }
+
+  // 3) Evento finalizado (fim do horário, ainda ativo no sistema)
+  const endedAfter = admin.firestore.Timestamp.fromMillis(
+    now.toMillis() - ENDED_WINDOW_MINUTES * 60 * 1000,
+  );
+  const ended = await queryEndedEvents(endedAfter, now);
+  if (ended) {
+    for (const doc of ended.docs) {
+      const event = doc.data();
+      if (event.status !== 'active' || event.endedNotified === true) continue;
+      const guildId = event.guildId;
+      if (!guildId) continue;
+      const webhook = await getGuildDiscordWebhook(guildId);
+      if (!webhook) continue;
+      if (!guildNameCache.has(guildId)) guildNameCache.set(guildId, await getGuildName(guildId));
+      await sendDiscordWebhook(
+        webhook,
+        buildEventEmbed(
+          event,
+          guildNameCache.get(guildId),
+          COLOR_ACCENT,
+          `🏁 ${event.title ?? 'Evento'} finalizou!`,
+        ),
+      );
+      await markNotified(doc.ref, 'endedNotified');
+    }
   }
 });
