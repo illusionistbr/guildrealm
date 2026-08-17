@@ -14,13 +14,13 @@ const actionIcons: Record<string, any> = {
 };
 
 const allLogs = [
-  { id: '1', user: 'admin@guildrealm.com', action: 'login', target: 'Sessão', details: 'Login realizado', date: '2min atrás', ip: '189.45.67.89' },
-  { id: '2', user: 'admin@guildrealm.com', action: 'update', target: 'Jogo: Throne and Liberty', details: 'Descrição alterada', date: '15min atrás', ip: '189.45.67.89' },
-  { id: '3', user: 'editor@guildrealm.com', action: 'create', target: 'Conquista: Lenda Viva', details: 'Nova conquista criada', date: '1h atrás', ip: '191.23.45.67' },
-  { id: '4', user: 'mod@guildrealm.com', action: 'update', target: 'Usuário: DarkEclipse', details: 'Status alterado para suspenso', date: '2h atrás', ip: '177.89.01.23' },
-  { id: '5', user: 'admin@guildrealm.com', action: 'delete', target: 'Guilda: Storm Legion', details: 'Guilda banida', date: '3h atrás', ip: '189.45.67.89' },
-  { id: '6', user: 'editor@guildrealm.com', action: 'update', target: 'CMS: Hero Section', details: 'Título atualizado', date: '5h atrás', ip: '191.23.45.67' },
-  { id: '7', user: 'admin@guildrealm.com', action: 'logout', target: 'Sessão', details: 'Logout', date: '8h atrás', ip: '189.45.67.89' },
+  { id: '1', user: 'admin@clanforge.com', action: 'login', target: 'Sessão', details: 'Login realizado', date: '2min atrás', ip: '189.45.67.89' },
+  { id: '2', user: 'admin@clanforge.com', action: 'update', target: 'Jogo: Throne and Liberty', details: 'Descrição alterada', date: '15min atrás', ip: '189.45.67.89' },
+  { id: '3', user: 'editor@clanforge.com', action: 'create', target: 'Conquista: Lenda Viva', details: 'Nova conquista criada', date: '1h atrás', ip: '191.23.45.67' },
+  { id: '4', user: 'mod@clanforge.com', action: 'update', target: 'Usuário: DarkEclipse', details: 'Status alterado para suspenso', date: '2h atrás', ip: '177.89.01.23' },
+  { id: '5', user: 'admin@clanforge.com', action: 'delete', target: 'Guilda: Storm Legion', details: 'Guilda banida', date: '3h atrás', ip: '189.45.67.89' },
+  { id: '6', user: 'editor@clanforge.com', action: 'update', target: 'CMS: Hero Section', details: 'Título atualizado', date: '5h atrás', ip: '191.23.45.67' },
+  { id: '7', user: 'admin@clanforge.com', action: 'logout', target: 'Sessão', details: 'Logout', date: '8h atrás', ip: '189.45.67.89' },
 ];
 
 export default function LogsPage() {

@@ -1,6 +1,6 @@
 {
   "name": "functions",
-  "description": "Cloud Functions for Firebase - GuildRealm",
+  "description": "Cloud Functions for Firebase - ClanForge",
   "engines": {
     "node": "22"
   },

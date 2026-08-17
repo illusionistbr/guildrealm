@@ -9,6 +9,9 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { getFirebaseApp, getFirebaseAuth } from '@/lib/admin/firebase/client';
+import { Turnstile } from '@/components/signup/Turnstile';
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const benefitIcons = [UsersRound, Trophy, ShieldCheck] as const;
 const fieldIcons = [UsersRound, Mail, Mail, ShieldCheck, ShieldCheck] as const;
@@ -23,6 +26,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   'auth/operation-not-allowed': 'O cadastro está temporariamente desativado. Ative o provedor E-mail/Senha no Firebase Console.',
   'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.',
   'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
+  'signup-rate-limited': 'Muitas tentativas de cadastro neste dispositivo. Aguarde alguns minutos e tente novamente.',
+  'signup-turnstile-invalid': 'Falha na verificação de segurança. Tente novamente.',
 };
 
 export default function Signup() {
@@ -38,6 +43,9 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileNonce, setTurnstileNonce] = useState(0);
 
   const setValue = (index: number, value: string) => {
     setValues((prev) => prev.map((v, i) => (i === index ? value : v)));
@@ -62,15 +70,33 @@ export default function Signup() {
     setError('');
     setSuccess('');
 
+    // Honeypot: campo oculto que humanos não veem. Se preenchido, é bot —
+    // simula sucesso sem criar a conta (não revela a armadilha).
+    if (honeypot.trim()) {
+      setSuccess('Conta criada com sucesso! Enviamos um e-mail de confirmação. Redirecionando para o login...');
+      setTimeout(() => router.push('/login'), 3000);
+      return;
+    }
+
     const validationError = validate();
     if (validationError) {
       setError(validationError);
       return;
     }
 
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError('Resolva o desafio de segurança para continuar.');
+      return;
+    }
+
     setLoading(true);
     const [nickname, email, , password] = values;
     try {
+      // Verificação server-side (rate limit + Turnstile) antes de criar a conta
+      if (TURNSTILE_SITE_KEY) {
+        const fn = httpsCallable(getFunctions(getFirebaseApp()), 'verifySignup');
+        await fn({ token: turnstileToken ?? '', email: email.trim() });
+      }
       const userCredential = await createUserWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
       const user = userCredential.user;
 
@@ -90,7 +116,11 @@ export default function Signup() {
       setSuccess('Conta criada com sucesso! Enviamos um e-mail de confirmação. Redirecionando para o login...');
       setTimeout(() => router.push('/login'), 3000);
     } catch (err: unknown) {
-      const code = (err as { code?: string })?.code ?? '';
+      const code = ((err as { code?: string })?.code ?? '').replace('functions/', '');
+      if (code === 'signup-turnstile-invalid') {
+        setTurnstileNonce((n) => n + 1);
+        setTurnstileToken(null);
+      }
       setError(ERROR_MESSAGES[code] ?? 'Erro ao criar conta. Tente novamente em instantes.');
     } finally {
       setLoading(false);
@@ -126,6 +156,18 @@ export default function Signup() {
             <div><h2>{t('formTitle')}</h2><p>{t('formText')}</p></div>
           </div>
           <form onSubmit={handleSubmit} noValidate>
+            <div className="hp-field" aria-hidden="true">
+              <label htmlFor="hp-website">Website</label>
+              <input
+                id="hp-website"
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
             <div className="signup-fields">
               {fields.map(({ label, placeholder, hint, isPassword }, index) => {
                 const Icon = fieldIcons[index];
@@ -189,6 +231,16 @@ export default function Signup() {
             {success && (
               <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm">
                 <CheckCircle2 size={16} className="shrink-0" /> {success}
+              </div>
+            )}
+
+            {TURNSTILE_SITE_KEY && (
+              <div className="mb-4">
+                <Turnstile
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onToken={setTurnstileToken}
+                  resetNonce={turnstileNonce}
+                />
               </div>
             )}
 

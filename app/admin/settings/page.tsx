@@ -66,8 +66,8 @@ export default function SettingsPage() {
         <div className="bg-[#0a1122] border border-[rgba(38,51,86,0.7)] rounded-xl p-6 space-y-5">
           {activeTab === 'general' && (
             <>
-              <Field label="Nome da Plataforma" value="GuildRealm" />
-              <Field label="URL Base" value="https://guildrealm.com" />
+              <Field label="Nome da Plataforma" value="ClanForge" />
+              <Field label="URL Base" value="https://clanforge.com" />
               <Field label="Idioma Padrão" value="pt-BR" type="select" options={['pt-BR', 'en', 'es', 'ko', 'ja', 'ru', 'zh']} />
               <Field label="Timezone" value="America/Sao_Paulo" type="select" options={['America/Sao_Paulo', 'America/New_York', 'Europe/London', 'Asia/Tokyo']} />
               <Field label="Modo Manutenção" value="Desativado" type="select" options={['Ativado', 'Desativado']} />
@@ -84,11 +84,11 @@ export default function SettingsPage() {
           )}
           {activeTab === 'social' && (
             <>
-              <Field label="Discord" value="https://discord.gg/guildrealm" />
-              <Field label="Twitter / X" value="https://x.com/guildrealm" />
-              <Field label="Instagram" value="https://instagram.com/guildrealm" />
-              <Field label="YouTube" value="https://youtube.com/@guildrealm" />
-              <Field label="TikTok" value="https://tiktok.com/@guildrealm" />
+              <Field label="Discord" value="https://discord.gg/clanforge" />
+              <Field label="Twitter / X" value="https://x.com/clanforge" />
+              <Field label="Instagram" value="https://instagram.com/clanforge" />
+              <Field label="YouTube" value="https://youtube.com/@clanforge" />
+              <Field label="TikTok" value="https://tiktok.com/@clanforge" />
             </>
           )}
           {(activeTab === 'email' || activeTab === 'security' || activeTab === 'integrations' || activeTab === 'billing' || activeTab === 'seo') && (

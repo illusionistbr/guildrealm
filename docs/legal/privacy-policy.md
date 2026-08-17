@@ -11,25 +11,25 @@ approved_by:
 requires_translation: true
 ---
 
-# Política de Privacidade — GuildRealm
+# Política de Privacidade — ClanForge
 
 ---
 
 ## Introdução
 
-A GuildRealm leva sua privacidade a sério.
+A ClanForge leva sua privacidade a sério.
 
-Esta Política explica quais informações coletamos, por que coletamos, como utilizamos, compartilhamos e protegemos seus dados pessoais quando você utiliza a plataforma GuildRealm.
+Esta Política explica quais informações coletamos, por que coletamos, como utilizamos, compartilhamos e protegemos seus dados pessoais quando você utiliza a plataforma ClanForge.
 
 Recomendamos a leitura completa deste documento. Se você tiver dúvidas, entre em contato conosco através dos canais indicados ao final.
 
-Ao criar uma conta ou utilizar a GuildRealm, você confirma que leu e entendeu esta Política.
+Ao criar uma conta ou utilizar a ClanForge, você confirma que leu e entendeu esta Política.
 
 ---
 
 ## Quem Somos
 
-GuildRealm é a controladora responsável pelo tratamento dos dados pessoais coletados na plataforma.
+ClanForge é a controladora responsável pelo tratamento dos dados pessoais coletados na plataforma.
 
 **Razão Social:** [Razão Social a definir]
 
@@ -37,20 +37,20 @@ GuildRealm é a controladora responsável pelo tratamento dos dados pessoais col
 
 **Endereço:** [Endereço completo a definir]
 
-**Contato:** privacy@guildrealm.com
+**Contato:** privacy@clanforge.com
 
 ---
 
 ## Quais Dados Coletamos
 
-A GuildRealm coleta diferentes tipos de dados para que a plataforma funcione corretamente, seja segura e ofereça uma boa experiência.
+A ClanForge coleta diferentes tipos de dados para que a plataforma funcione corretamente, seja segura e ofereça uma boa experiência.
 
 ### Dados Fornecidos por Você
 
 Estes são os dados que você nos envia voluntariamente ao criar sua conta ou utilizar a plataforma:
 
 - **Nome** — utilizado para personalizar seu perfil e identificá-lo na plataforma
-- **Nickname (nome de usuário)** — seu identificador público dentro da GuildRealm
+- **Nickname (nome de usuário)** — seu identificador público dentro da ClanForge
 - **E-mail** — utilizado para criar sua conta, enviar notificações importantes e recuperação de senha
 - **Senha** — armazenada de forma criptografada (hash). Nunca armazenamos sua senha em texto puro
 - **Foto / Avatar** — imagem que você escolhe para representá-lo publicamente
@@ -78,7 +78,7 @@ Estes dados são criados naturalmente conforme você interage com a plataforma:
 
 ### Dados Coletados Automaticamente
 
-Quando você acessa a GuildRealm, algumas informações são coletadas automaticamente pelo funcionamento padrão da internet e dos serviços que utilizamos:
+Quando você acessa a ClanForge, algumas informações são coletadas automaticamente pelo funcionamento padrão da internet e dos serviços que utilizamos:
 
 - **Endereço IP** — utilizado para segurança, proteção contra abuso e análises
 - **Navegador** — identificação do navegador utilizado (Chrome, Firefox, Safari, etc.)
@@ -119,7 +119,7 @@ Nós **não** utilizamos seus dados para:
 
 ## Base Legal (LGPD)
 
-A GuildRealm trata seus dados pessoais em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD).
+A ClanForge trata seus dados pessoais em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD).
 
 As bases legais que autorizam o tratamento dos seus dados incluem:
 
@@ -128,7 +128,7 @@ As bases legais que autorizam o tratamento dos seus dados incluem:
 | **Consentimento** (art. 7º, I) | Quando você aceita nossa Política de Privacidade e, quando exigido, cookies não essenciais |
 | **Execução de contrato** (art. 7º, V) | Para criar sua conta e fornecer os serviços da plataforma |
 | **Cumprimento de obrigação legal ou regulatória** (art. 7º, II) | Para atender exigências legais, como retenção de dados fiscais e atendimento a ordens judiciais |
-| **Exercício regular de direitos** (art. 7º, VI) | Para proteger os direitos da GuildRealm e de seus usuários |
+| **Exercício regular de direitos** (art. 7º, VI) | Para proteger os direitos da ClanForge e de seus usuários |
 | **Legítimo interesse** (art. 7º, IX) | Para atividades como segurança da plataforma, prevenção a fraudes e melhoria dos serviços, desde que seus direitos e liberdades fundamentais não sejam prejudicados |
 
 Você pode revogar seu consentimento a qualquer momento, mas isso pode impactar sua capacidade de utilizar determinadas funcionalidades da plataforma.
@@ -137,7 +137,7 @@ Você pode revogar seu consentimento a qualquer momento, mas isso pode impactar 
 
 ## Compartilhamento de Dados
 
-A GuildRealm **não vende** seus dados pessoais para terceiros. Nunca.
+A ClanForge **não vende** seus dados pessoais para terceiros. Nunca.
 
 Podemos compartilhar seus dados nas seguintes situações:
 
@@ -150,7 +150,7 @@ Compartilhamos dados com empresas que nos auxiliam a operar a plataforma. Estes 
 Podemos compartilhar dados com autoridades públicas quando:
 
 - Exigido por lei, ordem judicial ou regulatória
-- Necessário para proteger direitos, propriedade ou segurança da GuildRealm, de usuários ou do público
+- Necessário para proteger direitos, propriedade ou segurança da ClanForge, de usuários ou do público
 - Necessário para investigar ou coibir atividades ilegais
 
 ### Com Consentimento
@@ -159,13 +159,13 @@ Compartilharemos seus dados com terceiros quando você nos autorizar expressamen
 
 ### Transferências Corporativas
 
-Em caso de fusão, aquisição, reestruturação ou venda da GuildRealm, seus dados poderão ser transferidos como parte do negócio, desde que a entidade adquirente concorde em proteger seus dados conforme esta Política.
+Em caso de fusão, aquisição, reestruturação ou venda da ClanForge, seus dados poderão ser transferidos como parte do negócio, desde que a entidade adquirente concorde em proteger seus dados conforme esta Política.
 
 ---
 
 ## Serviços de Terceiros
 
-A GuildRealm utiliza serviços de terceiros para funcionar. Cada um deles trata seus dados conforme suas próprias políticas de privacidade.
+A ClanForge utiliza serviços de terceiros para funcionar. Cada um deles trata seus dados conforme suas próprias políticas de privacidade.
 
 ### Firebase (Google)
 
@@ -234,7 +234,7 @@ Além de cookies, utilizamos armazenamento local do navegador (Local Storage) pa
 
 ## Retenção dos Dados
 
-A GuildRealm mantém seus dados pessoais armazenados pelo tempo necessário para cumprir as finalidades descritas nesta Política.
+A ClanForge mantém seus dados pessoais armazenados pelo tempo necessário para cumprir as finalidades descritas nesta Política.
 
 ### Critérios de Retenção
 
@@ -274,7 +274,7 @@ Você, como titular de dados pessoais, possui direitos garantidos pela LGPD. Exp
 
 Para exercer qualquer um destes direitos, entre em contato conosco através do e-mail:
 
-**privacy@guildrealm.com**
+**privacy@clanforge.com**
 
 Responderemos sua solicitação em até **15 dias**, conforme previsto na LGPD.
 
@@ -312,7 +312,7 @@ A exclusão completa é processada em até **30 dias** após a confirmação da 
 
 ## Segurança
 
-A GuildRealm adota medidas técnicas e organizacionais para proteger seus dados pessoais contra acessos não autorizados, destruição, perda, alteração ou qualquer forma de tratamento inadequado.
+A ClanForge adota medidas técnicas e organizacionais para proteger seus dados pessoais contra acessos não autorizados, destruição, perda, alteração ou qualquer forma de tratamento inadequado.
 
 ### Medidas Implementadas
 
@@ -330,7 +330,7 @@ Nenhum sistema é 100% seguro, mas trabalhamos continuamente para manter a prote
 
 ## Crianças e Adolescentes
 
-A GuildRealm não é direcionada a crianças menores de 13 anos.
+A ClanForge não é direcionada a crianças menores de 13 anos.
 
 Se você tem entre 13 e 18 anos, pode utilizar a plataforma, mas recomendamos que seus pais ou responsáveis legais estejam cientes e concordem com esta Política.
 
@@ -342,7 +342,7 @@ Se você é pai, mãe ou responsável e acredita que seu filho nos forneceu dado
 
 ## Transferência Internacional de Dados
 
-A GuildRealm utiliza serviços de provedores localizados em diferentes países, incluindo Estados Unidos (Google Firebase, Cloudflare, Resend) e Brasil.
+A ClanForge utiliza serviços de provedores localizados em diferentes países, incluindo Estados Unidos (Google Firebase, Cloudflare, Resend) e Brasil.
 
 Quando seus dados são transferidos para outros países, adotamos medidas para garantir que recebam o mesmo nível de proteção exigido pela legislação brasileira, incluindo:
 
@@ -384,13 +384,13 @@ O uso continuado da plataforma após a vigência das alterações constitui acei
 Para questões relacionadas a esta Política de Privacidade ou para exercer seus direitos como titular de dados, entre em contato conosco:
 
 **Dúvidas sobre privacidade e proteção de dados:**
-privacy@guildrealm.com
+privacy@clanforge.com
 
 **Questões legais e notificações judiciais:**
-legal@guildrealm.com
+legal@clanforge.com
 
 **Dúvidas gerais sobre a plataforma:**
-contato@guildrealm.com
+contato@clanforge.com
 
 ---
 

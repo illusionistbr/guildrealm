@@ -97,6 +97,15 @@ export interface GuildCalendarEvent {
   createdByName: string;
   createdAt: Date;
   updatedAt: Date;
+  attendanceEnabled: boolean;
+  attendanceStart: Date | null;
+  attendanceEnd: Date | null;
+}
+
+export interface EventConfirmation {
+  userId: string;
+  displayName: string;
+  confirmedAt: Date;
 }
 
 export interface EventParticipant {

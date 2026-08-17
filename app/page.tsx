@@ -53,7 +53,7 @@ export default function Home() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="hero-copy">{t('heroText')}</motion.p>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.28 }} className="hero-ctas">
-            <PrimaryButton className="primary-cta" href="#recursos">{t('startFree')} <ArrowRight size={19} /></PrimaryButton>
+            <PrimaryButton className="primary-cta" href="/signup">{t('startFree')} <ArrowRight size={19} /></PrimaryButton>
             <a className="secondary-cta" href="#guilds">{t('exploreGuilds')}</a>
           </motion.div>
           <div className="benefits">

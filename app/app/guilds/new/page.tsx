@@ -36,6 +36,7 @@ import {
   ChevronLeft,
   Copy,
   ImagePlus,
+  Info,
   Shield,
   Sword,
   Users,
@@ -215,6 +216,11 @@ export default function CreateGuildPage() {
     if (!uid || !leaderCharacter) return;
     const leader = characters.find((c) => c.id === leaderCharacter);
     if (!leader) return;
+    if (leader.guildId) {
+      setError(t('leaderInGuild'));
+      setCreating(false);
+      return;
+    }
     setCreating(true);
     setError('');
 
@@ -284,6 +290,8 @@ export default function CreateGuildPage() {
       ? `${window.location.origin}/guilds/${createdGuildId}`
       : '';
 
+  const availableCharacters = characters.filter((c) => !c.guildId);
+
   return (
     <motion.div
       initial="initial"
@@ -352,7 +360,8 @@ export default function CreateGuildPage() {
           languages={languages}
           logoPreview={logoPreview}
           leaderName={
-            characters.find((c) => c.id === leaderCharacter)?.name ?? ''
+            availableCharacters.find((c) => c.id === leaderCharacter)?.name ??
+            ''
           }
           creating={creating}
           error={error}
@@ -422,7 +431,8 @@ function FormStep({
   onSubmit: (e: React.FormEvent) => void;
 }) {
   const classOptions = useMemo(() => t.raw('classes') as Option[], [t]);
-  const leader = characters.find((c) => c.id === leaderCharacter);
+  const available = characters.filter((c) => !c.guildId);
+  const leader = available.find((c) => c.id === leaderCharacter);
 
   return (
     <motion.div
@@ -435,6 +445,14 @@ function FormStep({
         </div>
       )}
 
+      <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-accent/20 bg-accent/5 p-3 text-xs text-muted">
+        <Info size={15} className="text-accent shrink-0 mt-0.5" />
+        <div>
+          <p className="text-white font-medium">{t('flowTitle')}</p>
+          <p className="mt-1">{t('flowText')}</p>
+        </div>
+      </div>
+
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="block text-sm text-muted mb-1.5">
@@ -445,12 +463,33 @@ function FormStep({
               {t('loadingCharacters')}
             </div>
           ) : characters.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-[rgba(38,51,86,0.5)] bg-[#0a1122] p-4 flex flex-col items-center text-center">
-              <Sword size={20} className="text-muted mb-2" />
-              <p className="text-sm text-muted">{t('noCharacters')}</p>
+            <div className="rounded-lg border border-dashed border-[rgba(38,51,86,0.5)] bg-[#0a1122] p-6 flex flex-col items-center text-center">
+              <Sword size={24} className="text-accent mb-3" />
+              <p className="text-sm text-white font-medium">
+                {t('noCharacters')}
+              </p>
+              <p className="text-xs text-muted mt-1 max-w-sm">
+                {t('noCharactersSub')}
+              </p>
               <Link
                 href="/app/characters/new"
-                className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors"
+                className="mt-4 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors"
+              >
+                <Sword size={14} /> {t('createCharacterFirst')}
+              </Link>
+            </div>
+          ) : available.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-[rgba(38,51,86,0.5)] bg-[#0a1122] p-6 flex flex-col items-center text-center">
+              <Users size={24} className="text-accent mb-3" />
+              <p className="text-sm text-white font-medium">
+                {t('allInGuild')}
+              </p>
+              <p className="text-xs text-muted mt-1 max-w-sm">
+                {t('allInGuildSub')}
+              </p>
+              <Link
+                href="/app/characters/new"
+                className="mt-4 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors"
               >
                 <Sword size={14} /> {t('createCharacterFirst')}
               </Link>
@@ -463,7 +502,7 @@ function FormStep({
                   onChange={(e) => onLeaderChange(e.target.value)}
                   className="w-full h-11 pl-3 pr-9 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white focus:outline-none focus:border-accent/50 transition-colors appearance-none"
                 >
-                  {characters.map((c) => (
+                  {available.map((c) => (
                     <option
                       key={c.id}
                       value={c.id}

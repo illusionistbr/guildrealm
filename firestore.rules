@@ -79,6 +79,46 @@ service cloud.firestore {
         !resource.data.isDefault;
     }
 
+    match /guilds/{guildId}/ranks/{rankId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow create, update: if isSignedIn() &&
+        (isGuildOwner(guildId));
+      allow delete: if isSignedIn() &&
+        (isGuildOwner(guildId)) &&
+        !resource.data.isDefault;
+    }
+
+    // ============ RECRUTAMENTO ============
+    // Configurações visíveis para qualquer visitante (a página pública de
+    // candidatura não exige login), mas a escrita é feita exclusivamente pela
+    // Cloud Function (valida permissão + sanitiza).
+    match /guilds/{guildId}/settings/recruitment {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Hash/salt da senha da guild: nunca exposto a clientes, apenas
+    // acessível pela Cloud Function (admin SDK).
+    match /guilds/{guildId}/settings/recruitmentSecret {
+      allow read, write: if false;
+    }
+
+    // Webhook do Discord: visível e editável apenas pelo dono da guild
+    // (a URL permite postar no canal, então não pode ser pública).
+    match /guilds/{guildId}/settings/discord {
+      allow read, write: if isSignedIn() && isGuildOwner(guildId);
+    }
+
+    // Candidaturas: leitura apenas para membros da guild ou para o próprio candidato.
+    // Criação/edição/remoção exclusivamente pela Cloud Function (valida recrutamento
+    // aberto, pertencimento e pendências).
+    match /guilds/{guildId}/applications/{applicationId} {
+      allow read: if isSignedIn() &&
+        (isGuildMember(guildId) ||
+         resource.data.applicantId == request.auth.uid);
+      allow write: if false;
+    }
+
     match /guilds/{guildId}/presets/{presetId} {
       allow read: if isSignedIn() && isGuildMember(guildId);
       allow create, update, delete: if isSignedIn() &&
@@ -131,6 +171,20 @@ match /members/{userId} {
         allow read: if isSignedIn();
         allow create: if isSignedIn() && request.auth.uid == userId;
         allow delete: if isSignedIn() && request.auth.uid == userId;
+      }
+
+      // Código de confirmação de presença: acessível apenas pela Cloud
+      // Function (valida janela/membro e gera o código; nunca exposto).
+      match /attendance/{docId} {
+        allow read, write: if false;
+      }
+
+      // Confirmações de presença: leitura para membros da guild (página de
+      // presenças); escrita exclusivamente pela Cloud Function.
+      match /confirmations/{userId} {
+        allow read: if isSignedIn() &&
+          isGuildMember(resource.data.guildId);
+        allow write: if false;
       }
     }
 

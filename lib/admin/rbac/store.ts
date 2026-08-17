@@ -54,7 +54,7 @@ export const useAuthStore = create<AuthState>()(
       clearSession: () => set({ session: null, isAuthenticated: false, isLoading: false }),
     }),
     {
-      name: 'guildrealm-admin-auth',
+      name: 'clanforge-admin-auth',
       partialize: (state) => ({ session: state.session }),
       onRehydrateStorage: () => (state) => {
         if (state) state.setHydrated(true);

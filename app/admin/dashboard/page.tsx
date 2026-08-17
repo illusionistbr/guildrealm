@@ -9,7 +9,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-heading font-bold text-white">Dashboard</h1>
-            <p className="text-muted text-sm mt-1">Visão geral da plataforma GuildRealm</p>
+            <p className="text-muted text-sm mt-1">Visão geral da plataforma ClanForge</p>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted">Última atualização: agora</span>

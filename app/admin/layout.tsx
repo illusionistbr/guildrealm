@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './admin.css';
 
 export const metadata: Metadata = {
-  title: 'GuildRealm Admin',
-  description: 'Painel administrativo GuildRealm',
+  title: 'ClanForge Admin',
+  description: 'Painel administrativo ClanForge',
   robots: 'noindex, nofollow',
 };
 

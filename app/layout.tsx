@@ -4,7 +4,7 @@ import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'GuildRealm — Seu reino. Sua guilda. Sua lenda.',
+  title: 'ClanForge — Seu reino. Sua guilda. Sua lenda.',
   description: 'A plataforma definitiva para guildas de MMORPG.',
 };
 

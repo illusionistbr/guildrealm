@@ -29,8 +29,8 @@ export function SiteHeader() {
 
   return (
     <header className="nav">
-      <a href="/" className="brand" aria-label="GuildRealm, início">
-        <span className="brand-mark"><ShieldCheck size={25} /></span><span>GuildRealm</span>
+      <a href="/" className="brand" aria-label="ClanForge, início">
+        <span className="brand-mark"><ShieldCheck size={25} /></span><span>ClanForge</span>
       </a>
       <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
         {navigationItems.map((item) => <a key={item.label} href={item.href} onClick={closeMenu}>{item.label}</a>)}

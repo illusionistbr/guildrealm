@@ -1,6 +1,6 @@
-# GuildRealm — Guia de Design
+# ClanForge — Guia de Design
 
-Este documento é a referência obrigatória para qualquer tela ou componente novo do GuildRealm. Preserve o sistema abaixo antes de criar estilos locais.
+Este documento é a referência obrigatória para qualquer tela ou componente novo do ClanForge. Preserve o sistema abaixo antes de criar estilos locais.
 
 ## Direção visual
 

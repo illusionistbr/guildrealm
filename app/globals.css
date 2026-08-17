@@ -74,7 +74,7 @@ button {
 .hero-art {
   position: absolute;
   inset: 0;
-  background: url('/images/guildrealm-hero.png') center / cover no-repeat;
+  background: url('/images/clanforge-hero.png') center / cover no-repeat;
   opacity: 0.84;
 }
 .hero-shade {
@@ -587,7 +587,7 @@ button {
     border-color 0.3s ease;
 }
 .game-2 {
-  background-image: url('/images/guildrealm-hero.png');
+  background-image: url('/images/clanforge-hero.png');
   background-position: center 58%;
 }
 .game-card:hover {
@@ -1615,6 +1615,14 @@ button {
   grid-template-columns: 1fr 1fr;
   gap: 28px 32px;
   margin-top: 32px;
+}
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 .signup-fields label > b {
   font: 700 12px Outfit;

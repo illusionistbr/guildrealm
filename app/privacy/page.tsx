@@ -30,11 +30,11 @@ const tocItems = [
 ];
 
 const companyInfo = [
-  { label: 'Razão Social', value: 'GuildRealm Serviços Digitais LTDA' },
+  { label: 'Razão Social', value: 'ClanForge Serviços Digitais LTDA' },
   { label: 'CNPJ', value: '12.345.678/0001-90' },
   { label: 'Endereço', value: 'Rua das Laranjeiras, 123, Sala 1001 – Centro\nNovo Hamburgo/RS – Brasil – CEP 93510-000' },
-  { label: 'E-mail', value: 'privacy@guildrealm.com' },
-  { label: 'DPO / Encarregado', value: 'privacy@guildrealm.com' },
+  { label: 'E-mail', value: 'privacy@clanforge.com' },
+  { label: 'DPO / Encarregado', value: 'privacy@clanforge.com' },
 ];
 
 const dataCategories = [

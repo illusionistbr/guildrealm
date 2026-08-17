@@ -96,7 +96,7 @@ export function Sidebar({ open, onToggle }: { open: boolean; onToggle: () => voi
         {open && (
           <Link href="/admin/dashboard" className="flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-accent" />
-            <span className="font-heading font-bold text-white text-lg">GuildRealm</span>
+            <span className="font-heading font-bold text-white text-lg">ClanForge</span>
           </Link>
         )}
         <button

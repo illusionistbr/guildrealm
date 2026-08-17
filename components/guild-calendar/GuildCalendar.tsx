@@ -23,6 +23,7 @@ interface GuildCalendarProps {
   uid: string;
   displayName: string;
   isLeader: boolean;
+  canManageEvents: boolean;
   timezone: number;
 }
 
@@ -32,6 +33,7 @@ export function GuildCalendar({
   uid,
   displayName,
   isLeader,
+  canManageEvents,
   timezone,
 }: GuildCalendarProps) {
   const t = useTranslations('GuildCalendar');
@@ -303,6 +305,7 @@ export function GuildCalendar({
           event={detailsEvent}
           uid={uid}
           isLeader={isLeader}
+          canManageEvents={canManageEvents}
           onClose={() => setDetailsEvent(null)}
           onUpdate={handleUpdateEvent}
           onDelete={handleDeleteEvent}

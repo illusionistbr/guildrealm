@@ -15,7 +15,7 @@
     "heroRealm": "王国。",
     "heroGuild": "ギルド。",
     "heroLegend": "伝説。",
-    "heroText": "GuildRealm は MMORPG プレイヤーのための究極のプラットフォームです。ギルドを作り、仲間を集め、挑戦を制し、ランキングを駆け上がり、歴史に名を刻みましょう。",
+    "heroText": "ClanForge は MMORPG プレイヤーのための究極のプラットフォームです。ギルドを作り、仲間を集め、挑戦を制し、ランキングを駆け上がり、歴史に名を刻みましょう。",
     "startFree": "無料で始める",
     "exploreGuilds": "ギルドを探す",
     "free": "100% 無料",
@@ -31,7 +31,7 @@
     "countries": "コミュニティの国",
     "leaderEyebrow": "リーダーの現実",
     "leaderTitle": "ギルド運営がもう一つの仕事になるべきではありません。",
-    "leaderText": "GuildRealm は、時間を奪いコミュニティを疲弊させる作業を一か所にまとめます。",
+    "leaderText": "ClanForge は、時間を奪いコミュニティを疲弊させる作業を一か所にまとめます。",
     "featuresEyebrow": "機能",
     "featuresTitle": "王国を支配するために必要なすべて",
     "featuresText": "プレイヤーとギルドリーダーのための強力なツール",
@@ -145,7 +145,7 @@
     "statsAriaLabel": "コミュニティの数字"
   },
   "Signup": {
-    "asideEyebrow": "GUILDREALMに参加",
+    "asideEyebrow": "CLANFORGEに参加",
     "asideTitle1": "あなたの壮大な旅が",
     "asideTitle2": "今",
     "asideTitle3": "始まります。",
@@ -165,7 +165,7 @@
       }
     ],
     "formTitle": "アカウントを作成",
-    "formText": "以下の詳細を入力して、GuildRealmアカウントを作成してください。",
+    "formText": "以下の詳細を入力して、ClanForgeアカウントを作成してください。",
     "fields": [
       {
         "label": "ニックネーム",
@@ -308,7 +308,7 @@
   "Terms": {
     "heroEyebrow": "LEGAL",
     "heroTitle": "利用規約",
-    "heroText": "GuildRealmプラットフォームの利用条件をご確認ください。",
+    "heroText": "ClanForgeプラットフォームの利用条件をご確認ください。",
     "metaDate": "最終更新:",
     "metaVersion": "バージョン:",
     "metaRead": "読了時間:",
@@ -318,7 +318,7 @@
     "contactCardBtn": "お問い合わせ",
     "breadcrumbLegal": "法的情報",
     "breadcrumbTitle": "利用規約",
-    "infoCardTitle": "GuildRealmの使命",
+    "infoCardTitle": "ClanForgeの使命",
     "infoCardText": "プレイヤーをつなぎ、ギルドを強化し、MMORPGでエピックな体験を創造します。",
     "noticeTitle": "規約の変更について",
     "noticeText": "法改正やプラットフォームの変更に応じて、本規約を更新する場合があります。最新版は常に本ページでご確認いただけます。",
@@ -332,25 +332,25 @@
         "id": "introduction",
         "num": "1",
         "title": "はじめに",
-        "content": "<p><b>GuildRealm</b>へようこそ！本利用規約は、GuildRealmプラットフォームへのアクセスおよび利用を規定します。</p><p>アカウントを作成または本プラットフォームのいずれかを利用することで、本規約に同意したものとみなされます。</p>"
+        "content": "<p><b>ClanForge</b>へようこそ！本利用規約は、ClanForgeプラットフォームへのアクセスおよび利用を規定します。</p><p>アカウントを作成または本プラットフォームのいずれかを利用することで、本規約に同意したものとみなされます。</p>"
       },
       {
         "id": "definitions",
         "num": "2",
         "title": "定義",
-        "content": "<p>本規約で使用される主な用語の定義：</p><table><thead><tr><th>用語</th><th>定義</th></tr></thead><tbody><tr><td><b>ユーザー</b></td><td>アカウントを作成し、GuildRealmを利用するすべての方。</td></tr><tr><td><b>アカウント</b></td><td>ユーザーがサービスを利用するための個人プロフィール。</td></tr><tr><td><b>ギルド</b></td><td>GuildRealm内で作成・管理されるプレイヤーのグループ。</td></tr><tr><td><b>コンテンツ</b></td><td>プラットフォーム上に公開されるすべての情報、テキスト、画像。</td></tr><tr><td><b>サービス</b></td><td>GuildRealmが提供するすべての機能とリソース。</td></tr><tr><td><b>モデレーション</b></td><td>プラットフォームの安全と正常な運営のために取られる措置。</td></tr></tbody></table>"
+        "content": "<p>本規約で使用される主な用語の定義：</p><table><thead><tr><th>用語</th><th>定義</th></tr></thead><tbody><tr><td><b>ユーザー</b></td><td>アカウントを作成し、ClanForgeを利用するすべての方。</td></tr><tr><td><b>アカウント</b></td><td>ユーザーがサービスを利用するための個人プロフィール。</td></tr><tr><td><b>ギルド</b></td><td>ClanForge内で作成・管理されるプレイヤーのグループ。</td></tr><tr><td><b>コンテンツ</b></td><td>プラットフォーム上に公開されるすべての情報、テキスト、画像。</td></tr><tr><td><b>サービス</b></td><td>ClanForgeが提供するすべての機能とリソース。</td></tr><tr><td><b>モデレーション</b></td><td>プラットフォームの安全と正常な運営のために取られる措置。</td></tr></tbody></table>"
       },
       {
         "id": "acceptance",
         "num": "3",
         "title": "規約の同意",
-        "content": "<p>GuildRealmにアクセスすることで、本規約および<b>プライバシーポリシー</b>に同意したものとみなされます。</p>"
+        "content": "<p>ClanForgeにアクセスすることで、本規約および<b>プライバシーポリシー</b>に同意したものとみなされます。</p>"
       },
       {
         "id": "eligibility",
         "num": "4",
         "title": "利用資格",
-        "content": "<p>GuildRealmを利用するには<b>13歳以上</b>である必要があります。</p><ul><li>提供された情報は正確です</li><li>パスワードを安全に管理します</li><li>不正使用を報告します</li></ul>"
+        "content": "<p>ClanForgeを利用するには<b>13歳以上</b>である必要があります。</p><ul><li>提供された情報は正確です</li><li>パスワードを安全に管理します</li><li>不正使用を報告します</li></ul>"
       },
       {
         "id": "account",
@@ -374,7 +374,7 @@
         "id": "content",
         "num": "8",
         "title": "ユーザーコンテンツ",
-        "content": "<p>コンテンツの<b>所有者</b>は投稿者自身です。GuildRealmにはプラットフォーム内での表示・配布のライセンスが付与されます。</p><p><b>禁止コンテンツ：</b>違法コンテンツ、差別的コンテンツ、スパム、フィッシングなど。</p>"
+        "content": "<p>コンテンツの<b>所有者</b>は投稿者自身です。ClanForgeにはプラットフォーム内での表示・配布のライセンスが付与されます。</p><p><b>禁止コンテンツ：</b>違法コンテンツ、差別的コンテンツ、スパム、フィッシングなど。</p>"
       },
       {
         "id": "messages",
@@ -404,19 +404,19 @@
         "id": "sweepstakes",
         "num": "13",
         "title": "抽選イベント",
-        "content": "<p>GuildRealmは景品付きの抽選やイベントを開催する場合があります。</p>"
+        "content": "<p>ClanForgeは景品付きの抽選やイベントを開催する場合があります。</p>"
       },
       {
         "id": "ip",
         "num": "14",
         "title": "知的財産",
-        "content": "<p>GuildRealmのすべての視覚要素、コード、デザイン、ロゴはプラットフォームの独占財産です。</p>"
+        "content": "<p>ClanForgeのすべての視覚要素、コード、デザイン、ロゴはプラットフォームの独占財産です。</p>"
       },
       {
         "id": "thirdparty",
         "num": "15",
         "title": "サードパーティゲーム",
-        "content": "<p>GuildRealmは登録されたゲームの開発者・パブリッシャーとの提携関係はありません（公式パートナーシップを除く）。</p>"
+        "content": "<p>ClanForgeは登録されたゲームの開発者・パブリッシャーとの提携関係はありません（公式パートナーシップを除く）。</p>"
       },
       {
         "id": "availability",
@@ -434,7 +434,7 @@
         "id": "liability",
         "num": "18",
         "title": "責任の制限",
-        "content": "<p>GuildRealmはプラットフォームの利用に起因する直接的・間接的損害について責任を負いません。</p>"
+        "content": "<p>ClanForgeはプラットフォームの利用に起因する直接的・間接的損害について責任を負いません。</p>"
       },
       {
         "id": "changes",
@@ -446,20 +446,20 @@
         "id": "law",
         "num": "20",
         "title": "準拠法と管轄",
-        "content": "<p>本利用規約はブラジル連邦共和国の法律に準拠します。</p><p>GuildRealmの利用に起因する紛争で友好的に解決できない場合、リオグランデ・ド・スル州ノボ・ハンブルゴの裁判所が管轄となります。</p>"
+        "content": "<p>本利用規約はブラジル連邦共和国の法律に準拠します。</p><p>ClanForgeの利用に起因する紛争で友好的に解決できない場合、リオグランデ・ド・スル州ノボ・ハンブルゴの裁判所が管轄となります。</p>"
       },
       {
         "id": "contact",
         "num": "21",
         "title": "お問い合わせ",
-        "content": "<p>contato@guildrealm.com | privacy@guildrealm.com | legal@guildrealm.com</p>"
+        "content": "<p>contato@clanforge.com | privacy@clanforge.com | legal@clanforge.com</p>"
       }
     ]
   },
   "Privacy": {
     "heroEyebrow": "LEGAL",
     "heroTitle": "プライバシーポリシー",
-    "heroText": "GuildRealmではお客様のプライバシーを最優先しています。本ポリシーでは、お客様の個人データをどのように収集、使用、保護するかを説明します。",
+    "heroText": "ClanForgeではお客様のプライバシーを最優先しています。本ポリシーでは、お客様の個人データをどのように収集、使用、保護するかを説明します。",
     "metaDate": "最終更新:",
     "metaVersion": "バージョン:",
     "metaRead": "読了時間:",
@@ -491,19 +491,19 @@
         "id": "intro",
         "num": "1",
         "title": "はじめに",
-        "content": "<p>GuildRealm（<b>「当社」</b>、<b>「当社の」</b>、または<b>「プラットフォーム」</b>）は、お客様のプライバシーと個人データを保護することに専念しています。本プライバシーポリシーでは、お客様が提供する情報、またはサービスのご利用時に自動的に収集する情報を、どのように収集、使用、保存、保護するかを説明します。</p>"
+        "content": "<p>ClanForge（<b>「当社」</b>、<b>「当社の」</b>、または<b>「プラットフォーム」</b>）は、お客様のプライバシーと個人データを保護することに専念しています。本プライバシーポリシーでは、お客様が提供する情報、またはサービスのご利用時に自動的に収集する情報を、どのように収集、使用、保存、保護するかを説明します。</p>"
       },
       {
         "id": "who",
         "num": "2",
         "title": "当社について",
-        "content": "<p>GuildRealmは、プラットフォームを通じて処理される個人データの管理者です。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>商号</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>住所</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – ブラジル – CEP 93510-000</td></tr><tr><td><b>メール</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>DPO / 担当者</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"
+        "content": "<p>ClanForgeは、プラットフォームを通じて処理される個人データの管理者です。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>商号</b></td><td>ClanForge Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>住所</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – ブラジル – CEP 93510-000</td></tr><tr><td><b>メール</b></td><td>privacy@clanforge.com</td></tr><tr><td><b>DPO / 担当者</b></td><td>privacy@clanforge.com</td></tr></tbody></table>"
       },
       {
         "id": "data",
         "num": "3",
         "title": "収集するデータ",
-        "content": "<p>最高のGuildRealm体験を提供するために、さまざまな種類のデータを収集します。</p><h4>ユーザーが提供するデータ</h4><ul><li><b>名前</b> — プロフィールのパーソナライズに使用</li><li><b>ニックネーム</b> — プラットフォーム上の公開識別子</li><li><b>メール</b> — アカウント作成およびパスワード復旧用</li><li><b>パスワード</b> — 暗号化された状態（ハッシュ）で保存</li><li><b>写真 / アバター</b> — 公開的にお客様を表す画像</li><li><b>バナー</b> — プロフィール背景画像</li><li><b>自己紹介</b> — お客様についての説明テキスト</li><li><b>国と言語</b> — ローカライズされたコンテンツ用</li><li><b>SNSリンク</b> — 自発的に共有</li><li><b>公開コンテンツ</b> — テキスト、コメント、投稿、ガイド</li></ul><h4>使用中に生成されるデータ</h4><ul><li><b>ギルド</b> — 作成または参加するギルド</li><li><b>実績とバッジ</b> — メダルと表彰</li><li><b>プライベートメッセージ</b> — 他のユーザーと交換するコンテンツ</li><li><b>フレンドリスト</b> — 確立された接続</li><li><b>通知</b> — 通知の記録</li><li><b>コメントといいね</b> — コンテンツのやり取り</li><li><b>ログイン履歴</b> — アクセス日時</li></ul><h4>自動で収集されるデータ</h4><ul><li><b>IPアドレス</b> — セキュリティと分析用</li><li><b>ブラウザとOS</b> — 技術的識別</li><li><b>言語とタイムゾーン</b> — パーソナライズ用</li><li><b>デバイスタイプ</b> — デスクトップ、タブレットまたはモバイル</li><li><b>Cookieと識別子</b> — 機能性とセキュリティ用</li><li><b>サーバーログ</b> — 自動技術記録</li></ul>"
+        "content": "<p>最高のClanForge体験を提供するために、さまざまな種類のデータを収集します。</p><h4>ユーザーが提供するデータ</h4><ul><li><b>名前</b> — プロフィールのパーソナライズに使用</li><li><b>ニックネーム</b> — プラットフォーム上の公開識別子</li><li><b>メール</b> — アカウント作成およびパスワード復旧用</li><li><b>パスワード</b> — 暗号化された状態（ハッシュ）で保存</li><li><b>写真 / アバター</b> — 公開的にお客様を表す画像</li><li><b>バナー</b> — プロフィール背景画像</li><li><b>自己紹介</b> — お客様についての説明テキスト</li><li><b>国と言語</b> — ローカライズされたコンテンツ用</li><li><b>SNSリンク</b> — 自発的に共有</li><li><b>公開コンテンツ</b> — テキスト、コメント、投稿、ガイド</li></ul><h4>使用中に生成されるデータ</h4><ul><li><b>ギルド</b> — 作成または参加するギルド</li><li><b>実績とバッジ</b> — メダルと表彰</li><li><b>プライベートメッセージ</b> — 他のユーザーと交換するコンテンツ</li><li><b>フレンドリスト</b> — 確立された接続</li><li><b>通知</b> — 通知の記録</li><li><b>コメントといいね</b> — コンテンツのやり取り</li><li><b>ログイン履歴</b> — アクセス日時</li></ul><h4>自動で収集されるデータ</h4><ul><li><b>IPアドレス</b> — セキュリティと分析用</li><li><b>ブラウザとOS</b> — 技術的識別</li><li><b>言語とタイムゾーン</b> — パーソナライズ用</li><li><b>デバイスタイプ</b> — デスクトップ、タブレットまたはモバイル</li><li><b>Cookieと識別子</b> — 機能性とセキュリティ用</li><li><b>サーバーログ</b> — 自動技術記録</li></ul>"
       },
       {
         "id": "usage",
@@ -515,19 +515,19 @@
         "id": "legal",
         "num": "5",
         "title": "法的根拠（LGPD）",
-        "content": "<p>GuildRealmは<b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>に準拠してデータを処理します。</p><table><thead><tr><th>法的根拠</th><th>適用</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>ポリシーおよび非必須Cookieを受け入れた場合</td></tr><tr><td><b>契約の履行</b>（art. 7º, V）</td><td>アカウントを作成し、サービスを提供するため</td></tr><tr><td><b>法的義務</b>（art. 7º, II）</td><td>法的および司法的要件を満たすため</td></tr><tr><td><b>権利の行使</b>（art. 7º, VI）</td><td>GuildRealmおよびユーザーの権利を保護するため</td></tr><tr><td><b>正当な利益</b>（art. 7º, IX）</td><td>セキュリティ、詐欺防止、サービス改善のため</td></tr></tbody></table><p>いつでも同意を撤回できます。</p>"
+        "content": "<p>ClanForgeは<b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>に準拠してデータを処理します。</p><table><thead><tr><th>法的根拠</th><th>適用</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>ポリシーおよび非必須Cookieを受け入れた場合</td></tr><tr><td><b>契約の履行</b>（art. 7º, V）</td><td>アカウントを作成し、サービスを提供するため</td></tr><tr><td><b>法的義務</b>（art. 7º, II）</td><td>法的および司法的要件を満たすため</td></tr><tr><td><b>権利の行使</b>（art. 7º, VI）</td><td>ClanForgeおよびユーザーの権利を保護するため</td></tr><tr><td><b>正当な利益</b>（art. 7º, IX）</td><td>セキュリティ、詐欺防止、サービス改善のため</td></tr></tbody></table><p>いつでも同意を撤回できます。</p>"
       },
       {
         "id": "sharing",
         "num": "6",
         "title": "データの共有",
-        "content": "<p>GuildRealmはお客様の個人データを第三者に<b>販売しません</b>。</p><p>以下の状況でデータを共有する場合があります：</p><ul><li><b>サービスプロバイダー</b> — プラットフォームの運営を支援する企業</li><li><b>公共機関</b> — 法律や裁判所の命令により要求された場合</li><li><b>同意に基づく</b> — 明示的に許可した場合</li><li><b>企業譲渡</b> — 合併や買収の場合</li></ul>"
+        "content": "<p>ClanForgeはお客様の個人データを第三者に<b>販売しません</b>。</p><p>以下の状況でデータを共有する場合があります：</p><ul><li><b>サービスプロバイダー</b> — プラットフォームの運営を支援する企業</li><li><b>公共機関</b> — 法律や裁判所の命令により要求された場合</li><li><b>同意に基づく</b> — 明示的に許可した場合</li><li><b>企業譲渡</b> — 合併や買収の場合</li></ul>"
       },
       {
         "id": "thirdparty",
         "num": "7",
         "title": "第三者サービス",
-        "content": "<p>GuildRealmは運営のために第三者サービスを使用しています：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage、Hosting</li><li><b>Cloudflare</b> — DDoS保護、CDN、ネットワークセキュリティ</li><li><b>Google Analytics</b> — 使用統計（有効な場合）</li><li><b>Google reCAPTCHA</b> — ボット保護</li><li><b>Resend</b> — トランザクショナルメール送信</li></ul>"
+        "content": "<p>ClanForgeは運営のために第三者サービスを使用しています：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage、Hosting</li><li><b>Cloudflare</b> — DDoS保護、CDN、ネットワークセキュリティ</li><li><b>Google Analytics</b> — 使用統計（有効な場合）</li><li><b>Google reCAPTCHA</b> — ボット保護</li><li><b>Resend</b> — トランザクショナルメール送信</li></ul>"
       },
       {
         "id": "cookies",
@@ -545,7 +545,7 @@
         "id": "rights",
         "num": "10",
         "title": "お客様の権利（LGPD）",
-        "content": "<p>データ主体として、以下の権利があります：</p><ul><li><b>確認およびアクセス</b> — データのコピーを要求する</li><li><b>訂正</b> — 不正確なデータの訂正を要求する</li><li><b>更新</b> — プラットフォーム上の情報を更新する</li><li><b>匿名化、ブロックまたは削除</b> — データの除去を要求する</li><li><b>データポータビリティ</b> — 別のサービスへの転送を要求する</li><li><b>同意の撤回</b> — いつでも</li><li><b>共有情報</b> — 誰と共有しているかを知る</li><li><b>異議申立</b> — 正当な利益に基づく処理に異議を唱える</li></ul><p><b>privacy@guildrealm.com</b>までご連絡ください。<b>15日</b>以内に回答いたします。</p>"
+        "content": "<p>データ主体として、以下の権利があります：</p><ul><li><b>確認およびアクセス</b> — データのコピーを要求する</li><li><b>訂正</b> — 不正確なデータの訂正を要求する</li><li><b>更新</b> — プラットフォーム上の情報を更新する</li><li><b>匿名化、ブロックまたは削除</b> — データの除去を要求する</li><li><b>データポータビリティ</b> — 別のサービスへの転送を要求する</li><li><b>同意の撤回</b> — いつでも</li><li><b>共有情報</b> — 誰と共有しているかを知る</li><li><b>異議申立</b> — 正当な利益に基づく処理に異議を唱える</li></ul><p><b>privacy@clanforge.com</b>までご連絡ください。<b>15日</b>以内に回答いたします。</p>"
       },
       {
         "id": "deletion",
@@ -557,13 +557,13 @@
         "id": "security",
         "num": "12",
         "title": "データのセキュリティ",
-        "content": "<p>GuildRealmが採用する措置：</p><ul><li><b>暗号化</b> — 全送信でHTTPS（SSL/TLS）</li><li><b>アクセス制御</b> — 制限された認証済みアクセス</li><li><b>監視</b> — アクセスおよび侵入試行ログ</li><li><b>Firebase Security</b> — データベースセキュリティルール</li><li><b>Cloudflare</b> — DDoS保護</li><li><b>定期バックアップ</b> — データの整合性を確保</li><li><b>暗号化パスワード</b> — bcryptアルゴリズム</li></ul>"
+        "content": "<p>ClanForgeが採用する措置：</p><ul><li><b>暗号化</b> — 全送信でHTTPS（SSL/TLS）</li><li><b>アクセス制御</b> — 制限された認証済みアクセス</li><li><b>監視</b> — アクセスおよび侵入試行ログ</li><li><b>Firebase Security</b> — データベースセキュリティルール</li><li><b>Cloudflare</b> — DDoS保護</li><li><b>定期バックアップ</b> — データの整合性を確保</li><li><b>暗号化パスワード</b> — bcryptアルゴリズム</li></ul>"
       },
       {
         "id": "children",
         "num": "13",
         "title": "子どもと青少年",
-        "content": "<p>GuildRealmは13歳未満の子どもを対象としていません。</p><p>13歳から18歳の場合は、保護者にこのポリシーを把握することをお勧めします。</p><p>13歳未満の子どものデータを意図的に収集しません。この年齢層のアカウントを特定した場合、データを削除し、アカウントを終了します。</p>"
+        "content": "<p>ClanForgeは13歳未満の子どもを対象としていません。</p><p>13歳から18歳の場合は、保護者にこのポリシーを把握することをお勧めします。</p><p>13歳未満の子どものデータを意図的に収集しません。この年齢層のアカウントを特定した場合、データを削除し、アカウントを終了します。</p>"
       },
       {
         "id": "transfer",
@@ -581,7 +581,7 @@
         "id": "contact-priv",
         "num": "16",
         "title": "お問い合わせ",
-        "content": "<p>プライバシーやデータ保護に関するご質問：</p><ul><li><b>プライバシー:</b> privacy@guildrealm.com</li><li><b>法務:</b> legal@guildrealm.com</li><li><b>一般:</b> contato@guildrealm.com</li></ul>"
+        "content": "<p>プライバシーやデータ保護に関するご質問：</p><ul><li><b>プライバシー:</b> privacy@clanforge.com</li><li><b>法務:</b> legal@clanforge.com</li><li><b>一般:</b> contato@clanforge.com</li></ul>"
       },
       {
         "id": "law-priv",
@@ -629,7 +629,7 @@
     "heroText": "アカウントのメールアドレスを入力すると、パスワードをリセットして冒険に戻るための手順をお送りします。",
     "backLink": "ログインに戻る",
     "formTitle": "パスワードのリセット",
-    "formText": "GuildRealmアカウントに関連付けられたメールアドレスを入力してください。新しいパスワードを作成するリンクが届きます。",
+    "formText": "ClanForgeアカウントに関連付けられたメールアドレスを入力してください。新しいパスワードを作成するリンクが届きます。",
     "emailLabel": "メールアドレスまたはユーザー名",
     "emailPlaceholder": "メールアドレスまたはユーザー名を入力",
     "submit": "手順を送信",
@@ -734,7 +734,11 @@
     "loadingGuilds": "ギルドを読み込み中...",
     "noOpenGuilds": "募集中のギルドが見つかりませんでした。",
     "join": "参加",
+    "applyToGuild": "応募",
     "joinError": "ギルドに参加できませんでした。もう一度お試しください。",
+    "invalidPassword": "パスワードが正しくありません。",
+    "passwordPlaceholder": "ギルドパスワード",
+    "passwordGuildBadge": "パスワード",
     "leaveError": "ギルドを脱退できませんでした。もう一度お試しください。",
     "edit": "編集",
     "delete": "削除",
@@ -935,7 +939,7 @@
       }
     ],
     "leaderCharacterLabel": "リーダーキャラクター",
-    "leaderCharacterHint": "リーダーとなり、メンバー一覧に表示されます。",
+    "leaderCharacterHint": "自動的にリーダーとなり、メンバーリストに表示されます。",
     "leaderRequired": "ギルドを率いるキャラクターを選択してください。",
     "noCharacters": "まだキャラクターがいません。",
     "createCharacterFirst": "キャラクターを作成",
@@ -981,7 +985,13 @@
         "label": "Chanter",
         "icon": "/games/aion2/classes/Chanter.webp"
       }
-    ]
+    ],
+    "flowTitle": "まずキャラクターを作成し、それからギルドを作成",
+    "flowText": "すべてのギルドはキャラクターによって作られます。キャラクターを紐付けると、自動的にリーダーになります。新規メンバーは「メンバー」として加入し、リーダーは後から他の階級に昇格させられます。",
+    "noCharactersSub": "ギルドを作成するにはキャラクターが必要です。キャラクターがギルドに紐付き、リーダーになります。キャラクターを作成してから、こちらに戻ってください。",
+    "allInGuild": "すべてのキャラクターがすでにギルドに所属しています。",
+    "allInGuildSub": "現在のギルドを脱退するか、新しいキャラクターを作成してください。",
+    "leaderInGuild": "このキャラクターはすでにギルドに所属しています。別のキャラクターを選ぶか、新しく作成してください。"
   },
   "GuildPage": {
     "notFound": "ギルドが見つかりませんでした。",
@@ -1066,7 +1076,10 @@
         "value": "tr",
         "label": "トルコ語"
       }
-    ]
+    ],
+    "focusLabel": "焦点",
+    "mentalityLabel": "プレイスタイル",
+    "apply": "応募する"
   },
   "GuildPanel": {
     "backToDashboard": "ダッシュボードに戻る",
@@ -1074,7 +1087,46 @@
     "subtitle": "ここからギルドを管理できます。",
     "menuOverview": "概要",
     "menuCalendar": "カレンダー",
+    "menuAttendance": "出欠",
+    "attendanceSub": "イベントでのメンバーの出欠を確認・管理します。",
+    "attendancePresent": "参加した",
+    "attendanceAbsent": "参加しなかった",
+    "attendanceEmpty": "まだ誰もいません",
+    "attendanceNoEvents": "イベントがまだ作成されていません。",
+    "attendanceBadgeCode": "コード確認",
+    "attendanceBadgeJoin": "登録制",
+    "attendanceReportPresent": "出勤レポートを生成",
+    "attendanceReportAbsent": "欠席レポートを生成",
+    "reportStartDate": "開始日",
+    "reportEndDate": "終了日",
+    "reportPeriodInvalid": "終了日は開始日以降にしてください。",
+    "reportType": "レポートの種類",
+    "reportSimple": "シンプル — 絶対数のみ",
+    "reportDetailed": "詳細 — イベント名・日付・時刻付き",
+    "reportGenerate": "PDFを生成",
+    "reportGenerating": "生成中...",
+    "reportTitlePresent": "出勤レポート",
+    "reportTitleAbsent": "欠席レポート",
+    "reportPeriod": "期間",
+    "reportTo": "〜",
+    "reportGuild": "ギルド",
+    "reportCountPresent": "出勤",
+    "reportCountAbsent": "欠席",
+    "reportNoData": "選択した期間にイベントがありません。",
+    "reportGenerateError": "レポートを生成できませんでした。もう一度お試しください。",
     "menuMembers": "メンバー",
+    "menuApplications": "応募",
+    "applicationsSub": "ギルドへの応募を確認・管理します。",
+    "applicationsPending": "保留中の応募",
+    "applicationsEmpty": "保留中の応募はありません。",
+    "applicationsHistory": "応募履歴",
+    "applicationAccept": "承認",
+    "applicationReject": "却下",
+    "applicationAccepted": "承認済み",
+    "applicationRejected": "却下済み",
+    "applicationNoAnswers": "この応募には回答がありません。",
+    "applicationReviewError": "応募を確認できませんでした。もう一度お試しください。",
+    "applicationAlreadyReviewed": "この応募はすでに確認済みです。",
     "timezoneLabel": "タイムゾーン",
     "createEvent": "イベントを作成",
     "eventTitle": "イベント名",
@@ -1240,7 +1292,103 @@
     "kickError": "メンバーを除名できませんでした。もう一度お試しください。",
     "banError": "メンバーをBANできませんでした。もう一度お試しください。",
     "statusError": "ステータスを変更できませんでした。もう一度お試しください。",
-    "roleError": "役割を変更できませんでした。もう一度お試しください。"
+    "roleError": "役割を変更できませんでした。もう一度お試しください。",
+    "menuSettings": "設定",
+    "settingsSub": "ギルドの情報と外観を管理します。",
+    "tabGeneral": "全般",
+    "settingsNameLabel": "ギルド名",
+    "settingsNamePlaceholder": "ギルド名を入力",
+    "settingsLogoLabel": "ロゴ",
+    "settingsLogoUpload": "ロゴをアップロード",
+    "settingsLogoChange": "ロゴを変更",
+    "settingsLogoRemove": "削除",
+    "settingsLogoSub": "PNG、JPG、WebP（2 MBまで）。",
+    "settingsLogoInvalid": "形式が無効です。PNG、JPG、WebPを使用してください。",
+    "settingsLogoTooLarge": "画像は最大2 MBです。",
+    "settingsBannerLabel": "公開プロフィールのバナー",
+    "settingsBannerUpload": "バナーをアップロード",
+    "settingsBannerChange": "バナーを変更",
+    "settingsBannerRemove": "削除",
+    "settingsBannerSub": "PNG、JPG、WebP（4 MBまで）。推奨サイズ: 1600 x 400。",
+    "settingsBannerInvalid": "形式が無効です。PNG、JPG、WebPを使用してください。",
+    "settingsBannerTooLarge": "画像は最大4 MBです。",
+    "settingsDescriptionLabel": "説明",
+    "settingsDescriptionPlaceholder": "ギルドについて簡単に説明してください...",
+    "settingsDescriptionHint": "ギルドの公開プロフィールに表示されます。",
+    "settingsFocusLabel": "ギルドの焦点",
+    "settingsMentalityLabel": "プレイスタイル",
+    "settingsSave": "変更を保存",
+    "settingsSaving": "保存中...",
+    "settingsSaved": "設定を保存しました！",
+    "settingsError": "保存できませんでした。もう一度お試しください。",
+    "settingsNameRequired": "ギルド名は必須です。",
+    "settingsPermission": "設定にアクセスする権限がありません。",
+    "tabRanks": "階級",
+    "ranksHint": "カスタム階級を作成し、すべての階級（デフォルトを含む）の権限を編集できます。デフォルト階級は削除できません。",
+    "newRank": "新しい階級",
+    "editRank": "階級を編集",
+    "rankName": "名前",
+    "rankNamePlaceholder": "例: コマンダー",
+    "rankColor": "色",
+    "rankPermissions": "権限",
+    "rankDefault": "デフォルト",
+    "saveRank": "階級を保存",
+    "cancelRank": "キャンセル",
+    "rankNameRequired": "階級名は必須です。",
+    "rankSaveError": "階級を保存できませんでした。もう一度お試しください。",
+    "rankDeleteTitle": "階級を削除",
+    "rankDeleteMessage": "階級 {name} を削除しますか？この階級のメンバーはデフォルト階級に戻ります。",
+    "rankDeleteError": "階級を削除できませんでした。もう一度お試しください。",
+    "deleteRank": "削除",
+    "rankPermissionsLabels": [
+      {
+        "value": "manageMembers",
+        "label": "メンバー管理"
+      },
+      {
+        "value": "manageGroups",
+        "label": "グループ管理"
+      },
+      {
+        "value": "manageEvents",
+        "label": "イベント管理"
+      },
+      {
+        "value": "manageSettings",
+        "label": "設定管理"
+      },
+      {
+        "value": "manageRanks",
+        "label": "階級管理"
+      },
+      {
+        "value": "manageRecruitment",
+        "label": "募集管理"
+      }
+    ],
+    "assignRank": "階級を割り当て",
+    "rankDefaultLabel": "デフォルト",
+    "searchPlaceholder": "プレイヤー名で検索...",
+    "filterAll": "すべて",
+    "membersEmpty": "メンバーが見つかりません。",
+    "tabRecruitment": "募集",
+    "tabDiscord": "Discord",
+    "discordTitle": "Discord通知",
+    "discordSub": "ギルドのアクティビティ（イベント、参加状況など）をDiscordのチャンネルに自動送信します。",
+    "discordWebhookLabel": "Webhook URL",
+    "discordWebhookPlaceholder": "https://discord.com/api/webhooks/...",
+    "discordWebhookHint": "Discordで：サーバー設定 → 連携サービス → Webhook → 新しいWebhook。チャンネルを選んでURLをコピーしてください。Webhookがないと通知は送信されません。",
+    "discordSave": "Webhookを保存",
+    "discordSaving": "保存中...",
+    "discordSaved": "Webhookを保存しました！",
+    "discordRemove": "削除",
+    "discordTest": "接続テスト",
+    "discordTesting": "送信中...",
+    "discordTested": "テストメッセージをチャンネルに送信しました！",
+    "discordUrlInvalid": "WebhookのURLが無効です。Discordの完全なURLを貼り付けてください。",
+    "discordError": "保存できませんでした。もう一度お試しください。",
+    "discordEmpty": "Webhookが設定されていません。通知はDiscordに送信されません。",
+    "discordLoading": "読み込み中..."
   },
   "GuildCalendar": {
     "today": "今日",
@@ -1264,6 +1412,30 @@
     "maxParticipants": "最大参加者数",
     "unlimited": "無限",
     "allowRegistration": "登録を許可",
+    "attendanceEnabled": "出欠確認",
+    "attendanceEnabledHint": "メンバーは権限のあるユーザーが共有したコードで、下記の時間内に出欠を確認します。",
+    "attendanceStartLabel": "確認開始",
+    "attendanceEndLabel": "確認終了",
+    "attendanceBeforeOption": "イベント終了{value}分前",
+    "attendanceAfterOption": "イベント終了{value}分後",
+    "attendanceWindow": "確認時間: {start} – {end}",
+    "attendanceConfirmedCount": "確認済み",
+    "attendanceConfirmed": "出欠を確認しました！",
+    "attendanceNotOpen": "確認は{time}に開始します",
+    "attendanceNotOpenText": "確認はまだ開始していません。",
+    "attendanceGenerateCode": "確認コードを生成",
+    "attendanceCodeHint": "このコードをギルドメンバーと共有してください。全員が同じコードを使用します。",
+    "attendanceCodeCopy": "コピー",
+    "attendanceCodeCopied": "コピーしました！",
+    "attendanceCodePlaceholder": "コードを入力",
+    "attendanceConfirm": "出欠を確認",
+    "attendanceInvalidCode": "コードが無効です。",
+    "attendanceClosed": "確認期間は終了しました。",
+    "attendanceAlreadyConfirmed": "このイベントの出欠はすでに確認済みです。",
+    "attendanceGenerateError": "コードを生成できませんでした。もう一度お試しください。",
+    "attendanceGenerateNotOpen": "コードは確認開始1分前から利用できます。",
+    "attendanceWaitCode": "リーダーまたは役員がコードを共有するまでお待ちください。",
+    "attendanceConfirmError": "確認できませんでした。コードと時間を確認してください。",
     "cancel": "キャンセル",
     "create": "作成",
     "createError": "イベントを作成できませんでした。もう一度試してください。",
@@ -1363,5 +1535,113 @@
     "editRole": "役割を編集",
     "deleteRole": "役割を削除",
     "newRole": "新しい役割"
+  },
+  "Recruitment": {
+    "sectionRecruitment": "募集",
+    "recruitmentStatusSub": "新しいプレイヤーがギルドに応募できるかどうかを設定します。",
+    "openLabel": "募集中",
+    "closedLabel": "受付終了",
+    "openHint": "募集中の場合、プレイヤーはギルドに入るための応募を送信できます。",
+    "closedHint": "受付終了の場合、外部のプレイヤーは応募を送信できません。",
+    "sectionMessage": "応募者へのメッセージ",
+    "sectionMessageSub": "応募フォームの前に応募者に表示されるメッセージ。",
+    "messagePlaceholder": "応募者への歓迎メッセージや案内を書いてください...",
+    "sectionQuestions": "応募の質問",
+    "sectionQuestionsSub": "ギルドへの入団を希望する際に応募者が回答する質問を設定します。",
+    "addQuestion": "質問を追加",
+    "previewButton": "応募をプレビュー",
+    "previewTitle": "応募のプレビュー",
+    "noQuestions": "まだ質問が追加されていません。",
+    "saveSettings": "変更を保存",
+    "savingSettings": "保存中...",
+    "savedSettings": "募集設定が保存されました。",
+    "saveError": "設定を保存できませんでした。",
+    "editQuestion": "編集",
+    "duplicateQuestion": "複製",
+    "deleteQuestion": "削除",
+    "deleteQuestionTitle": "質問を削除",
+    "deleteQuestionMessage": "この質問を削除してもよろしいですか？",
+    "requiredBadge": "必須",
+    "optionalBadge": "任意",
+    "dragHint": "ドラッグで並べ替え",
+    "newQuestionTitle": "新しい質問",
+    "editQuestionTitle": "質問を編集",
+    "questionLabel": "質問",
+    "questionPlaceholder": "例: 現在のCPは？",
+    "typeLabel": "タイプ",
+    "requiredLabel": "必須の質問",
+    "optionsLabel": "選択肢",
+    "addOption": "選択肢を追加",
+    "removeOption": "削除",
+    "optionPlaceholder": "例: タンク",
+    "minLengthLabel": "最小文字数",
+    "maxLengthLabel": "最大文字数",
+    "minValueLabel": "最小値",
+    "maxValueLabel": "最大値",
+    "checkboxTextLabel": "チェックボックスのテキスト",
+    "checkboxTextPlaceholder": "例: ギルドのルールに同意します。",
+    "questionNameRequired": "質問を入力してください。",
+    "optionRequired": "選択肢を1つ以上追加してください。",
+    "saveQuestion": "質問を保存",
+    "cancelLabel": "キャンセル",
+    "type_short_text": "短文",
+    "type_long_text": "長文",
+    "type_number": "数字",
+    "type_single_choice": "単一選択",
+    "type_multiple_choice": "複数選択",
+    "type_dropdown": "ドロップダウン",
+    "type_yes_no": "はい/いいえ",
+    "type_checkbox": "チェックボックス",
+    "selectOption": "選択してください...",
+    "yes": "はい",
+    "no": "いいえ",
+    "fieldRequired": "この質問は必須です。",
+    "errInvalidNumber": "有効な数字を入力してください。",
+    "errMinValue": "最小値は{min}です。",
+    "errMaxValue": "最大値は{max}です。",
+    "errMinLength": "最小{min}文字です。",
+    "errMaxLength": "最大{max}文字です。",
+    "errRequiredOption": "選択してください。",
+    "errRequiredOptions": "1つ以上選択してください。",
+    "submitApplication": "応募を送信",
+    "submitting": "送信中...",
+    "submitError": "応募を送信できませんでした。もう一度お試しください。",
+    "pageTitle": "募集",
+    "openBadge": "募集中",
+    "closedBadge": "受付終了",
+    "closedMessage": "現在、このギルドは新しい応募を受け付けていません。",
+    "alreadyMember": "あなたはすでにこのギルドのメンバーです。",
+    "selectCharacter": "参加するキャラクター",
+    "selectCharacterPlaceholder": "キャラクターを選択",
+    "selectCharacterHint": "応募が承認された場合にギルドに追加されるキャラクターを選択してください。",
+    "selectCharacterRequired": "送信する前にキャラクターを選択してください。",
+    "noCharacterTitle": "利用可能なキャラクターがありません",
+    "noCharacterMessage": "このギルドに応募するには、ギルド未所属のキャラクターが必要です。",
+    "createCharacter": "キャラクターを作成",
+    "applicationSuccess": "応募を送信しました！",
+    "applicationSuccessSub": "応募が正常に送信されました。ギルドが確認し、通知されます。",
+    "sectionPassword": "ギルドパスワード",
+    "sectionPasswordSub": "パスワードを知っている人は、募集が閉じていても申請なしで直接参加できます。",
+    "passwordOn": "有効",
+    "passwordOff": "無効",
+    "passwordLabel": "パスワード",
+    "passwordLabelReset": "パスワードを再設定",
+    "passwordPlaceholder": "新しいパスワード",
+    "passwordKeepPlaceholder": "空欄のままにすると現在のものが維持されます",
+    "passwordHint": "参加させたい人と共有してください。知っている人は直接入れます。",
+    "passwordRequiredError": "有効にするにはパスワードを設定してください。",
+    "passwordLengthError": "パスワードは4〜64文字で設定してください。",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを隠す",
+    "joinWithPassword": "ギルドパスワードで参加",
+    "passwordInputPlaceholder": "ギルドパスワード",
+    "invalidPassword": "パスワードが正しくありません。",
+    "passwordRequired": "ギルドパスワードを入力してください。",
+    "joinedTitle": "ギルドへようこそ！",
+    "joinedSub": "パスワードでギルドに参加しました。",
+    "orApply": "または応募",
+    "joinError": "ギルドに参加できませんでした。もう一度お試しください。",
+    "notFound": "ギルドが見つかりません。",
+    "backToGuild": "ギルドに戻る"
   }
 }

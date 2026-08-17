@@ -67,7 +67,7 @@ function AppSidebar({ open, onToggle }: { open: boolean; onToggle: () => void })
             <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
               <span className="text-white font-bold text-sm">G</span>
             </div>
-            <span className="font-heading font-bold text-white text-lg">GuildRealm</span>
+            <span className="font-heading font-bold text-white text-lg">ClanForge</span>
           </Link>
         )}
         <button

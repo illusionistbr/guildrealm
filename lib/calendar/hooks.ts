@@ -21,9 +21,12 @@ import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import {
   GuildCalendarEvent,
   EventParticipant,
+  EventConfirmation,
   EventType,
   EVENT_TYPES,
 } from './types';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getFirebaseApp } from '@/lib/admin/firebase/client';
 
 const EVENTS_COL = COLLECTIONS.GUILD_EVENTS;
 
@@ -81,6 +84,9 @@ export function useGuildEvents(guildId: string | null) {
             createdByName: data.createdByName ?? '',
             createdAt: tsToDate(data.createdAt),
             updatedAt: tsToDate(data.updatedAt),
+            attendanceEnabled: data.attendanceEnabled ?? false,
+            attendanceStart: tsToDate(data.attendanceStart),
+            attendanceEnd: tsToDate(data.attendanceEnd),
           });
         });
         setEvents(list);
@@ -115,6 +121,9 @@ export function useGuildEvents(guildId: string | null) {
         status: data.status,
         createdBy: uid,
         createdByName: displayName,
+        attendanceEnabled: data.attendanceEnabled ?? false,
+        attendanceStart: data.attendanceStart ?? null,
+        attendanceEnd: data.attendanceEnd ?? null,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -135,6 +144,9 @@ export function useGuildEvents(guildId: string | null) {
       if (data.maxParticipants !== undefined) updateData.maxParticipants = data.maxParticipants;
       if (data.allowRegistration !== undefined) updateData.allowRegistration = data.allowRegistration;
       if (data.status !== undefined) updateData.status = data.status;
+      if (data.attendanceEnabled !== undefined) updateData.attendanceEnabled = data.attendanceEnabled;
+      if (data.attendanceStart !== undefined) updateData.attendanceStart = data.attendanceStart;
+      if (data.attendanceEnd !== undefined) updateData.attendanceEnd = data.attendanceEnd;
       await updateDoc(doc(getFirebaseDb(), EVENTS_COL, eventId), updateData);
     },
     [],
@@ -213,4 +225,82 @@ export function useEventParticipants(eventId: string | null) {
   }, []);
 
   return { participants, loading, joinEvent, leaveEvent };
+}
+
+const CONFIRMATIONS_COL = 'confirmations';
+
+export function useEventConfirmations(eventId: string | null) {
+  const [confirmations, setConfirmations] = useState<EventConfirmation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!eventId) {
+      setConfirmations([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const colRef = collection(
+      getFirebaseDb(),
+      EVENTS_COL,
+      eventId,
+      CONFIRMATIONS_COL,
+    );
+
+    const unsubscribe = onSnapshot(
+      colRef,
+      (snap) => {
+        const list: EventConfirmation[] = [];
+        snap.forEach((d) => {
+          const data = d.data();
+          list.push({
+            userId: d.id,
+            displayName: data.displayName ?? 'Player',
+            confirmedAt: tsToDate(data.confirmedAt),
+          });
+        });
+        list.sort(
+          (a, b) => a.confirmedAt.getTime() - b.confirmedAt.getTime(),
+        );
+        setConfirmations(list);
+        setLoading(false);
+      },
+      () => {
+        setLoading(false);
+      },
+    );
+
+    return unsubscribe;
+  }, [eventId]);
+
+  return { confirmations, loading };
+}
+
+export interface AttendanceCodeResult {
+  code: string;
+  attendanceStart: number;
+  attendanceEnd: number;
+}
+
+export async function generateAttendanceCode(
+  eventId: string,
+): Promise<AttendanceCodeResult> {
+  const fn = httpsCallable<
+    { eventId: string },
+    AttendanceCodeResult
+  >(getFunctions(getFirebaseApp()), 'generateAttendanceCode');
+  const res = await fn({ eventId });
+  return res.data;
+}
+
+export async function confirmAttendance(
+  eventId: string,
+  code: string,
+): Promise<void> {
+  const fn = httpsCallable<
+    { eventId: string; code: string },
+    { success: boolean }
+  >(getFunctions(getFirebaseApp()), 'confirmAttendance');
+  await fn({ eventId, code });
 }

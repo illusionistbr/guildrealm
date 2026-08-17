@@ -81,7 +81,7 @@ export default function AdminLoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border-2 border-accent/30 bg-accent/10 mb-4">
             <ShieldCheck className="w-8 h-8 text-accent" />
           </div>
-          <h1 className="text-2xl font-heading font-bold text-white">GuildRealm Admin</h1>
+          <h1 className="text-2xl font-heading font-bold text-white">ClanForge Admin</h1>
           <p className="text-muted text-sm mt-1">Painel administrativo — acesso restrito</p>
         </div>
 

@@ -37,6 +37,7 @@ interface GroupsViewProps {
   guildId: string;
   memberIds: string[];
   memberNames: Record<string, string>;
+  memberRoles?: Record<string, string>;
   isLeader: boolean;
 }
 
@@ -46,6 +47,7 @@ export function GroupsView({
   guildId,
   memberIds,
   memberNames,
+  memberRoles = {},
   isLeader,
 }: GroupsViewProps) {
   const t = useTranslations('GuildGroups');
@@ -84,6 +86,15 @@ export function GroupsView({
 
   const { roles } = useGuildRoles(guildId);
   const { presets, deletePreset } = useGuildPresets(guildId);
+
+  const roleIdFor = useCallback(
+    (userId: string): string | null => {
+      const roleName = memberRoles[userId];
+      if (!roleName) return null;
+      return roles.find((r) => r.name === roleName)?.id ?? null;
+    },
+    [memberRoles, roles],
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -162,7 +173,7 @@ export function GroupsView({
         if (activeId.startsWith('available-')) {
           const uid = activeId.slice('available-'.length);
           const gid = overGroupId(overId);
-          if (gid) await addMemberToGroup(gid, uid, null);
+          if (gid) await addMemberToGroup(gid, uid, roleIdFor(uid));
         } else if (activeId.startsWith('member-')) {
           const { gid: fromGid, uid } = parseMemberId(activeId);
           if (overId === 'available-members') {
@@ -171,7 +182,7 @@ export function GroupsView({
           }
           const toGid = overGroupId(overId);
           if (toGid && toGid !== fromGid) {
-            await moveMember(uid, fromGid, toGid, null);
+            await moveMember(uid, fromGid, toGid, roleIdFor(uid));
           }
         } else if (activeId.startsWith('group-')) {
           const fromGid = activeId.slice('group-'.length);
@@ -209,7 +220,7 @@ export function GroupsView({
         );
       }
     },
-    [groups, addMemberToGroup, moveMember, removeMemberFromGroup, reorderGroups, showError, t],
+    [groups, addMemberToGroup, moveMember, removeMemberFromGroup, reorderGroups, roleIdFor, showError, t],
   );
 
   const groupOrderIds = useMemo(() => groups.map((g) => g.id), [groups]);

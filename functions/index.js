@@ -3,6 +3,10 @@ const { onDocumentCreated, onDocumentWritten, onDocumentDeleted } = require('fir
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { onInit } = require('firebase-functions/v2/core');
 const admin = require('firebase-admin');
+const crypto = require('crypto');
+
+// Notificações no Discord (webhooks) via triggers do Firestore
+Object.assign(exports, require('./discord'));
 
 onInit(() => {
   admin.initializeApp();
@@ -23,6 +27,21 @@ const CODE_TO_STATUS = {
   'failed-precondition': 'FAILED_PRECONDITION',
   'group-full': 'GROUP_FULL',
   'already-in-group': 'ALREADY_IN_GROUP',
+  'already-in-guild': 'ALREADY_IN_GUILD',
+  'already-applied': 'ALREADY_APPLIED',
+  'recruitment-closed': 'RECRUITMENT_CLOSED',
+  'application-required': 'APPLICATION_REQUIRED',
+  'already-reviewed': 'ALREADY_REVIEWED',
+  'attendance-not-open': 'FAILED_PRECONDITION',
+  'attendance-closed': 'FAILED_PRECONDITION',
+  'attendance-invalid-code': 'INVALID_ARGUMENT',
+  'attendance-already-confirmed': 'ALREADY_EXISTS',
+  'signup-rate-limited': 'RESOURCE_EXHAUSTED',
+  'signup-turnstile-invalid': 'INVALID_ARGUMENT',
+  'password-required': 'PASSWORD_REQUIRED',
+  'invalid-password': 'INVALID_PASSWORD',
+  'password-required': 'PASSWORD_REQUIRED',
+  'invalid-password': 'INVALID_PASSWORD',
   aborted: 'ABORTED',
   'out-of-range': 'OUT_OF_RANGE',
   unimplemented: 'UNIMPLEMENTED',
@@ -52,6 +71,11 @@ const STATUS_TO_HTTP = {
   UNAUTHENTICATED: 401,
   GROUP_FULL: 409,
   ALREADY_IN_GROUP: 409,
+  ALREADY_IN_GUILD: 409,
+  ALREADY_APPLIED: 409,
+  RECRUITMENT_CLOSED: 400,
+  APPLICATION_REQUIRED: 409,
+  ALREADY_REVIEWED: 409,
 };
 
 class CallableError extends Error {
@@ -61,8 +85,8 @@ class CallableError extends Error {
   }
 }
 
-function callable(handler) {
-  return onRequest({ cors: true }, async (req, res) => {
+function callable(handler, options) {
+  return onRequest({ cors: true, ...options }, async (req, res) => {
     try {
       const context = { rawRequest: req };
 
@@ -175,6 +199,98 @@ exports.createUserProfile = callable(async (data, context) => {
   return { success: true };
 });
 
+// ============ PROTEÇÃO DE CADASTRO (Honeypot → Rate Limit → Turnstile) ============
+// Chamado pelo cliente ANTES de criar a conta no Firebase Auth. Aplica rate
+// limit por IP e por e-mail e valida o token do Cloudflare Turnstile.
+// Obs.: não exige login (o cadastro acontece antes da autenticação).
+exports.verifySignup = callable(async (data, context) => {
+  const email =
+    typeof data?.email === 'string' ? data.email.trim().toLowerCase() : '';
+  const token = typeof data?.token === 'string' ? data.token.trim() : '';
+
+  // 1) Rate limit por IP (5 tentativas / 15 min)
+  await enforceSignupRateLimit(
+    `ip_${hashValue(clientIp(context))}`,
+    5,
+    15 * 60 * 1000,
+  );
+
+  // 2) Rate limit por e-mail (3 tentativas / 60 min)
+  if (email) {
+    await enforceSignupRateLimit(
+      `email_${hashValue(email)}`,
+      3,
+      60 * 60 * 1000,
+    );
+  }
+
+  // 3) Turnstile (Cloudflare) — validado server-side
+  await verifyTurnstileToken(token);
+
+  return { success: true };
+});
+
+function hashValue(value) {
+  return crypto.createHash('sha256').update(value).digest('hex');
+}
+
+function clientIp(context) {
+  const req = context.rawRequest;
+  const fwd = req?.headers?.['x-forwarded-for'];
+  if (fwd) return String(fwd).split(',')[0].trim();
+  return req?.ip || 'unknown';
+}
+
+async function enforceSignupRateLimit(key, max, windowMs) {
+  const ref = admin.firestore().doc(`signup_attempts/${key}`);
+  const now = Date.now();
+  const snap = await ref.get();
+  if (!snap.exists) {
+    await ref.set({ count: 1, windowStart: now });
+    return;
+  }
+  const data = snap.data();
+  const windowStart = data.windowStart ?? now;
+  if (now - windowStart > windowMs) {
+    await ref.set({ count: 1, windowStart: now });
+    return;
+  }
+  if ((data.count ?? 0) >= max) {
+    throw new CallableError(
+      'signup-rate-limited',
+      'Too many signup attempts. Try again later.',
+    );
+  }
+  await ref.update({ count: admin.firestore.FieldValue.increment(1) });
+}
+
+async function verifyTurnstileToken(token) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    console.warn(
+      'TURNSTILE_SECRET_KEY not set; skipping Turnstile verification',
+    );
+    return;
+  }
+  if (!token) {
+    throw new CallableError('signup-turnstile-invalid', 'Missing Turnstile token');
+  }
+  let res;
+  try {
+    res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret, response: token }),
+    });
+  } catch {
+    throw new CallableError('signup-turnstile-invalid', 'Turnstile verification failed');
+  }
+  const data = await res.json();
+  if (!data?.success) {
+    throw new CallableError('signup-turnstile-invalid', 'Turnstile verification failed');
+  }
+}
+
 // ============ ENTRADA/SAIDA DE GUILD (por personagem) ============
 
 function characterDoc(characterId) {
@@ -185,7 +301,7 @@ function characterDoc(characterId) {
 exports.joinGuild = callable(async (data, context) => {
   if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
 
-  const { characterId, guildId } = data ?? {};
+  const { characterId, guildId, password } = data ?? {};
   if (!characterId || !guildId) {
     throw new CallableError('invalid-argument', 'characterId and guildId are required');
   }
@@ -210,9 +326,38 @@ exports.joinGuild = callable(async (data, context) => {
       throw new CallableError('not-found', 'Guild not found');
     }
     const guild = guildSnap.data();
-    if (guild.recruitment === 'closed') {
-      throw new CallableError('failed-precondition', 'Guild is not recruiting');
+
+    // Senha da guild: quem tiver a senha entra direto, mesmo com o
+    // recrutamento fechado ou com candidatura obrigatória.
+    const settingsSnap = await tx.get(recruitmentDoc(guildId));
+    const settings = settingsSnap.exists ? settingsSnap.data() : null;
+    const passwordEnabled = settings?.passwordEnabled === true;
+
+    let passwordOk = false;
+    if (passwordEnabled) {
+      if (typeof password !== 'string' || !password) {
+        throw new CallableError('password-required', 'Guild password is required to join');
+      }
+      const secretSnap = await tx.get(recruitmentSecretDoc(guildId));
+      const secret = secretSnap.exists ? secretSnap.data() : null;
+      passwordOk = verifyGuildPassword(secret?.passwordHash, secret?.passwordSalt, password);
+      if (!passwordOk) {
+        throw new CallableError('invalid-password', 'Invalid guild password');
+      }
     }
+
+    if (!passwordOk) {
+      if (guild.recruitment === 'closed') {
+        throw new CallableError('failed-precondition', 'Guild is not recruiting');
+      }
+      if (await guildRequiresApplication(guildId)) {
+        throw new CallableError(
+          'application-required',
+          'Guild requires an application before joining',
+        );
+      }
+    }
+
     if ((guild.bannedCharacters ?? []).includes(characterId)) {
       throw new CallableError('permission-denied', 'Character is banned from this guild');
     }
@@ -364,7 +509,7 @@ exports.kickGuildMember = callable(async (data, context) => {
     throw new CallableError('invalid-argument', 'guildId and characterId are required');
   }
 
-  const guild = await requireGuildLeader(guildId, context.auth.uid);
+  const guild = await requireGuildPermission(guildId, context.auth.uid, 'manageMembers');
   if (guild.ownerCharacterId === characterId) {
     throw new CallableError('failed-precondition', 'Guild leader cannot be removed');
   }
@@ -377,7 +522,7 @@ exports.kickGuildMember = callable(async (data, context) => {
   return { success: true };
 });
 
-// Líder expulsa e bane um personagem da guild (não pode mais entrar)
+// Expulsa e bane um personagem da guild (não pode mais entrar)
 exports.banGuildMember = callable(async (data, context) => {
   if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
 
@@ -386,7 +531,7 @@ exports.banGuildMember = callable(async (data, context) => {
     throw new CallableError('invalid-argument', 'guildId and characterId are required');
   }
 
-  const guild = await requireGuildLeader(guildId, context.auth.uid);
+  const guild = await requireGuildPermission(guildId, context.auth.uid, 'manageMembers');
   if (guild.ownerCharacterId === characterId) {
     throw new CallableError('failed-precondition', 'Guild leader cannot be banned');
   }
@@ -399,6 +544,698 @@ exports.banGuildMember = callable(async (data, context) => {
   await guildDoc(guildId).update({
     bannedCharacters: admin.firestore.FieldValue.arrayUnion(characterId),
     updatedAt: fv.serverTimestamp(),
+  });
+
+  return { success: true };
+});
+
+// Atribui um cargo a um personagem da guild (permissão manageMembers)
+exports.setGuildMemberRank = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, characterId, rankId = null } = data ?? {};
+  if (!guildId || !characterId) {
+    throw new CallableError('invalid-argument', 'guildId and characterId are required');
+  }
+
+  const guild = await requireGuildPermission(guildId, context.auth.uid, 'manageMembers');
+  if (guild.ownerCharacterId === characterId) {
+    throw new CallableError('failed-precondition', 'Guild leader rank cannot be changed');
+  }
+  if (!(guild.members ?? []).includes(characterId)) {
+    throw new CallableError('invalid-argument', 'Character is not a guild member');
+  }
+
+  const update = { updatedAt: fv.serverTimestamp() };
+  if (rankId) {
+    const rankSnap = await guildDoc(guildId).collection('ranks').doc(rankId).get();
+    if (!rankSnap.exists) throw new CallableError('not-found', 'Rank not found');
+    update[`memberRanks.${characterId}`] = rankId;
+  } else {
+    update[`memberRanks.${characterId}`] = admin.firestore.FieldValue.delete();
+  }
+  await guildDoc(guildId).update(update);
+
+  return { success: true };
+});
+
+// Ativa/inativa um personagem da guild (permissão manageMembers)
+exports.setGuildMemberStatus = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, characterId, inactive } = data ?? {};
+  if (!guildId || !characterId || typeof inactive !== 'boolean') {
+    throw new CallableError('invalid-argument', 'guildId, characterId and inactive are required');
+  }
+
+  const guild = await requireGuildPermission(guildId, context.auth.uid, 'manageMembers');
+  if (guild.ownerCharacterId === characterId && inactive) {
+    throw new CallableError('failed-precondition', 'Guild leader cannot be inactivated');
+  }
+  if (!(guild.members ?? []).includes(characterId)) {
+    throw new CallableError('invalid-argument', 'Character is not a guild member');
+  }
+
+  await guildDoc(guildId).update({
+    inactiveCharacters: inactive
+      ? admin.firestore.FieldValue.arrayUnion(characterId)
+      : admin.firestore.FieldValue.arrayRemove(characterId),
+    updatedAt: fv.serverTimestamp(),
+  });
+
+  return { success: true };
+});
+
+// ============ RECRUTAMENTO ============
+
+const RECRUITMENT_QUESTION_TYPES = [
+  'short_text',
+  'long_text',
+  'number',
+  'single_choice',
+  'multiple_choice',
+  'dropdown',
+  'yes_no',
+  'checkbox',
+];
+
+function recruitmentDoc(guildId) {
+  return admin.firestore().doc(`guilds/${guildId}/settings/recruitment`);
+}
+
+// Guarda o hash da senha em um doc separado, sem leitura de clientes.
+function recruitmentSecretDoc(guildId) {
+  return admin.firestore().doc(`guilds/${guildId}/settings/recruitmentSecret`);
+}
+
+function hashGuildPassword(password, salt) {
+  return require('crypto').createHash('sha256').update(`${salt}:${password}`).digest('hex');
+}
+
+function newGuildPasswordSalt() {
+  return require('crypto').randomBytes(16).toString('hex');
+}
+
+function verifyGuildPassword(hash, salt, password) {
+  if (typeof hash !== 'string' || typeof salt !== 'string' || typeof password !== 'string') {
+    return false;
+  }
+  const candidate = Buffer.from(hashGuildPassword(password, salt), 'hex');
+  const expected = Buffer.from(hash, 'hex');
+  return candidate.length === expected.length && require('crypto').timingSafeEqual(candidate, expected);
+}
+
+function recruitmentApplicationsCol(guildId) {
+  return admin.firestore().collection(`guilds/${guildId}/applications`);
+}
+
+// Uma guild exige candidatura quando o recrutamento está ativo com perguntas
+// configuradas. Nesse caso, ninguém pode entrar direto via joinGuild.
+async function guildRequiresApplication(guildId) {
+  try {
+    const settingsSnap = await recruitmentDoc(guildId).get();
+    if (!settingsSnap.exists) return false;
+    const settings = settingsSnap.data();
+    return (
+      settings.enabled === true &&
+      Array.isArray(settings.questions) &&
+      settings.questions.length > 0
+    );
+  } catch {
+    return false;
+  }
+}
+
+function sanitizeRecruitmentConfig(type, config) {
+  const cfg = config ?? {};
+  const out = {};
+  if (type === 'short_text' || type === 'long_text') {
+    if (Number.isInteger(cfg.minLength)) {
+      out.minLength = Math.max(0, Math.min(2000, cfg.minLength));
+    }
+    if (Number.isInteger(cfg.maxLength)) {
+      out.maxLength = Math.max(0, Math.min(5000, cfg.maxLength));
+    }
+  }
+  if (type === 'number') {
+    if (typeof cfg.min === 'number' && Number.isFinite(cfg.min)) out.min = cfg.min;
+    if (typeof cfg.max === 'number' && Number.isFinite(cfg.max)) out.max = cfg.max;
+  }
+  if (type === 'single_choice' || type === 'multiple_choice' || type === 'dropdown') {
+    const options = Array.isArray(cfg.options)
+      ? cfg.options
+          .map((o) => (typeof o === 'string' ? o.trim() : ''))
+          .filter(Boolean)
+          .slice(0, 50)
+      : [];
+    out.options = options;
+  }
+  if (type === 'checkbox') {
+    out.text = typeof cfg.text === 'string' ? cfg.text.slice(0, 300) : '';
+  }
+  return out;
+}
+
+function sanitizeRecruitmentQuestions(questions) {
+  if (!Array.isArray(questions)) return [];
+  return questions
+    .filter((q) => q && typeof q === 'object')
+    .map((q, index) => {
+      const type = RECRUITMENT_QUESTION_TYPES.includes(q.type)
+        ? q.type
+        : 'short_text';
+      return {
+        id:
+          typeof q.id === 'string' && q.id
+            ? q.id.slice(0, 64)
+            : `q_${Date.now()}_${index}`,
+        type,
+        title: typeof q.title === 'string' ? q.title.trim().slice(0, 300) : '',
+        required: q.required === true,
+        order: Number.isInteger(q.order) ? q.order : index,
+        config: sanitizeRecruitmentConfig(type, q.config),
+      };
+    })
+    .filter((q) => q.title)
+    .sort((a, b) => a.order - b.order);
+}
+
+// Salva as configurações de recrutamento (permissão manageRecruitment)
+exports.saveRecruitmentSettings = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, enabled, message, questions, passwordEnabled, password } = data ?? {};
+  if (!guildId || typeof enabled !== 'boolean') {
+    throw new CallableError('invalid-argument', 'guildId and enabled are required');
+  }
+
+  await requireGuildPermission(guildId, context.auth.uid, 'manageRecruitment');
+
+  const cleanMessage =
+    typeof message === 'string' ? message.trim().slice(0, 5000) : '';
+  const cleanQuestions = sanitizeRecruitmentQuestions(questions);
+
+  const wantPassword = passwordEnabled === true;
+  const cleanPassword =
+    typeof password === 'string' && password ? password.slice(0, 128) : '';
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const secretSnap = await tx.get(recruitmentSecretDoc(guildId));
+    const existing = secretSnap.exists ? secretSnap.data() : null;
+
+    let passwordSet = false;
+    if (wantPassword) {
+      if (cleanPassword) {
+        const salt = newGuildPasswordSalt();
+        tx.set(recruitmentSecretDoc(guildId), {
+          passwordHash: hashGuildPassword(cleanPassword, salt),
+          passwordSalt: salt,
+          updatedAt: fv.serverTimestamp(),
+          updatedBy: context.auth.uid,
+        });
+        passwordSet = true;
+      } else if (existing && existing.passwordHash && existing.passwordSalt) {
+        passwordSet = true;
+      } else {
+        throw new CallableError(
+          'invalid-argument',
+          'A password is required to enable the guild password',
+        );
+      }
+    } else {
+      tx.delete(recruitmentSecretDoc(guildId));
+    }
+
+    tx.set(
+      recruitmentDoc(guildId),
+      {
+        enabled,
+        message: cleanMessage,
+        questions: cleanQuestions,
+        passwordEnabled: wantPassword,
+        passwordSet,
+        updatedAt: fv.serverTimestamp(),
+        updatedBy: context.auth.uid,
+      },
+      { merge: true },
+    );
+    // Mantém o campo legado da guild sincronizado com o novo estado,
+    // para que badges públicos, listagem e joinGuild reflitam a mesma config.
+    tx.update(guildDoc(guildId), {
+      recruitment: enabled ? 'open' : 'closed',
+    });
+  });
+
+  return { success: true };
+});
+
+// Envia uma mensagem de teste para o webhook do Discord da guild
+exports.testDiscordWebhook = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, webhookUrl } = data ?? {};
+  if (!guildId || typeof webhookUrl !== 'string' || !webhookUrl.trim()) {
+    throw new CallableError('invalid-argument', 'guildId and webhookUrl are required');
+  }
+  if (!/^https:\/\/discord\.com\/api\/webhooks\//.test(webhookUrl.trim())) {
+    throw new CallableError('invalid-argument', 'Invalid Discord webhook URL');
+  }
+
+  await requireGuildPermission(guildId, context.auth.uid, 'manageSettings');
+
+  try {
+    const res = await fetch(webhookUrl.trim(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embeds: [
+          {
+            color: 0x6d28d9,
+            title: '✅ Conexão com o Discord funcionando!',
+            description:
+              'As notificações desta guild (eventos, presenças e mais) serão enviadas para este canal.',
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      }),
+    });
+    if (!res.ok) {
+      throw new CallableError(
+        'invalid-argument',
+        `Discord rejected the webhook (${res.status})`,
+      );
+    }
+    return { success: true };
+  } catch (err) {
+    if (err instanceof CallableError) throw err;
+    throw new CallableError('internal', 'Failed to send test message');
+  }
+});
+
+// ============ PRESENÇAS (confirmação de presença em eventos) ============
+
+// Alfabeto sem caracteres ambíguos (0/O, 1/I/L) para o código compartilhável.
+const ATTENDANCE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+function generateAttendanceCodeValue() {
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    code += ATTENDANCE_ALPHABET[crypto.randomInt(ATTENDANCE_ALPHABET.length)];
+  }
+  return code;
+}
+
+// Valida que o evento existe e tem confirmação de presença habilitada.
+async function getEventForAttendance(eventId) {
+  const eventSnap = await admin
+    .firestore()
+    .doc(`guild_events/${eventId}`)
+    .get();
+  if (!eventSnap.exists) throw new CallableError('not-found', 'Event not found');
+  const event = eventSnap.data();
+  if (!event.attendanceEnabled) {
+    throw new CallableError(
+      'invalid-argument',
+      'Attendance confirmation is not enabled for this event',
+    );
+  }
+  const guildSnap = await guildDoc(event.guildId).get();
+  const guild = guildSnap.data();
+  if (!guild) throw new CallableError('not-found', 'Guild not found');
+  return { event, guild };
+}
+
+function getAttendanceWindow(event) {
+  const startMs = event.attendanceStart?.toMillis?.() ?? null;
+  const endMs = event.attendanceEnd?.toMillis?.() ?? null;
+  if (!startMs || !endMs) {
+    throw new CallableError(
+      'invalid-argument',
+      'Event has no attendance window',
+    );
+  }
+  return { startMs, endMs };
+}
+
+// Gera (ou reutiliza) o código de confirmação de presença do evento.
+// Disponível a partir de 1 minuto antes da abertura das confirmações.
+// Apenas quem tem a permissão de gerenciar eventos (líder, oficiais etc.).
+exports.generateAttendanceCode = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { eventId } = data ?? {};
+  if (!eventId || typeof eventId !== 'string') {
+    throw new CallableError('invalid-argument', 'eventId is required');
+  }
+
+  const { event } = await getEventForAttendance(eventId);
+  await requireGuildPermission(event.guildId, context.auth.uid, 'manageEvents');
+  const { startMs, endMs } = getAttendanceWindow(event);
+
+  const now = Date.now();
+  if (now < startMs - 60000) {
+    throw new CallableError(
+      'attendance-not-open',
+      'Attendance code is not available yet',
+    );
+  }
+  if (now > endMs) {
+    throw new CallableError('attendance-closed', 'Attendance window is closed');
+  }
+
+  const codeRef = admin
+    .firestore()
+    .doc(`guild_events/${eventId}/attendance/code`);
+  const existing = await codeRef.get();
+  if (existing.exists && typeof existing.data()?.code === 'string') {
+    return {
+      code: existing.data().code,
+      attendanceStart: startMs,
+      attendanceEnd: endMs,
+    };
+  }
+
+  const code = generateAttendanceCodeValue();
+  await codeRef.set({
+    code,
+    createdAt: fv.serverTimestamp(),
+    createdBy: context.auth.uid,
+  });
+
+  return { code, attendanceStart: startMs, attendanceEnd: endMs };
+});
+
+// Confirma a presença do membro no evento com o código compartilhado.
+// Só funciona dentro da janela de confirmações [attendanceStart, attendanceEnd].
+exports.confirmAttendance = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { eventId, code } = data ?? {};
+  if (!eventId || typeof eventId !== 'string') {
+    throw new CallableError('invalid-argument', 'eventId is required');
+  }
+  if (typeof code !== 'string' || !code.trim()) {
+    throw new CallableError('invalid-argument', 'code is required');
+  }
+
+  const { event, guild } = await getEventForAttendance(eventId);
+  if (!(guild.memberOwnerIds ?? []).includes(context.auth.uid)) {
+    throw new CallableError('permission-denied', 'User is not a guild member');
+  }
+  const { startMs, endMs } = getAttendanceWindow(event);
+
+  const now = Date.now();
+  if (now < startMs) {
+    throw new CallableError('attendance-not-open', 'Attendance window has not opened yet');
+  }
+  if (now > endMs) {
+    throw new CallableError('attendance-closed', 'Attendance window is closed');
+  }
+
+  const codeSnap = await admin
+    .firestore()
+    .doc(`guild_events/${eventId}/attendance/code`)
+    .get();
+  if (!codeSnap.exists || codeSnap.data().code !== code.trim().toUpperCase()) {
+    throw new CallableError('attendance-invalid-code', 'Invalid confirmation code');
+  }
+
+  const confirmedRef = admin
+    .firestore()
+    .doc(`guild_events/${eventId}/confirmations/${context.auth.uid}`);
+  const already = await confirmedRef.get();
+  if (already.exists) {
+    throw new CallableError('attendance-already-confirmed', 'Attendance already confirmed');
+  }
+
+  const charSnap = await admin
+    .firestore()
+    .collection('characters')
+    .where('ownerId', '==', context.auth.uid)
+    .where('guildId', '==', event.guildId)
+    .limit(1)
+    .get();
+  const charName = charSnap.empty
+    ? (context.auth.token.name ?? '')
+    : (charSnap.docs[0].data().name ?? '');
+
+  await confirmedRef.set({
+    guildId: event.guildId,
+    displayName: charName || context.auth.token.name || '',
+    confirmedAt: fv.serverTimestamp(),
+  });
+
+  return { success: true };
+});
+
+function validateAnswers(questions, answers) {
+  const provided = new Map();
+  for (const a of answers ?? []) {
+    if (a && typeof a.questionId === 'string') {
+      provided.set(a.questionId, a.answer);
+    }
+  }
+
+  const clean = [];
+  for (const q of questions) {
+    const raw = provided.get(q.id);
+    let answer = null;
+
+    if (q.type === 'multiple_choice') {
+      const list = Array.isArray(raw)
+        ? raw.map((v) => String(v).slice(0, 2000)).filter(Boolean)
+        : [];
+      if (q.required && list.length === 0) {
+        throw new CallableError('invalid-argument', `Required question unanswered: ${q.id}`);
+      }
+      const valid = (q.config.options ?? []).filter((o) => list.includes(o));
+      answer = valid;
+    } else if (q.type === 'checkbox') {
+      answer = raw === true || raw === 'true';
+      if (q.required && answer !== true) {
+        throw new CallableError('invalid-argument', `Required checkbox unchecked: ${q.id}`);
+      }
+    } else if (q.type === 'yes_no') {
+      answer = raw === 'yes' || raw === 'no' ? raw : null;
+      if (q.required && !answer) {
+        throw new CallableError('invalid-argument', `Required question unanswered: ${q.id}`);
+      }
+    } else if (q.type === 'number') {
+      if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
+        const n = Number(String(raw).replace(/\./g, '').replace(',', '.'));
+        if (!Number.isFinite(n)) {
+          throw new CallableError('invalid-argument', `Invalid number: ${q.id}`);
+        }
+        if (q.config.min !== undefined && n < q.config.min) {
+          throw new CallableError('invalid-argument', `Below minimum: ${q.id}`);
+        }
+        if (q.config.max !== undefined && n > q.config.max) {
+          throw new CallableError('invalid-argument', `Above maximum: ${q.id}`);
+        }
+        answer = String(n);
+      } else if (q.required) {
+        throw new CallableError('invalid-argument', `Required question unanswered: ${q.id}`);
+      }
+    } else if (q.type === 'short_text' || q.type === 'long_text') {
+      const s = typeof raw === 'string' ? raw.trim().slice(0, 5000) : '';
+      if (q.required && !s) {
+        throw new CallableError('invalid-argument', `Required question unanswered: ${q.id}`);
+      }
+      if (s && q.config.minLength && s.length < q.config.minLength) {
+        throw new CallableError('invalid-argument', `Below min length: ${q.id}`);
+      }
+      if (s && q.config.maxLength && s.length > q.config.maxLength) {
+        throw new CallableError('invalid-argument', `Above max length: ${q.id}`);
+      }
+      answer = s;
+    } else {
+      // single_choice / dropdown
+      const s = typeof raw === 'string' ? raw : '';
+      if (q.required && !s) {
+        throw new CallableError('invalid-argument', `Required question unanswered: ${q.id}`);
+      }
+      if (s && !(q.config.options ?? []).includes(s)) {
+        throw new CallableError('invalid-argument', `Invalid option: ${q.id}`);
+      }
+      answer = s || null;
+    }
+
+    if (answer !== null) clean.push({ questionId: q.id, answer });
+  }
+  return clean;
+}
+
+// Envia uma candidatura (recrutamento aberto, candidato externo, sem pendência)
+exports.submitGuildApplication = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, answers, characterId } = data ?? {};
+  if (!guildId) {
+    throw new CallableError('invalid-argument', 'guildId is required');
+  }
+  if (!characterId) {
+    throw new CallableError('invalid-argument', 'characterId is required');
+  }
+
+  const uid = context.auth.uid;
+
+  const guildSnap = await guildDoc(guildId).get();
+  if (!guildSnap.exists) throw new CallableError('not-found', 'Guild not found');
+  const guild = guildSnap.data();
+
+  // Personagem escolhido para a candidatura
+  const charSnap = await characterDoc(characterId).get();
+  if (!charSnap.exists) throw new CallableError('not-found', 'Character not found');
+  const character = charSnap.data();
+  if (character.ownerId !== uid) {
+    throw new CallableError('permission-denied', 'Character does not belong to this user');
+  }
+  if (character.guildId) {
+    throw new CallableError('already-in-group', 'Character is already in a guild');
+  }
+  if (guild.game && character.game && guild.game !== character.game) {
+    throw new CallableError('invalid-argument', 'Game does not match guild');
+  }
+  if ((guild.bannedCharacters ?? []).includes(characterId)) {
+    throw new CallableError('permission-denied', 'Applicant is banned from this guild');
+  }
+
+  // Candidato não pode estar banido via outro personagem
+  const allChars = await admin
+    .firestore()
+    .collection('characters')
+    .where('ownerId', '==', uid)
+    .get();
+  for (const c of allChars.docs) {
+    if ((guild.bannedCharacters ?? []).includes(c.id)) {
+      throw new CallableError('permission-denied', 'Applicant is banned from this guild');
+    }
+  }
+
+  const settingsSnap = await recruitmentDoc(guildId).get();
+  if (!settingsSnap.exists || settingsSnap.data().enabled !== true) {
+    throw new CallableError('recruitment-closed', 'Recruitment is closed');
+  }
+  const settings = settingsSnap.data();
+
+  const cleanAnswers = validateAnswers(settings.questions ?? [], answers);
+
+  // Impede candidaturas simultâneas pendentes
+  const pending = await recruitmentApplicationsCol(guildId)
+    .where('applicantId', '==', uid)
+    .where('status', '==', 'PENDING')
+    .limit(1)
+    .get();
+  if (!pending.empty) {
+    throw new CallableError('already-applied', 'Applicant already has a pending application');
+  }
+
+  // Nome do candidato a partir do perfil de usuário
+  let applicantName = 'Jogador';
+  try {
+    const userSnap = await admin.firestore().collection('users').doc(uid).get();
+    if (userSnap.exists) {
+      applicantName =
+        userSnap.data().displayName?.trim() ||
+        userSnap.data().nickname?.trim() ||
+        'Jogador';
+    }
+  } catch {
+    // mantém o fallback
+  }
+
+  const appRef = recruitmentApplicationsCol(guildId).doc();
+  await appRef.set({
+    guildId,
+    applicantId: uid,
+    applicantName,
+    applicantCharacterId: characterId,
+    status: 'PENDING',
+    answers: cleanAnswers,
+    submittedAt: fv.serverTimestamp(),
+    updatedAt: fv.serverTimestamp(),
+  });
+
+  return { success: true, applicationId: appRef.id };
+});
+
+// Revisa uma candidatura: aceita (adiciona o personagem à guild) ou rejeita.
+// Exige permissão de gerenciar recrutamento (dono, líder ou cargo com a permissão).
+exports.reviewGuildApplication = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, applicationId, decision } = data ?? {};
+  if (!guildId || !applicationId) {
+    throw new CallableError('invalid-argument', 'guildId and applicationId are required');
+  }
+  if (decision !== 'accepted' && decision !== 'rejected') {
+    throw new CallableError('invalid-argument', 'decision must be accepted or rejected');
+  }
+
+  const guild = await requireGuildPermission(guildId, context.auth.uid, 'manageRecruitment');
+  const reviewerUid = context.auth.uid;
+
+  const appRef = recruitmentApplicationsCol(guildId).doc(applicationId);
+  const appSnap = await appRef.get();
+  if (!appSnap.exists) throw new CallableError('not-found', 'Application not found');
+  const application = appSnap.data();
+  if (application.status !== 'PENDING') {
+    throw new CallableError('already-reviewed', 'Application was already reviewed');
+  }
+
+  if (decision === 'rejected') {
+    await appRef.update({
+      status: 'REJECTED',
+      reviewedBy: reviewerUid,
+      updatedAt: fv.serverTimestamp(),
+    });
+    return { success: true };
+  }
+
+  // ----- Aceite: adiciona o personagem do candidato à guild -----
+  const characterId = application.applicantCharacterId;
+  if (!characterId) {
+    throw new CallableError('invalid-argument', 'Application has no character to accept');
+  }
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const charSnap = await tx.get(characterDoc(characterId));
+    if (!charSnap.exists) throw new CallableError('not-found', 'Character not found');
+    const character = charSnap.data();
+    if (character.ownerId !== application.applicantId) {
+      throw new CallableError('permission-denied', 'Character does not belong to applicant');
+    }
+    if (character.guildId) {
+      throw new CallableError('already-in-group', 'Character is already in a guild');
+    }
+    if (guild.game && character.game && guild.game !== character.game) {
+      throw new CallableError('invalid-argument', 'Game does not match guild');
+    }
+    if ((guild.bannedCharacters ?? []).includes(characterId)) {
+      throw new CallableError('permission-denied', 'Character is banned from this guild');
+    }
+    const members = guild.members ?? [];
+    if (members.includes(characterId)) {
+      throw new CallableError('already-in-group', 'Character is already a guild member');
+    }
+
+    const owners = guild.memberOwnerIds ?? [];
+    tx.update(guildDoc(guildId), {
+      members: [...members, characterId],
+      memberOwnerIds: owners.includes(application.applicantId)
+        ? owners
+        : [...owners, application.applicantId],
+      updatedAt: fv.serverTimestamp(),
+    });
+    tx.update(characterDoc(characterId), {
+      guildId,
+      updatedAt: fv.serverTimestamp(),
+    });
+    tx.update(appRef, {
+      status: 'ACCEPTED',
+      reviewedBy: reviewerUid,
+      updatedAt: fv.serverTimestamp(),
+    });
   });
 
   return { success: true };
@@ -452,14 +1289,36 @@ function guildGroupsCol(guildId) {
   return admin.firestore().collection(`guilds/${guildId}/groups`);
 }
 
-async function requireGuildLeader(guildId, uid) {
+// Retorna o cargo do personagem do usuário dentro da guild (ou null se não tiver)
+async function getCallerRank(guildId, guild, uid) {
+  const chars = await admin
+    .firestore()
+    .collection('characters')
+    .where('ownerId', '==', uid)
+    .where('guildId', '==', guildId)
+    .limit(1)
+    .get();
+  if (chars.empty) return null;
+  const charId = chars.docs[0].id;
+  const rankId = guild.memberRanks?.[charId];
+  if (!rankId) return null;
+  const rankSnap = await guildDoc(guildId).collection('ranks').doc(rankId).get();
+  if (!rankSnap.exists) return null;
+  return rankSnap.data();
+}
+
+// Autoriza o dono, líderes legados ou quem tiver a permissão no cargo
+async function requireGuildPermission(guildId, uid, permission) {
   const snap = await guildDoc(guildId).get();
   if (!snap.exists) throw new CallableError('not-found', 'Guild not found');
   const guild = snap.data();
-  if (guild.ownerId !== uid && !(guild.leaders ?? []).includes(uid)) {
-    throw new CallableError('permission-denied', 'Only guild leaders can manage members');
-  }
-  return guild;
+  if (guild.ownerId === uid || (guild.leaders ?? []).includes(uid)) return guild;
+  const rank = await getCallerRank(guildId, guild, uid);
+  if (rank && rank.permissions?.[permission]) return guild;
+  throw new CallableError(
+    'permission-denied',
+    `Missing permission: ${permission}`,
+  );
 }
 
 // Verifica se o usuário já está em qualquer grupo da guild (exceto skipGroupId)
@@ -481,7 +1340,7 @@ exports.assignGuildMember = callable(async (data, context) => {
     throw new CallableError('invalid-argument', 'guildId, userId and toGroupId are required');
   }
 
-  const guild = await requireGuildLeader(guildId, context.auth.uid);
+  const guild = await requireGuildPermission(guildId, context.auth.uid, 'manageGroups');
   const uid = context.auth.uid;
 
   // O alvo da movimentação deve ser um membro real da guild
@@ -566,7 +1425,7 @@ exports.removeGuildMember = callable(async (data, context) => {
     throw new CallableError('invalid-argument', 'guildId, groupId and userId are required');
   }
 
-  await requireGuildLeader(guildId, context.auth.uid);
+  await requireGuildPermission(guildId, context.auth.uid, 'manageGroups');
 
   await admin.firestore().runTransaction(async (tx) => {
     const memberRef = groupMembersCol(guildId, groupId).doc(userId);

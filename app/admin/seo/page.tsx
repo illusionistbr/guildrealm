@@ -50,7 +50,7 @@ export default function SEOPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs text-muted mb-1.5">OG Title</label>
-              <input type="text" defaultValue="GuildRealm — Seu reino. Sua guilda. Sua lenda." className="w-full h-10 px-3 bg-[#050912] border border-[rgba(38,51,86,0.7)] rounded-lg text-white text-sm focus:outline-none focus:border-accent/50" />
+              <input type="text" defaultValue="ClanForge — Seu reino. Sua guilda. Sua lenda." className="w-full h-10 px-3 bg-[#050912] border border-[rgba(38,51,86,0.7)] rounded-lg text-white text-sm focus:outline-none focus:border-accent/50" />
             </div>
             <div>
               <label className="block text-xs text-muted mb-1.5">OG Description</label>

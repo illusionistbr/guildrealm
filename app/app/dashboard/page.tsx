@@ -30,6 +30,7 @@ import {
   Crown,
   LayoutDashboard,
   Loader2,
+  Lock,
   LogIn,
   Pencil,
   Plus,
@@ -93,8 +94,14 @@ export default function UserDashboard() {
   const [reloadKey, setReloadKey] = useState(0);
   const [joinCharacter, setJoinCharacter] = useState<CharacterDoc | null>(null);
   const [openGuilds, setOpenGuilds] = useState<GuildDoc[]>([]);
+  const [guildEntry, setGuildEntry] = useState<Record<
+    string,
+    { requiresApp: boolean; passwordEnabled: boolean }
+  >>({});
+  const [passwords, setPasswords] = useState<Record<string, string>>({});
   const [joinLoading, setJoinLoading] = useState(false);
   const [joinError, setJoinError] = useState('');
+  const [loadError, setLoadError] = useState('');
   const [guildAction, setGuildAction] = useState<{
     characterId: string;
     busy: boolean;
@@ -239,41 +246,75 @@ export default function UserDashboard() {
   const openJoinModal = async (character: CharacterDoc) => {
     setJoinCharacter(character);
     setJoinError('');
-    setJoinLoading(true);
+    setLoadError('');
     setOpenGuilds([]);
+    setGuildEntry({});
+    setPasswords({});
+    setJoinLoading(true);
     try {
       const snap = await getDocs(
         query(
           collection(getFirebaseDb(), COLLECTIONS.GUILDS),
           where('game', '==', character.game ?? 'aion2'),
-          where('recruitment', '==', 'open'),
         ),
       );
       const list: GuildDoc[] = [];
       snap.forEach((d) => {
         list.push({ id: d.id, ...d.data() } as GuildDoc);
       });
-      setOpenGuilds(
-        list.filter((g) => !(g.members ?? []).includes(character.id)),
+
+      const entry: Record<string, { requiresApp: boolean; passwordEnabled: boolean }> = {};
+      const filtered: GuildDoc[] = [];
+      await Promise.all(
+        list.map(async (g) => {
+          let requiresApp = false;
+          let passwordEnabled = false;
+          try {
+            const settingsSnap = await getDoc(
+              doc(getFirebaseDb(), COLLECTIONS.GUILDS, g.id, 'settings', 'recruitment'),
+            );
+            if (settingsSnap.exists()) {
+              const data = settingsSnap.data();
+              requiresApp =
+                data.enabled === true &&
+                Array.isArray(data.questions) &&
+                data.questions.length > 0;
+              passwordEnabled = data.passwordEnabled === true;
+            }
+          } catch {
+            // sem acesso ao settings: trata como entrada direta
+          }
+          entry[g.id] = { requiresApp, passwordEnabled };
+          if (passwordEnabled || g.recruitment === 'open') filtered.push(g);
+        }),
       );
+      setOpenGuilds(filtered.filter((g) => !(g.members ?? []).includes(character.id)));
+      setGuildEntry(entry);
     } catch {
-      setJoinError(t('joinError'));
+      setLoadError(t('joinError'));
     }
     setJoinLoading(false);
   };
 
-  const handleJoin = async (guild: GuildDoc) => {
+  const handleJoin = async (guild: GuildDoc, password?: string) => {
     if (!joinCharacter) return;
     setJoinError('');
     try {
-      const fn = httpsCallable<{ characterId: string; guildId: string }, { success: boolean }>(
-        getFunctions(getFirebaseApp()),
-        'joinGuild',
-      );
-      await fn({ characterId: joinCharacter.id, guildId: guild.id });
+      const fn = httpsCallable<
+        { characterId: string; guildId: string; password?: string },
+        { success: boolean }
+      >(getFunctions(getFirebaseApp()), 'joinGuild');
+      await fn({
+        characterId: joinCharacter.id,
+        guildId: guild.id,
+        password: password ?? '',
+      });
       setJoinCharacter(null);
-    } catch {
-      setJoinError(t('joinError'));
+    } catch (err) {
+      const e = err as { code?: string };
+      setJoinError(
+        e?.code === 'functions/invalid-password' ? t('invalidPassword') : t('joinError'),
+      );
     }
   };
 
@@ -358,9 +399,15 @@ export default function UserDashboard() {
         <JoinGuildModal
           character={joinCharacter}
           guilds={openGuilds}
+          entry={guildEntry}
+          passwords={passwords}
           loading={joinLoading}
-          error={joinError}
+          error={loadError}
+          joinError={joinError}
           onClose={() => setJoinCharacter(null)}
+          onPasswordChange={(guildId, value) =>
+            setPasswords((prev) => ({ ...prev, [guildId]: value }))
+          }
           onJoin={handleJoin}
         />
       )}
@@ -644,24 +691,32 @@ function CharactersSection({
 function JoinGuildModal({
   character,
   guilds,
+  entry,
+  passwords,
   loading,
   error,
+  joinError,
   onClose,
+  onPasswordChange,
   onJoin,
 }: {
   character: CharacterDoc;
   guilds: GuildDoc[];
+  entry: Record<string, { requiresApp: boolean; passwordEnabled: boolean }>;
+  passwords: Record<string, string>;
   loading: boolean;
   error: string;
+  joinError: string;
   onClose: () => void;
-  onJoin: (guild: GuildDoc) => void;
+  onPasswordChange: (guildId: string, value: string) => void;
+  onJoin: (guild: GuildDoc, password?: string) => void;
 }) {
   const t = useTranslations('Dashboard');
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  const handleJoin = async (guild: GuildDoc) => {
+  const handleJoin = async (guild: GuildDoc, password?: string) => {
     setBusyId(guild.id);
-    await onJoin(guild);
+    await onJoin(guild, password);
     setBusyId(null);
   };
 
@@ -705,43 +760,90 @@ function JoinGuildModal({
             </p>
           ) : (
             <div className="space-y-2">
-              {guilds.map((guild) => (
-                <div
-                  key={guild.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-[rgba(38,51,86,0.3)] bg-[rgba(19,29,48,0.4)]"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0">
-                    {guild.name?.charAt(0) ?? 'G'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">
-                      {guild.name}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      {guild.faction && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent">
-                          {guild.faction}
-                        </span>
-                      )}
-                      <span className="text-[10px] text-muted flex items-center gap-1">
-                        <Users size={10} /> {guild.members?.length ?? 0}
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleJoin(guild)}
-                    disabled={busyId === guild.id}
-                    className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
+              {joinError && (
+                <p className="text-xs text-red-400 mb-2">{joinError}</p>
+              )}
+              {guilds.map((guild) => {
+                const info = entry[guild.id] ?? {
+                  requiresApp: false,
+                  passwordEnabled: false,
+                };
+                return (
+                  <div
+                    key={guild.id}
+                    className="flex items-center gap-3 p-3 rounded-lg border border-[rgba(38,51,86,0.3)] bg-[rgba(19,29,48,0.4)]"
                   >
-                    {busyId === guild.id ? (
-                      <Loader2 size={13} className="animate-spin" />
+                    <div className="w-9 h-9 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0">
+                      {guild.name?.charAt(0) ?? 'G'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white font-medium truncate">
+                        {guild.name}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {guild.faction && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent">
+                            {guild.faction}
+                          </span>
+                        )}
+                        <span className="text-[10px] text-muted flex items-center gap-1">
+                          <Users size={10} /> {guild.members?.length ?? 0}
+                        </span>
+                        {info.passwordEnabled && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400 flex items-center gap-1">
+                            <Lock size={10} /> {t('passwordGuildBadge')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {info.passwordEnabled ? (
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <input
+                          type="password"
+                          value={passwords[guild.id] ?? ''}
+                          onChange={(e) => onPasswordChange(guild.id, e.target.value)}
+                          placeholder={t('passwordPlaceholder')}
+                          className="w-28 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-xs text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors px-2.5 h-8"
+                        />
+                        <button
+                          onClick={() => handleJoin(guild, passwords[guild.id] ?? '')}
+                          disabled={busyId === guild.id}
+                          className="flex items-center gap-1.5 px-3 h-8 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
+                        >
+                          {busyId === guild.id ? (
+                            <Loader2 size={13} className="animate-spin" />
+                          ) : (
+                            <Lock size={13} />
+                          )}
+                          {t('join')}
+                        </button>
+                      </div>
+                    ) : info.requiresApp ? (
+                      <Link
+                        href={`/guilds/${guild.id}/recruitment`}
+                        onClick={onClose}
+                        className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors"
+                      >
+                        <Shield size={13} />
+                        {t('applyToGuild')}
+                      </Link>
                     ) : (
-                      <LogIn size={13} />
+                      <button
+                        onClick={() => handleJoin(guild)}
+                        disabled={busyId === guild.id}
+                        className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
+                      >
+                        {busyId === guild.id ? (
+                          <Loader2 size={13} className="animate-spin" />
+                        ) : (
+                          <LogIn size={13} />
+                        )}
+                        {t('join')}
+                      </button>
                     )}
-                    {t('join')}
-                  </button>
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

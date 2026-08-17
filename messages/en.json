@@ -15,7 +15,7 @@
     "heroRealm": "realm.",
     "heroGuild": "guild.",
     "heroLegend": "legend.",
-    "heroText": "GuildRealm is the ultimate platform for MMORPG players. Create your guild, recruit talent, conquer challenges, climb the rankings and leave your mark on history.",
+    "heroText": "ClanForge is the ultimate platform for MMORPG players. Create your guild, recruit talent, conquer challenges, climb the rankings and leave your mark on history.",
     "startFree": "Start for free",
     "exploreGuilds": "Explore guilds",
     "free": "100% Free",
@@ -31,7 +31,7 @@
     "countries": "Countries in the community",
     "leaderEyebrow": "THE LEADER'S REALITY",
     "leaderTitle": "Managing a guild shouldn't feel like another job.",
-    "leaderText": "GuildRealm brings together what currently steals your time and wears down your community.",
+    "leaderText": "ClanForge brings together what currently steals your time and wears down your community.",
     "featuresEyebrow": "FEATURES",
     "featuresTitle": "Everything you need to rule your realm",
     "featuresText": "Powerful tools for players and guild leaders",
@@ -145,7 +145,7 @@
     "statsAriaLabel": "Community numbers"
   },
   "Signup": {
-    "asideEyebrow": "JOIN GUILDREALM",
+    "asideEyebrow": "JOIN CLANFORGE",
     "asideTitle1": "Your epic journey",
     "asideTitle2": "starts",
     "asideTitle3": "here.",
@@ -165,7 +165,7 @@
       }
     ],
     "formTitle": "Create your account",
-    "formText": "Fill in the details below to create your GuildRealm account.",
+    "formText": "Fill in the details below to create your ClanForge account.",
     "fields": [
       {
         "label": "NICKNAME",
@@ -308,7 +308,7 @@
   "Terms": {
     "heroEyebrow": "LEGAL",
     "heroTitle": "Terms of Use",
-    "heroText": "Please read our terms and conditions of use for the GuildRealm platform carefully.",
+    "heroText": "Please read our terms and conditions of use for the ClanForge platform carefully.",
     "metaDate": "Last updated:",
     "metaVersion": "Version:",
     "metaRead": "Read time:",
@@ -318,7 +318,7 @@
     "contactCardBtn": "Get in touch",
     "breadcrumbLegal": "Legal",
     "breadcrumbTitle": "Terms of Use",
-    "infoCardTitle": "GuildRealm Mission",
+    "infoCardTitle": "ClanForge Mission",
     "infoCardText": "Connect players, strengthen guilds and create epic experiences in MMORPGs. Our mission is to provide powerful tools and a healthy community.",
     "noticeTitle": "These terms may change",
     "noticeText": "We may update these Terms periodically to reflect changes in the law or the platform. The latest version will always be available on this page.",
@@ -332,55 +332,55 @@
         "id": "introduction",
         "num": "1",
         "title": "Introduction",
-        "content": "<p>Welcome to <b>GuildRealm</b>! These Terms of Use govern your access to and use of the GuildRealm platform.</p><p>By creating an account or using any part of the platform, you agree to these Terms. If you do not agree, do not use GuildRealm.</p>"
+        "content": "<p>Welcome to <b>ClanForge</b>! These Terms of Use govern your access to and use of the ClanForge platform.</p><p>By creating an account or using any part of the platform, you agree to these Terms. If you do not agree, do not use ClanForge.</p>"
       },
       {
         "id": "definitions",
         "num": "2",
         "title": "Definitions",
-        "content": "<p>To facilitate reading, here are the meanings of the main terms used in this document.</p><table><thead><tr><th>TERM</th><th>DEFINITION</th></tr></thead><tbody><tr><td><b>User</b></td><td>Any person who creates an account or uses the GuildRealm platform.</td></tr><tr><td><b>Account</b></td><td>Personal profile created by the user to access platform services.</td></tr><tr><td><b>Guild</b></td><td>Group of players created and managed within GuildRealm.</td></tr><tr><td><b>Content</b></td><td>Any information, text, image, video, file or material published on the platform.</td></tr><tr><td><b>Service</b></td><td>All functionalities, tools and resources provided by GuildRealm.</td></tr><tr><td><b>Moderation</b></td><td>Actions taken by GuildRealm to maintain the security and proper functioning of the platform.</td></tr></tbody></table>"
+        "content": "<p>To facilitate reading, here are the meanings of the main terms used in this document.</p><table><thead><tr><th>TERM</th><th>DEFINITION</th></tr></thead><tbody><tr><td><b>User</b></td><td>Any person who creates an account or uses the ClanForge platform.</td></tr><tr><td><b>Account</b></td><td>Personal profile created by the user to access platform services.</td></tr><tr><td><b>Guild</b></td><td>Group of players created and managed within ClanForge.</td></tr><tr><td><b>Content</b></td><td>Any information, text, image, video, file or material published on the platform.</td></tr><tr><td><b>Service</b></td><td>All functionalities, tools and resources provided by ClanForge.</td></tr><tr><td><b>Moderation</b></td><td>Actions taken by ClanForge to maintain the security and proper functioning of the platform.</td></tr></tbody></table>"
       },
       {
         "id": "acceptance",
         "num": "3",
         "title": "Acceptance of Terms",
-        "content": "<p>By accessing or using GuildRealm, you confirm that you have read, understood and agree to these Terms, as well as our <b>Privacy Policy</b> and other applicable policies.</p><p>If you are using the platform on behalf of a company, organization or guild, you declare that you have authority to accept these Terms on their behalf.</p>"
+        "content": "<p>By accessing or using ClanForge, you confirm that you have read, understood and agree to these Terms, as well as our <b>Privacy Policy</b> and other applicable policies.</p><p>If you are using the platform on behalf of a company, organization or guild, you declare that you have authority to accept these Terms on their behalf.</p>"
       },
       {
         "id": "eligibility",
         "num": "4",
         "title": "Eligibility and Registration",
-        "content": "<p>To use GuildRealm you must be at least <b>13 years old</b>. In some countries, the minimum age may be higher.</p><ul><li>You are old enough to agree to these Terms</li><li>The information provided is true and accurate</li><li>You will keep your password secure and not share your account</li><li>You will notify GuildRealm of any unauthorized use</li></ul>"
+        "content": "<p>To use ClanForge you must be at least <b>13 years old</b>. In some countries, the minimum age may be higher.</p><ul><li>You are old enough to agree to these Terms</li><li>The information provided is true and accurate</li><li>You will keep your password secure and not share your account</li><li>You will notify ClanForge of any unauthorized use</li></ul>"
       },
       {
         "id": "account",
         "num": "5",
         "title": "User Account",
-        "content": "<p>Each user may maintain only <b>one account</b> on GuildRealm, unless expressly authorized.</p><p>The username cannot contain offensive words, impersonate others, represent trademarks without authorization, or contain personally identifiable information.</p>"
+        "content": "<p>Each user may maintain only <b>one account</b> on ClanForge, unless expressly authorized.</p><p>The username cannot contain offensive words, impersonate others, represent trademarks without authorization, or contain personally identifiable information.</p>"
       },
       {
         "id": "profile",
         "num": "6",
         "title": "Public Profile",
-        "content": "<p>Your account includes a public profile with information such as username, avatar, banner, biography, guilds, achievements and ranking.</p><p>GuildRealm offers privacy controls that allow you to manage who can view your information, send messages and invite to guilds.</p>"
+        "content": "<p>Your account includes a public profile with information such as username, avatar, banner, biography, guilds, achievements and ranking.</p><p>ClanForge offers privacy controls that allow you to manage who can view your information, send messages and invite to guilds.</p>"
       },
       {
         "id": "guilds",
         "num": "7",
         "title": "Guilds",
-        "content": "<p>Any user can create a Guild, as long as they respect the platform rules.</p><p>The Guild leader is responsible for its members, published content and violations committed on behalf of the group.</p><p>A Guild can be deleted by the leader or by GuildRealm in case of serious violation of the Terms.</p>"
+        "content": "<p>Any user can create a Guild, as long as they respect the platform rules.</p><p>The Guild leader is responsible for its members, published content and violations committed on behalf of the group.</p><p>A Guild can be deleted by the leader or by ClanForge in case of serious violation of the Terms.</p>"
       },
       {
         "id": "content",
         "num": "8",
         "title": "User Content",
-        "content": "<p>You remain the <b>owner</b> of all content you publish on the platform.</p><p>When publishing content, you grant GuildRealm a worldwide, non-exclusive, royalty-free license to display and distribute it within the platform.</p><p><b>Prohibited content includes:</b></p><ul><li>Materials that infringe copyright</li><li>Illegal, hateful or discriminatory content</li><li>Malware, phishing or harmful scripts</li><li>Spam or unauthorized advertising</li></ul>"
+        "content": "<p>You remain the <b>owner</b> of all content you publish on the platform.</p><p>When publishing content, you grant ClanForge a worldwide, non-exclusive, royalty-free license to display and distribute it within the platform.</p><p><b>Prohibited content includes:</b></p><ul><li>Materials that infringe copyright</li><li>Illegal, hateful or discriminatory content</li><li>Malware, phishing or harmful scripts</li><li>Spam or unauthorized advertising</li></ul>"
       },
       {
         "id": "messages",
         "num": "9",
         "title": "Private Messages",
-        "content": "<p>Private messages between users are confidential. However, GuildRealm may access them when there is a report, suspicion of illegal activity or judicial requirement.</p><p>GuildRealm may impose limits on the number of messages sent per day to prevent spam and abuse.</p>"
+        "content": "<p>Private messages between users are confidential. However, ClanForge may access them when there is a report, suspicion of illegal activity or judicial requirement.</p><p>ClanForge may impose limits on the number of messages sent per day to prevent spam and abuse.</p>"
       },
       {
         "id": "conduct",
@@ -398,68 +398,68 @@
         "id": "achievements",
         "num": "12",
         "title": "Achievements and Rankings",
-        "content": "<p>The achievements, XP, badges and rankings system has no monetary value and cannot be transferred or sold.</p><p>GuildRealm may change scores, requirements and rules at any time to maintain platform integrity.</p>"
+        "content": "<p>The achievements, XP, badges and rankings system has no monetary value and cannot be transferred or sold.</p><p>ClanForge may change scores, requirements and rules at any time to maintain platform integrity.</p>"
       },
       {
         "id": "sweepstakes",
         "num": "13",
         "title": "Sweepstakes and Events",
-        "content": "<p>GuildRealm may hold sweepstakes and events with prizes. Each has specific rules published at the time of publication.</p><p>GuildRealm may cancel or modify sweepstakes at any time.</p>"
+        "content": "<p>ClanForge may hold sweepstakes and events with prizes. Each has specific rules published at the time of publication.</p><p>ClanForge may cancel or modify sweepstakes at any time.</p>"
       },
       {
         "id": "ip",
         "num": "14",
         "title": "Intellectual Property",
-        "content": "<p>All visual elements, code, design, logo and brand of GuildRealm are exclusive property of the platform.</p><p>You may not copy, modify, distribute or create derivative products without express authorization.</p>"
+        "content": "<p>All visual elements, code, design, logo and brand of ClanForge are exclusive property of the platform.</p><p>You may not copy, modify, distribute or create derivative products without express authorization.</p>"
       },
       {
         "id": "thirdparty",
         "num": "15",
         "title": "Third-Party Games",
-        "content": "<p>GuildRealm has no affiliation with developers or publishers of registered games, except for official partnerships.</p><p>All game trademarks belong to their respective owners.</p><p>GuildRealm is not responsible for content, policies or technical issues of third-party games.</p>"
+        "content": "<p>ClanForge has no affiliation with developers or publishers of registered games, except for official partnerships.</p><p>All game trademarks belong to their respective owners.</p><p>ClanForge is not responsible for content, policies or technical issues of third-party games.</p>"
       },
       {
         "id": "availability",
         "num": "16",
         "title": "Platform Availability",
-        "content": "<p>GuildRealm strives to keep the platform available, but there is no guarantee of continuous availability.</p><p>The platform may become unavailable due to maintenance, failures, attacks, updates or force majeure.</p>"
+        "content": "<p>ClanForge strives to keep the platform available, but there is no guarantee of continuous availability.</p><p>The platform may become unavailable due to maintenance, failures, attacks, updates or force majeure.</p>"
       },
       {
         "id": "suspension",
         "num": "17",
         "title": "Suspension and Termination",
-        "content": "<p>GuildRealm may suspend or terminate accounts that seriously violate the Terms.</p><p>Users may request account deletion at any time. After deletion, all data will be lost.</p>"
+        "content": "<p>ClanForge may suspend or terminate accounts that seriously violate the Terms.</p><p>Users may request account deletion at any time. After deletion, all data will be lost.</p>"
       },
       {
         "id": "liability",
         "num": "18",
         "title": "Limitation of Liability",
-        "content": "<p>GuildRealm shall not be liable for direct, indirect or consequential damages arising from the use of the platform.</p><p>Total liability shall not exceed the amount paid in the previous 12 months or $100.00.</p>"
+        "content": "<p>ClanForge shall not be liable for direct, indirect or consequential damages arising from the use of the platform.</p><p>Total liability shall not exceed the amount paid in the previous 12 months or $100.00.</p>"
       },
       {
         "id": "changes",
         "num": "19",
         "title": "Changes to Terms",
-        "content": "<p>GuildRealm may change these Terms periodically. Significant changes will be communicated by email or notification.</p><p>Changes take effect 30 days after publication. Continued use constitutes acceptance.</p>"
+        "content": "<p>ClanForge may change these Terms periodically. Significant changes will be communicated by email or notification.</p><p>Changes take effect 30 days after publication. Continued use constitutes acceptance.</p>"
       },
       {
         "id": "law",
         "num": "20",
         "title": "Applicable Law and Jurisdiction",
-        "content": "<p>These Terms of Use are governed by the laws of the Federative Republic of Brazil.</p><p>In the event of any controversy arising from the use of the GuildRealm platform that cannot be resolved amicably, the court of Novo Hamburgo, State of Rio Grande do Sul, shall have jurisdiction, with express renunciation of any other, however privileged it may be, except where applicable legislation mandatorily requires a different jurisdiction.</p>"
+        "content": "<p>These Terms of Use are governed by the laws of the Federative Republic of Brazil.</p><p>In the event of any controversy arising from the use of the ClanForge platform that cannot be resolved amicably, the court of Novo Hamburgo, State of Rio Grande do Sul, shall have jurisdiction, with express renunciation of any other, however privileged it may be, except where applicable legislation mandatorily requires a different jurisdiction.</p>"
       },
       {
         "id": "contact",
         "num": "21",
         "title": "Contact",
-        "content": "<p>For questions about these Terms:</p><ul><li><b>General:</b> contato@guildrealm.com</li><li><b>Privacy:</b> privacy@guildrealm.com</li><li><b>Legal:</b> legal@guildrealm.com</li></ul>"
+        "content": "<p>For questions about these Terms:</p><ul><li><b>General:</b> contato@clanforge.com</li><li><b>Privacy:</b> privacy@clanforge.com</li><li><b>Legal:</b> legal@clanforge.com</li></ul>"
       }
     ]
   },
   "Privacy": {
     "heroEyebrow": "LEGAL",
     "heroTitle": "Privacy Policy",
-    "heroText": "Your privacy is a priority for GuildRealm. This Policy explains how we collect, use and protect your personal data.",
+    "heroText": "Your privacy is a priority for ClanForge. This Policy explains how we collect, use and protect your personal data.",
     "metaDate": "Last updated:",
     "metaVersion": "Version:",
     "metaRead": "Read time:",
@@ -491,19 +491,19 @@
         "id": "introduction",
         "num": "1",
         "title": "Introduction",
-        "content": "<p>GuildRealm (<b>\"we\"</b>, <b>\"our\"</b> or <b>\"platform\"</b>) is committed to protecting your privacy and personal data. This Privacy Policy explains how we collect, use, store and protect the information you provide or that we automatically collect when you use our services.</p>"
+        "content": "<p>ClanForge (<b>\"we\"</b>, <b>\"our\"</b> or <b>\"platform\"</b>) is committed to protecting your privacy and personal data. This Privacy Policy explains how we collect, use, store and protect the information you provide or that we automatically collect when you use our services.</p>"
       },
       {
         "id": "who-we-are",
         "num": "2",
         "title": "Who we are",
-        "content": "<p>GuildRealm is the controller of personal data processed through the platform.</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>Legal Name</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>Address</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – Brazil – CEP 93510-000</td></tr><tr><td><b>Email</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>DPO / Officer</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"
+        "content": "<p>ClanForge is the controller of personal data processed through the platform.</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>Legal Name</b></td><td>ClanForge Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>Address</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – Brazil – CEP 93510-000</td></tr><tr><td><b>Email</b></td><td>privacy@clanforge.com</td></tr><tr><td><b>DPO / Officer</b></td><td>privacy@clanforge.com</td></tr></tbody></table>"
       },
       {
         "id": "data-collected",
         "num": "3",
         "title": "What data we collect",
-        "content": "<p>We collect different types of data to provide the best possible experience on GuildRealm.</p><h4>Data provided by the user</h4><ul><li><b>Name</b> — used to personalize your profile</li><li><b>Nickname</b> — your public identifier on the platform</li><li><b>Email</b> — for account creation and password recovery</li><li><b>Password</b> — stored encrypted (hash)</li><li><b>Photo / Avatar</b> — image that represents you publicly</li><li><b>Banner</b> — profile background image</li><li><b>Biography</b> — descriptive text about you</li><li><b>Country and language</b> — for localized content</li><li><b>Social media links</b> — voluntarily shared</li><li><b>Published content</b> — texts, comments, posts and guides</li></ul><h4>Data generated during use</h4><ul><li><b>Guilds</b> — guilds you create or participate in</li><li><b>Achievements and badges</b> — medals and recognitions</li><li><b>Private messages</b> — content exchanged with other users</li><li><b>Friends list</b> — established connections</li><li><b>Notifications</b> — notification records</li><li><b>Comments and likes</b> — content interactions</li><li><b>Login history</b> — access dates and times</li></ul><h4>Data collected automatically</h4><ul><li><b>IP address</b> — for security and analytics</li><li><b>Browser and OS</b> — technical identification</li><li><b>Language and timezone</b> — for personalization</li><li><b>Device type</b> — desktop, tablet or mobile</li><li><b>Cookies and identifiers</b> — for functionality and security</li><li><b>Server logs</b> — automatic technical records</li></ul>"
+        "content": "<p>We collect different types of data to provide the best possible experience on ClanForge.</p><h4>Data provided by the user</h4><ul><li><b>Name</b> — used to personalize your profile</li><li><b>Nickname</b> — your public identifier on the platform</li><li><b>Email</b> — for account creation and password recovery</li><li><b>Password</b> — stored encrypted (hash)</li><li><b>Photo / Avatar</b> — image that represents you publicly</li><li><b>Banner</b> — profile background image</li><li><b>Biography</b> — descriptive text about you</li><li><b>Country and language</b> — for localized content</li><li><b>Social media links</b> — voluntarily shared</li><li><b>Published content</b> — texts, comments, posts and guides</li></ul><h4>Data generated during use</h4><ul><li><b>Guilds</b> — guilds you create or participate in</li><li><b>Achievements and badges</b> — medals and recognitions</li><li><b>Private messages</b> — content exchanged with other users</li><li><b>Friends list</b> — established connections</li><li><b>Notifications</b> — notification records</li><li><b>Comments and likes</b> — content interactions</li><li><b>Login history</b> — access dates and times</li></ul><h4>Data collected automatically</h4><ul><li><b>IP address</b> — for security and analytics</li><li><b>Browser and OS</b> — technical identification</li><li><b>Language and timezone</b> — for personalization</li><li><b>Device type</b> — desktop, tablet or mobile</li><li><b>Cookies and identifiers</b> — for functionality and security</li><li><b>Server logs</b> — automatic technical records</li></ul>"
       },
       {
         "id": "usage",
@@ -515,19 +515,19 @@
         "id": "legal-basis",
         "num": "5",
         "title": "Legal basis (LGPD)",
-        "content": "<p>GuildRealm processes your data in compliance with the <b>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</b>.</p><table><thead><tr><th>Legal Basis</th><th>Application</th></tr></thead><tbody><tr><td><b>Consent</b> (art. 7º, I)</td><td>When you accept our Policy and non-essential cookies</td></tr><tr><td><b>Contract execution</b> (art. 7º, V)</td><td>To create your account and provide services</td></tr><tr><td><b>Legal obligation</b> (art. 7º, II)</td><td>To comply with legal and judicial requirements</td></tr><tr><td><b>Exercise of rights</b> (art. 7º, VI)</td><td>To protect GuildRealm and users' rights</td></tr><tr><td><b>Legitimate interest</b> (art. 7º, IX)</td><td>For security, fraud prevention and service improvement</td></tr></tbody></table><p>You may revoke your consent at any time.</p>"
+        "content": "<p>ClanForge processes your data in compliance with the <b>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)</b>.</p><table><thead><tr><th>Legal Basis</th><th>Application</th></tr></thead><tbody><tr><td><b>Consent</b> (art. 7º, I)</td><td>When you accept our Policy and non-essential cookies</td></tr><tr><td><b>Contract execution</b> (art. 7º, V)</td><td>To create your account and provide services</td></tr><tr><td><b>Legal obligation</b> (art. 7º, II)</td><td>To comply with legal and judicial requirements</td></tr><tr><td><b>Exercise of rights</b> (art. 7º, VI)</td><td>To protect ClanForge and users' rights</td></tr><tr><td><b>Legitimate interest</b> (art. 7º, IX)</td><td>For security, fraud prevention and service improvement</td></tr></tbody></table><p>You may revoke your consent at any time.</p>"
       },
       {
         "id": "sharing",
         "num": "6",
         "title": "Data sharing",
-        "content": "<p>GuildRealm <b>does not sell</b> your personal data to third parties.</p><p>We may share data in the following situations:</p><ul><li><b>Service providers</b> — companies that help us operate the platform</li><li><b>Public authorities</b> — when required by law or court order</li><li><b>With consent</b> — when you expressly authorize</li><li><b>Corporate transfers</b> — in case of merger or acquisition</li></ul>"
+        "content": "<p>ClanForge <b>does not sell</b> your personal data to third parties.</p><p>We may share data in the following situations:</p><ul><li><b>Service providers</b> — companies that help us operate the platform</li><li><b>Public authorities</b> — when required by law or court order</li><li><b>With consent</b> — when you expressly authorize</li><li><b>Corporate transfers</b> — in case of merger or acquisition</li></ul>"
       },
       {
         "id": "third-parties",
         "num": "7",
         "title": "Third-party services",
-        "content": "<p>GuildRealm uses third-party services to operate:</p><ul><li><b>Firebase (Google)</b> — Authentication, Firestore, Storage and Hosting</li><li><b>Cloudflare</b> — DDoS protection, CDN and network security</li><li><b>Google Analytics</b> — usage statistics (when enabled)</li><li><b>Google reCAPTCHA</b> — bot protection</li><li><b>Resend</b> — transactional email sending</li></ul>"
+        "content": "<p>ClanForge uses third-party services to operate:</p><ul><li><b>Firebase (Google)</b> — Authentication, Firestore, Storage and Hosting</li><li><b>Cloudflare</b> — DDoS protection, CDN and network security</li><li><b>Google Analytics</b> — usage statistics (when enabled)</li><li><b>Google reCAPTCHA</b> — bot protection</li><li><b>Resend</b> — transactional email sending</li></ul>"
       },
       {
         "id": "cookies",
@@ -545,7 +545,7 @@
         "id": "rights",
         "num": "10",
         "title": "Your rights (LGPD)",
-        "content": "<p>As a data subject, you may:</p><ul><li><b>Confirm and access</b> — request a copy of your data</li><li><b>Correct</b> — request correction of incorrect data</li><li><b>Update</b> — update information on the platform</li><li><b>Anonymize, block or delete</b> — request data removal</li><li><b>Portability</b> — request transfer to another service</li><li><b>Revoke consent</b> — at any time</li><li><b>Information about sharing</b> — know with whom we share</li><li><b>Object</b> — oppose processing based on legitimate interest</li></ul><p>Contact us at <b>privacy@guildrealm.com</b>. We will respond within <b>15 days</b>.</p>"
+        "content": "<p>As a data subject, you may:</p><ul><li><b>Confirm and access</b> — request a copy of your data</li><li><b>Correct</b> — request correction of incorrect data</li><li><b>Update</b> — update information on the platform</li><li><b>Anonymize, block or delete</b> — request data removal</li><li><b>Portability</b> — request transfer to another service</li><li><b>Revoke consent</b> — at any time</li><li><b>Information about sharing</b> — know with whom we share</li><li><b>Object</b> — oppose processing based on legitimate interest</li></ul><p>Contact us at <b>privacy@clanforge.com</b>. We will respond within <b>15 days</b>.</p>"
       },
       {
         "id": "deletion",
@@ -557,13 +557,13 @@
         "id": "security",
         "num": "12",
         "title": "Data security",
-        "content": "<p>Measures adopted by GuildRealm:</p><ul><li><b>Encryption</b> — HTTPS (SSL/TLS) on all transmissions</li><li><b>Access control</b> — restricted and authorized access</li><li><b>Monitoring</b> — access and intrusion attempt logs</li><li><b>Firebase Security</b> — database security rules</li><li><b>Cloudflare</b> — DDoS protection</li><li><b>Regular backups</b> — to ensure data integrity</li><li><b>Encrypted passwords</b> — bcrypt algorithm</li></ul>"
+        "content": "<p>Measures adopted by ClanForge:</p><ul><li><b>Encryption</b> — HTTPS (SSL/TLS) on all transmissions</li><li><b>Access control</b> — restricted and authorized access</li><li><b>Monitoring</b> — access and intrusion attempt logs</li><li><b>Firebase Security</b> — database security rules</li><li><b>Cloudflare</b> — DDoS protection</li><li><b>Regular backups</b> — to ensure data integrity</li><li><b>Encrypted passwords</b> — bcrypt algorithm</li></ul>"
       },
       {
         "id": "children",
         "num": "13",
         "title": "Children and adolescents",
-        "content": "<p>GuildRealm is not directed at children under 13 years of age.</p><p>If you are between 13 and 18 years old, we recommend that your parents or guardians be aware of this Policy.</p><p>We do not intentionally collect data from children under 13. If we identify an account in this age group, we will delete the data and close the account.</p>"
+        "content": "<p>ClanForge is not directed at children under 13 years of age.</p><p>If you are between 13 and 18 years old, we recommend that your parents or guardians be aware of this Policy.</p><p>We do not intentionally collect data from children under 13. If we identify an account in this age group, we will delete the data and close the account.</p>"
       },
       {
         "id": "transfer",
@@ -581,7 +581,7 @@
         "id": "contact-priv",
         "num": "16",
         "title": "Contact",
-        "content": "<p>For questions about privacy and data protection:</p><ul><li><b>Privacy:</b> privacy@guildrealm.com</li><li><b>Legal:</b> legal@guildrealm.com</li><li><b>General:</b> contato@guildrealm.com</li></ul>"
+        "content": "<p>For questions about privacy and data protection:</p><ul><li><b>Privacy:</b> privacy@clanforge.com</li><li><b>Legal:</b> legal@clanforge.com</li><li><b>General:</b> contato@clanforge.com</li></ul>"
       },
       {
         "id": "applicable-law",
@@ -629,7 +629,7 @@
     "heroText": "Enter your account email and we'll send instructions for you to reset your password and get back to your journey.",
     "backLink": "Back to login",
     "formTitle": "Reset your password",
-    "formText": "Enter the email associated with your GuildRealm account. You'll receive a link to create a new password.",
+    "formText": "Enter the email associated with your ClanForge account. You'll receive a link to create a new password.",
     "emailLabel": "Email or username",
     "emailPlaceholder": "Enter your email or username",
     "submit": "Send instructions",
@@ -686,7 +686,11 @@
     "loadingGuilds": "Loading guilds...",
     "noOpenGuilds": "No guild with open recruitment was found.",
     "join": "Join",
+    "applyToGuild": "Apply",
     "joinError": "Couldn't join the guild. Please try again.",
+    "invalidPassword": "Incorrect password.",
+    "passwordPlaceholder": "Guild password",
+    "passwordGuildBadge": "Password",
     "leaveError": "Couldn't leave the guild. Please try again.",
     "games": [
       {
@@ -857,7 +861,7 @@
     "goToPanel": "Go to guild panel",
     "leaderRole": "Leader",
     "leaderCharacterLabel": "Leader character",
-    "leaderCharacterHint": "Will lead the guild and appear in the member list.",
+    "leaderCharacterHint": "Becomes the leader automatically and appears in the member list.",
     "leaderRequired": "Pick a character to lead the guild.",
     "noCharacters": "You don't have any characters yet.",
     "createCharacterFirst": "Create character",
@@ -981,7 +985,13 @@
         "label": "Chanter",
         "icon": "/games/aion2/classes/Chanter.webp"
       }
-    ]
+    ],
+    "flowTitle": "Create your character first, then the guild",
+    "flowText": "Every guild is created by a character. When you link your character, it automatically becomes the leader. New members join as \"Member\" and the leader can promote them to other ranks later.",
+    "noCharactersSub": "You need a character to create a guild: it will be linked to the guild and become the leader. Create a character, then come back here.",
+    "allInGuild": "All of your characters are already in a guild.",
+    "allInGuildSub": "Leave the current guild or create a new character before creating another guild.",
+    "leaderInGuild": "This character is already in a guild. Choose another one or create a new one."
   },
   "GuildPage": {
     "notFound": "Guild not found.",
@@ -1066,7 +1076,10 @@
         "value": "tr",
         "label": "Turkish"
       }
-    ]
+    ],
+    "focusLabel": "Focus",
+    "mentalityLabel": "Mentality",
+    "apply": "Apply"
   },
   "GuildPanel": {
     "backToDashboard": "Back to dashboard",
@@ -1074,8 +1087,47 @@
     "subtitle": "Manage your guild from here.",
     "menuOverview": "Overview",
     "menuCalendar": "Calendar",
+    "menuAttendance": "Attendance",
+    "attendanceSub": "Track and confirm member attendance at events.",
+    "attendancePresent": "Attended",
+    "attendanceAbsent": "Did not attend",
+    "attendanceEmpty": "No one yet",
+    "attendanceNoEvents": "No events created yet.",
+    "attendanceBadgeCode": "Code confirmation",
+    "attendanceBadgeJoin": "By registration",
+    "attendanceReportPresent": "Generate attendance report",
+    "attendanceReportAbsent": "Generate absence report",
+    "reportStartDate": "Start date",
+    "reportEndDate": "End date",
+    "reportPeriodInvalid": "End date must be after start date.",
+    "reportType": "Report type",
+    "reportSimple": "Simple — absolute count only",
+    "reportDetailed": "Detailed — with event name, date and time",
+    "reportGenerate": "Generate PDF",
+    "reportGenerating": "Generating...",
+    "reportTitlePresent": "Attendance Report",
+    "reportTitleAbsent": "Absence Report",
+    "reportPeriod": "Period",
+    "reportTo": "to",
+    "reportGuild": "Guild",
+    "reportCountPresent": "attendances",
+    "reportCountAbsent": "absences",
+    "reportNoData": "No events in the selected period.",
+    "reportGenerateError": "Could not generate the report. Try again.",
     "menuGroups": "Groups",
     "menuMembers": "Members",
+    "menuApplications": "Applications",
+    "applicationsSub": "Review and manage guild applications.",
+    "applicationsPending": "Pending applications",
+    "applicationsEmpty": "No pending applications.",
+    "applicationsHistory": "Application history",
+    "applicationAccept": "Accept",
+    "applicationReject": "Reject",
+    "applicationAccepted": "Accepted",
+    "applicationRejected": "Rejected",
+    "applicationNoAnswers": "This application has no answers.",
+    "applicationReviewError": "Couldn't review the application. Please try again.",
+    "applicationAlreadyReviewed": "This application was already reviewed.",
     "timezoneLabel": "Timezone",
     "createEvent": "Create event",
     "eventTitle": "Event title",
@@ -1240,7 +1292,103 @@
     "kickError": "Couldn't remove the member. Please try again.",
     "banError": "Couldn't ban the member. Please try again.",
     "statusError": "Couldn't change the status. Please try again.",
-    "roleError": "Couldn't change the role. Please try again."
+    "roleError": "Couldn't change the role. Please try again.",
+    "menuSettings": "Settings",
+    "settingsSub": "Manage your guild information and appearance.",
+    "tabGeneral": "General",
+    "settingsNameLabel": "Guild name",
+    "settingsNamePlaceholder": "Enter the guild name",
+    "settingsLogoLabel": "Logo",
+    "settingsLogoUpload": "Upload logo",
+    "settingsLogoChange": "Change logo",
+    "settingsLogoRemove": "Remove",
+    "settingsLogoSub": "PNG, JPG or WebP up to 2 MB.",
+    "settingsLogoInvalid": "Invalid format. Use PNG, JPG or WebP.",
+    "settingsLogoTooLarge": "The image must be at most 2 MB.",
+    "settingsBannerLabel": "Public profile banner",
+    "settingsBannerUpload": "Upload banner",
+    "settingsBannerChange": "Change banner",
+    "settingsBannerRemove": "Remove",
+    "settingsBannerSub": "PNG, JPG or WebP up to 4 MB. Recommended size: 1600 x 400.",
+    "settingsBannerInvalid": "Invalid format. Use PNG, JPG or WebP.",
+    "settingsBannerTooLarge": "The image must be at most 4 MB.",
+    "settingsDescriptionLabel": "Description",
+    "settingsDescriptionPlaceholder": "Tell us a little about your guild...",
+    "settingsDescriptionHint": "Shown on the guild public profile.",
+    "settingsFocusLabel": "Guild focus",
+    "settingsMentalityLabel": "Mentality",
+    "settingsSave": "Save changes",
+    "settingsSaving": "Saving...",
+    "settingsSaved": "Settings saved!",
+    "settingsError": "Couldn't save. Please try again.",
+    "settingsNameRequired": "Guild name is required.",
+    "settingsPermission": "You don't have permission to access settings.",
+    "tabRanks": "Ranks",
+    "ranksHint": "Create custom ranks and edit the permissions of any rank, including defaults. Default ranks cannot be deleted.",
+    "newRank": "New rank",
+    "editRank": "Edit rank",
+    "rankName": "Name",
+    "rankNamePlaceholder": "e.g. Commander",
+    "rankColor": "Color",
+    "rankPermissions": "Permissions",
+    "rankDefault": "Default",
+    "saveRank": "Save rank",
+    "cancelRank": "Cancel",
+    "rankNameRequired": "Rank name is required.",
+    "rankSaveError": "Couldn't save the rank. Please try again.",
+    "rankDeleteTitle": "Delete rank",
+    "rankDeleteMessage": "Delete the rank {name}? Members with this rank will fall back to the default rank.",
+    "rankDeleteError": "Couldn't delete the rank. Please try again.",
+    "deleteRank": "Delete",
+    "rankPermissionsLabels": [
+      {
+        "value": "manageMembers",
+        "label": "Manage members"
+      },
+      {
+        "value": "manageGroups",
+        "label": "Manage groups"
+      },
+      {
+        "value": "manageEvents",
+        "label": "Manage events"
+      },
+      {
+        "value": "manageSettings",
+        "label": "Manage settings"
+      },
+      {
+        "value": "manageRanks",
+        "label": "Manage ranks"
+      },
+      {
+        "value": "manageRecruitment",
+        "label": "Manage recruitment"
+      }
+    ],
+    "assignRank": "Assign rank",
+    "rankDefaultLabel": "default",
+    "searchPlaceholder": "Search by player name...",
+    "filterAll": "All",
+    "membersEmpty": "No members found.",
+    "tabRecruitment": "Recruitment",
+    "tabDiscord": "Discord",
+    "discordTitle": "Discord notifications",
+    "discordSub": "Automatically send guild activity (events, attendance, and more) to your Discord channel.",
+    "discordWebhookLabel": "Webhook URL",
+    "discordWebhookPlaceholder": "https://discord.com/api/webhooks/...",
+    "discordWebhookHint": "In Discord: Server Settings → Integrations → Webhooks → New Webhook. Pick the channel and copy the URL. Without a webhook, no notifications are sent.",
+    "discordSave": "Save webhook",
+    "discordSaving": "Saving...",
+    "discordSaved": "Webhook saved!",
+    "discordRemove": "Remove",
+    "discordTest": "Test connection",
+    "discordTesting": "Sending...",
+    "discordTested": "Test message sent to the channel!",
+    "discordUrlInvalid": "Invalid webhook URL. Paste the full Discord URL.",
+    "discordError": "Couldn't save. Try again.",
+    "discordEmpty": "No webhook configured. Notifications won't be sent to Discord.",
+    "discordLoading": "Loading..."
   },
   "GuildCalendar": {
     "today": "Today",
@@ -1264,6 +1412,30 @@
     "maxParticipants": "Max participants",
     "unlimited": "Unlimited",
     "allowRegistration": "Allow registration",
+    "attendanceEnabled": "Attendance confirmation",
+    "attendanceEnabledHint": "Members confirm attendance with a code shared by an authorized member, within the window below.",
+    "attendanceStartLabel": "Confirmations start",
+    "attendanceEndLabel": "Confirmations end",
+    "attendanceBeforeOption": "{value} min before the event ends",
+    "attendanceAfterOption": "{value} min after the event ends",
+    "attendanceWindow": "Confirmations: {start} – {end}",
+    "attendanceConfirmedCount": "confirmed",
+    "attendanceConfirmed": "Attendance confirmed!",
+    "attendanceNotOpen": "Confirmations start at {time}",
+    "attendanceNotOpenText": "Confirmations have not started yet.",
+    "attendanceGenerateCode": "Generate confirmation code",
+    "attendanceCodeHint": "Share this code with guild members. Everyone uses the same code.",
+    "attendanceCodeCopy": "Copy",
+    "attendanceCodeCopied": "Copied!",
+    "attendanceCodePlaceholder": "Enter the code",
+    "attendanceConfirm": "Confirm attendance",
+    "attendanceInvalidCode": "Invalid code.",
+    "attendanceClosed": "The confirmation window has closed.",
+    "attendanceAlreadyConfirmed": "You already confirmed attendance for this event.",
+    "attendanceGenerateError": "Could not generate the code. Try again.",
+    "attendanceGenerateNotOpen": "The code will be available 1 minute before confirmations start.",
+    "attendanceWaitCode": "Wait for a leader or officer to share the code.",
+    "attendanceConfirmError": "Could not confirm. Check the code and the time.",
     "cancel": "Cancel",
     "create": "Create",
     "createError": "Could not create the event. Try again.",
@@ -1363,5 +1535,113 @@
     "editRole": "Edit role",
     "deleteRole": "Delete role",
     "newRole": "New role"
+  },
+  "Recruitment": {
+    "sectionRecruitment": "Recruitment",
+    "recruitmentStatusSub": "Set whether new players can apply to the guild.",
+    "openLabel": "Open",
+    "closedLabel": "Closed",
+    "openHint": "When open, players will be able to send applications to join the guild.",
+    "closedHint": "When closed, external players will not be able to send applications.",
+    "sectionMessage": "Message for applicants",
+    "sectionMessageSub": "Message shown to applicants before the application form.",
+    "messagePlaceholder": "Write a welcome message and instructions for applicants...",
+    "sectionQuestions": "Application questions",
+    "sectionQuestionsSub": "Set the questions applicants must answer when requesting to join the guild.",
+    "addQuestion": "Add question",
+    "previewButton": "Preview application",
+    "previewTitle": "Application preview",
+    "noQuestions": "No questions added yet.",
+    "saveSettings": "Save changes",
+    "savingSettings": "Saving...",
+    "savedSettings": "Recruitment settings saved.",
+    "saveError": "Unable to save settings.",
+    "editQuestion": "Edit",
+    "duplicateQuestion": "Duplicate",
+    "deleteQuestion": "Delete",
+    "deleteQuestionTitle": "Delete question",
+    "deleteQuestionMessage": "Are you sure you want to delete this question?",
+    "requiredBadge": "Required",
+    "optionalBadge": "Optional",
+    "dragHint": "Drag to reorder",
+    "newQuestionTitle": "New question",
+    "editQuestionTitle": "Edit question",
+    "questionLabel": "Question",
+    "questionPlaceholder": "E.g. What is your current CP?",
+    "typeLabel": "Type",
+    "requiredLabel": "Required question",
+    "optionsLabel": "Options",
+    "addOption": "Add option",
+    "removeOption": "Remove",
+    "optionPlaceholder": "E.g. Tank",
+    "minLengthLabel": "Minimum length",
+    "maxLengthLabel": "Maximum length",
+    "minValueLabel": "Minimum value",
+    "maxValueLabel": "Maximum value",
+    "checkboxTextLabel": "Checkbox text",
+    "checkboxTextPlaceholder": "E.g. I accept the guild rules.",
+    "questionNameRequired": "Enter the question.",
+    "optionRequired": "Add at least one option.",
+    "saveQuestion": "Save question",
+    "cancelLabel": "Cancel",
+    "type_short_text": "Short text",
+    "type_long_text": "Long text",
+    "type_number": "Number",
+    "type_single_choice": "Single choice",
+    "type_multiple_choice": "Multiple choice",
+    "type_dropdown": "Dropdown",
+    "type_yes_no": "Yes/No",
+    "type_checkbox": "Checkbox",
+    "selectOption": "Select an option...",
+    "yes": "Yes",
+    "no": "No",
+    "fieldRequired": "This question is required.",
+    "errInvalidNumber": "Enter a valid number.",
+    "errMinValue": "Minimum value is {min}.",
+    "errMaxValue": "Maximum value is {max}.",
+    "errMinLength": "Minimum of {min} characters.",
+    "errMaxLength": "Maximum of {max} characters.",
+    "errRequiredOption": "Select an option.",
+    "errRequiredOptions": "Select at least one option.",
+    "submitApplication": "Submit application",
+    "submitting": "Submitting...",
+    "submitError": "Unable to submit your application. Try again.",
+    "pageTitle": "Recruitment",
+    "openBadge": "Recruitment open",
+    "closedBadge": "Recruitment closed",
+    "closedMessage": "The guild is not accepting new applications at the moment.",
+    "alreadyMember": "You are already a member of this guild.",
+    "selectCharacter": "Character to join with",
+    "selectCharacterPlaceholder": "Select a character",
+    "selectCharacterHint": "Choose the character that will be added to the guild if your application is accepted.",
+    "selectCharacterRequired": "Select a character before submitting.",
+    "noCharacterTitle": "No available characters",
+    "noCharacterMessage": "You need a character without a guild to apply for this guild.",
+    "createCharacter": "Create character",
+    "applicationSuccess": "Application sent!",
+    "applicationSuccessSub": "Your application was sent successfully. The guild will review it and you will be notified.",
+    "sectionPassword": "Guild password",
+    "sectionPasswordSub": "Anyone with the password can join directly, without applying — even if recruitment is closed.",
+    "passwordOn": "Enabled",
+    "passwordOff": "Disabled",
+    "passwordLabel": "Password",
+    "passwordLabelReset": "Reset password",
+    "passwordPlaceholder": "New password",
+    "passwordKeepPlaceholder": "Leave blank to keep the current one",
+    "passwordHint": "Share it with the people you want to join. Whoever has it joins directly.",
+    "passwordRequiredError": "Set a password to enable it.",
+    "passwordLengthError": "The password must be between 4 and 64 characters.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "joinWithPassword": "Join with the guild password",
+    "passwordInputPlaceholder": "Guild password",
+    "invalidPassword": "Incorrect password.",
+    "passwordRequired": "Enter the guild password.",
+    "joinedTitle": "Welcome to the guild!",
+    "joinedSub": "Your character joined the guild with the password.",
+    "orApply": "or apply",
+    "joinError": "Couldn't join the guild. Try again.",
+    "notFound": "Guild not found.",
+    "backToGuild": "Back to guild"
   }
 }

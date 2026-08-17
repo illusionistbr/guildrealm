@@ -45,7 +45,7 @@ export default function SettingsPage() {
       <motion.div variants={fadeUp} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-heading font-bold text-white">Configurações</h1>
-          <p className="text-muted mt-1">Personalize sua experiência no GuildRealm.</p>
+          <p className="text-muted mt-1">Personalize sua experiência no ClanForge.</p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors">
           <Save size={16} /> Salvar

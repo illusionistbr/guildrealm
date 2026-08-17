@@ -92,6 +92,68 @@ export interface GuildRole {
   createdAt?: Date;
 }
 
+export const RANK_PERMISSIONS = [
+  'manageMembers',
+  'manageGroups',
+  'manageEvents',
+  'manageSettings',
+  'manageRanks',
+  'manageRecruitment',
+] as const;
+
+export type RankPermission = (typeof RANK_PERMISSIONS)[number];
+
+export interface GuildRank {
+  id: string;
+  guildId: string;
+  name: string;
+  color: string;
+  position: number;
+  isDefault: boolean;
+  permissions: Partial<Record<RankPermission, boolean>>;
+  createdBy: string;
+  createdAt?: Date;
+}
+
+export const DEFAULT_RANKS: Omit<
+  GuildRank,
+  'id' | 'guildId' | 'createdBy' | 'createdAt'
+>[] = [
+  {
+    name: 'Líder',
+    color: '#eab308',
+    position: 0,
+    isDefault: true,
+    permissions: {
+      manageMembers: true,
+      manageGroups: true,
+      manageEvents: true,
+      manageSettings: true,
+      manageRanks: true,
+      manageRecruitment: true,
+    },
+  },
+  {
+    name: 'Oficial',
+    color: '#6d28d9',
+    position: 1,
+    isDefault: true,
+    permissions: {
+      manageMembers: true,
+      manageGroups: true,
+      manageEvents: true,
+      manageRecruitment: true,
+    },
+  },
+  {
+    name: 'Membro',
+    color: '#64748b',
+    position: 2,
+    isDefault: true,
+    permissions: {},
+  },
+];
+
 export interface PresetGroup {
   id: string;
   name: string;
@@ -132,3 +194,73 @@ export const ROLE_COLORS = [
   { id: 'pink', label: 'Rosa', value: '#ec4899' },
   { id: 'slate', label: 'Cinza', value: '#64748b' },
 ];
+
+// ============ RECRUTAMENTO ============
+
+export const RECRUITMENT_QUESTION_TYPES = [
+  'short_text',
+  'long_text',
+  'number',
+  'single_choice',
+  'multiple_choice',
+  'dropdown',
+  'yes_no',
+  'checkbox',
+] as const;
+
+export type RecruitmentQuestionType =
+  (typeof RECRUITMENT_QUESTION_TYPES)[number];
+
+export interface RecruitmentQuestionConfig {
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  options?: string[];
+  text?: string;
+}
+
+export interface RecruitmentQuestion {
+  id: string;
+  type: RecruitmentQuestionType;
+  title: string;
+  required: boolean;
+  order: number;
+  config: RecruitmentQuestionConfig;
+}
+
+export interface RecruitmentSettings {
+  enabled: boolean;
+  message: string;
+  questions: RecruitmentQuestion[];
+  passwordEnabled?: boolean;
+  passwordSet?: boolean;
+  updatedBy?: string;
+  updatedAt?: Date;
+}
+
+export interface ApplicationAnswer {
+  questionId: string;
+  answer: string | string[];
+}
+
+export const APPLICATION_STATUSES = [
+  'PENDING',
+  'ACCEPTED',
+  'REJECTED',
+  'WITHDRAWN',
+] as const;
+
+export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
+
+export interface GuildApplication {
+  id: string;
+  guildId: string;
+  applicantId: string;
+  applicantName: string;
+  applicantCharacterId?: string | null;
+  status: ApplicationStatus;
+  answers: ApplicationAnswer[];
+  submittedAt?: Date;
+  updatedAt?: Date;
+}

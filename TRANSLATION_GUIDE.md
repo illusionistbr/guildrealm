@@ -1,6 +1,6 @@
 # Internacionalização obrigatória
 
-O GuildRealm usa `next-intl`. Todo conteúdo de interface precisa existir em `messages/pt-BR.json`, `messages/en.json`, `messages/es.json`, `messages/ko.json`, `messages/ja.json`, `messages/ru.json` e `messages/zh.json`.
+O ClanForge usa `next-intl`. Todo conteúdo de interface precisa existir em `messages/pt-BR.json`, `messages/en.json`, `messages/es.json`, `messages/ko.json`, `messages/ja.json`, `messages/ru.json` e `messages/zh.json`.
 
 ## Regra
 

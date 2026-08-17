@@ -14,6 +14,15 @@ service firebase.storage {
       allow delete: if isSignedIn();
     }
 
+    // Banners de guild: leitura pública, upload apenas para usuários logados
+    match /guild-banners/{guildId}/{fileName} {
+      allow read: if true;
+      allow write: if isSignedIn() &&
+        request.resource.size < 4 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if isSignedIn();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

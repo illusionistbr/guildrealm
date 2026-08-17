@@ -15,7 +15,7 @@
     "heroRealm": "王国。",
     "heroGuild": "公会。",
     "heroLegend": "传奇。",
-    "heroText": "GuildRealm 是 MMORPG 玩家的一站式平台。创建公会、招募人才、征服挑战、冲击排行榜，并在历史中留下你的印记。",
+    "heroText": "ClanForge 是 MMORPG 玩家的一站式平台。创建公会、招募人才、征服挑战、冲击排行榜，并在历史中留下你的印记。",
     "startFree": "免费开始",
     "exploreGuilds": "探索公会",
     "free": "100% 免费",
@@ -31,7 +31,7 @@
     "countries": "社区国家",
     "leaderEyebrow": "领袖的现实",
     "leaderTitle": "管理公会不该像另一份工作。",
-    "leaderText": "GuildRealm 将如今耗费时间、消磨社区精力的事务集中在一起。",
+    "leaderText": "ClanForge 将如今耗费时间、消磨社区精力的事务集中在一起。",
     "featuresEyebrow": "功能",
     "featuresTitle": "统御你的王国所需的一切",
     "featuresText": "为玩家和公会领袖打造的强大工具",
@@ -145,7 +145,7 @@
     "statsAriaLabel": "社区数据"
   },
   "Signup": {
-    "asideEyebrow": "加入 GUILDREALM",
+    "asideEyebrow": "加入 CLANFORGE",
     "asideTitle1": "你的史诗之旅",
     "asideTitle2": "从",
     "asideTitle3": "这里开始。",
@@ -165,7 +165,7 @@
       }
     ],
     "formTitle": "创建你的账户",
-    "formText": "填写以下信息以创建你的 GuildRealm 账户。",
+    "formText": "填写以下信息以创建你的 ClanForge 账户。",
     "fields": [
       {
         "label": "昵称",
@@ -308,7 +308,7 @@
   "Terms": {
     "heroEyebrow": "法律信息",
     "heroTitle": "使用条款",
-    "heroText": "请仔细阅读 GuildRealm 平台的使用条款和条件。",
+    "heroText": "请仔细阅读 ClanForge 平台的使用条款和条件。",
     "metaDate": "最后更新:",
     "metaVersion": "版本:",
     "metaRead": "阅读时间:",
@@ -318,7 +318,7 @@
     "contactCardBtn": "联系我们",
     "breadcrumbLegal": "法律信息",
     "breadcrumbTitle": "使用条款",
-    "infoCardTitle": "GuildRealm 的使命",
+    "infoCardTitle": "ClanForge 的使命",
     "infoCardText": "连接玩家，壮大公会，在 MMORPG 中创造史诗般的体验。",
     "noticeTitle": "条款可能变更",
     "noticeText": "我们可能会定期更新本条款以反映法律或平台的变化。最新版本始终可在本页面查看。",
@@ -332,25 +332,25 @@
         "id": "introduction",
         "num": "1",
         "title": "简介",
-        "content": "<p>欢迎使用 <b>GuildRealm</b>！本使用条款规范您对 GuildRealm 平台的访问和使用。</p><p>创建账户或使用平台即表示您同意本条款。</p>"
+        "content": "<p>欢迎使用 <b>ClanForge</b>！本使用条款规范您对 ClanForge 平台的访问和使用。</p><p>创建账户或使用平台即表示您同意本条款。</p>"
       },
       {
         "id": "definitions",
         "num": "2",
         "title": "定义",
-        "content": "<p>本文件中使用的主要术语定义：</p><table><thead><tr><th>术语</th><th>定义</th></tr></thead><tbody><tr><td><b>用户</b></td><td>创建账户或使用 GuildRealm 平台的任何人。</td></tr><tr><td><b>账户</b></td><td>用户为访问服务而创建的个人资料。</td></tr><tr><td><b>公会</b></td><td>在 GuildRealm 内创建和管理的玩家群体。</td></tr><tr><td><b>内容</b></td><td>在平台上发布的所有信息、文本、图片或材料。</td></tr><tr><td><b>服务</b></td><td>GuildRealm 提供的所有功能和资源。</td></tr><tr><td><b>管理</b></td><td>为确保平台安全和正常运行而采取的措施。</td></tr></tbody></table>"
+        "content": "<p>本文件中使用的主要术语定义：</p><table><thead><tr><th>术语</th><th>定义</th></tr></thead><tbody><tr><td><b>用户</b></td><td>创建账户或使用 ClanForge 平台的任何人。</td></tr><tr><td><b>账户</b></td><td>用户为访问服务而创建的个人资料。</td></tr><tr><td><b>公会</b></td><td>在 ClanForge 内创建和管理的玩家群体。</td></tr><tr><td><b>内容</b></td><td>在平台上发布的所有信息、文本、图片或材料。</td></tr><tr><td><b>服务</b></td><td>ClanForge 提供的所有功能和资源。</td></tr><tr><td><b>管理</b></td><td>为确保平台安全和正常运行而采取的措施。</td></tr></tbody></table>"
       },
       {
         "id": "acceptance",
         "num": "3",
         "title": "接受条款",
-        "content": "<p>访问 GuildRealm 即表示您确认已阅读并同意本条款和<b>隐私政策</b>。</p>"
+        "content": "<p>访问 ClanForge 即表示您确认已阅读并同意本条款和<b>隐私政策</b>。</p>"
       },
       {
         "id": "eligibility",
         "num": "4",
         "title": "资格和注册",
-        "content": "<p>使用 GuildRealm 您必须年满 <b>13 岁</b>。</p><ul><li>提供的信息准确无误</li><li>妥善保管密码</li><li>报告任何未经授权的使用</li></ul>"
+        "content": "<p>使用 ClanForge 您必须年满 <b>13 岁</b>。</p><ul><li>提供的信息准确无误</li><li>妥善保管密码</li><li>报告任何未经授权的使用</li></ul>"
       },
       {
         "id": "account",
@@ -404,19 +404,19 @@
         "id": "sweepstakes",
         "num": "13",
         "title": "抽奖活动",
-        "content": "<p>GuildRealm 可举办有奖抽奖和活动。</p>"
+        "content": "<p>ClanForge 可举办有奖抽奖和活动。</p>"
       },
       {
         "id": "ip",
         "num": "14",
         "title": "知识产权",
-        "content": "<p>GuildRealm 的所有视觉元素、代码、设计、徽标均为平台专有财产。</p>"
+        "content": "<p>ClanForge 的所有视觉元素、代码、设计、徽标均为平台专有财产。</p>"
       },
       {
         "id": "thirdparty",
         "num": "15",
         "title": "第三方游戏",
-        "content": "<p>GuildRealm 与已注册游戏的开发商或发行商没有关联（官方合作伙伴关系除外）。</p>"
+        "content": "<p>ClanForge 与已注册游戏的开发商或发行商没有关联（官方合作伙伴关系除外）。</p>"
       },
       {
         "id": "availability",
@@ -434,7 +434,7 @@
         "id": "liability",
         "num": "18",
         "title": "责任限制",
-        "content": "<p>GuildRealm 不对因使用平台而产生的直接或间接损害承担责任。</p>"
+        "content": "<p>ClanForge 不对因使用平台而产生的直接或间接损害承担责任。</p>"
       },
       {
         "id": "changes",
@@ -446,20 +446,20 @@
         "id": "law",
         "num": "20",
         "title": "适用法律",
-        "content": "<p>本使用条款受巴西联邦共和国法律管辖。</p><p>因使用 GuildRealm 平台而产生的任何争议，如无法友好解决，由南里奥格兰德州新汉堡法院管辖。</p>"
+        "content": "<p>本使用条款受巴西联邦共和国法律管辖。</p><p>因使用 ClanForge 平台而产生的任何争议，如无法友好解决，由南里奥格兰德州新汉堡法院管辖。</p>"
       },
       {
         "id": "contact",
         "num": "21",
         "title": "联系方式",
-        "content": "<p>contato@guildrealm.com | privacy@guildrealm.com | legal@guildrealm.com</p>"
+        "content": "<p>contato@clanforge.com | privacy@clanforge.com | legal@clanforge.com</p>"
       }
     ]
   },
   "Privacy": {
     "heroEyebrow": "法律",
     "heroTitle": "隐私政策",
-    "heroText": "您的隐私是 GuildRealm 的首要任务。本政策解释我们如何收集、使用和保护您的个人数据。",
+    "heroText": "您的隐私是 ClanForge 的首要任务。本政策解释我们如何收集、使用和保护您的个人数据。",
     "metaDate": "最后更新：",
     "metaVersion": "版本：",
     "metaRead": "阅读时间：",
@@ -491,19 +491,19 @@
         "id": "intro",
         "num": "1",
         "title": "简介",
-        "content": "<p>GuildRealm（<b>\"我们\"</b>、<b>\"我们的\"</b>或<b>\"平台\"</b>）致力于保护您的隐私和个人数据。本隐私政策解释我们如何收集、使用、存储和保护您提供的信息或在使用我们的服务时自动收集的信息。</p>"
+        "content": "<p>ClanForge（<b>\"我们\"</b>、<b>\"我们的\"</b>或<b>\"平台\"</b>）致力于保护您的隐私和个人数据。本隐私政策解释我们如何收集、使用、存储和保护您提供的信息或在使用我们的服务时自动收集的信息。</p>"
       },
       {
         "id": "who",
         "num": "2",
         "title": "关于我们",
-        "content": "<p>GuildRealm 是通过平台处理的个人数据的控制者。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>公司名称</b></td><td>GuildRealm Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>地址</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – 巴西 – CEP 93510-000</td></tr><tr><td><b>电子邮件</b></td><td>privacy@guildrealm.com</td></tr><tr><td><b>数据保护官</b></td><td>privacy@guildrealm.com</td></tr></tbody></table>"
+        "content": "<p>ClanForge 是通过平台处理的个人数据的控制者。</p><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><b>公司名称</b></td><td>ClanForge Serviços Digitais LTDA</td></tr><tr><td><b>CNPJ</b></td><td>12.345.678/0001-90</td></tr><tr><td><b>地址</b></td><td>Rua das Laranjeiras, 123, Sala 1001 – Centro<br/>Novo Hamburgo/RS – 巴西 – CEP 93510-000</td></tr><tr><td><b>电子邮件</b></td><td>privacy@clanforge.com</td></tr><tr><td><b>数据保护官</b></td><td>privacy@clanforge.com</td></tr></tbody></table>"
       },
       {
         "id": "data",
         "num": "3",
         "title": "我们收集的数据",
-        "content": "<p>我们收集不同类型的數據以提供最佳的 GuildRealm 体验。</p><h4>用户提供的数据</h4><ul><li><b>姓名</b> — 用于个性化您的个人资料</li><li><b>昵称</b> — 您在平台上的公开标识符</li><li><b>电子邮件</b> — 用于创建账户和找回密码</li><li><b>密码</b> — 以加密形式（哈希）存储</li><li><b>照片 / 头像</b> — 公开代表您的图像</li><li><b>横幅</b> — 个人资料背景图像</li><li><b>个人简介</b> — 关于您的描述性文本</li><li><b>国家和语言</b> — 用于本地化内容</li><li><b>社交媒体链接</b> — 自愿分享</li><li><b>发布的内容</b> — 文本、评论、帖子和指南</li></ul><h4>使用过程中生成的数据</h4><ul><li><b>公会</b> — 您创建或参与的公会</li><li><b>成就和徽章</b> — 奖章和认可</li><li><b>私信</b> — 与其他用户交换的内容</li><li><b>好友列表</b> — 已建立的连接</li><li><b>通知</b> — 通知记录</li><li><b>评论和点赞</b> — 内容互动</li><li><b>登录历史</b> — 访问日期和时间</li></ul><h4>自动收集的数据</h4><ul><li><b>IP 地址</b> — 用于安全和分析</li><li><b>浏览器和操作系统</b> — 技术标识</li><li><b>语言和时区</b> — 用于个性化</li><li><b>设备类型</b> — 桌面、平板或移动设备</li><li><b>Cookies 和标识符</b> — 用于功能和安全</li><li><b>服务器日志</b> — 自动技术记录</li></ul>"
+        "content": "<p>我们收集不同类型的數據以提供最佳的 ClanForge 体验。</p><h4>用户提供的数据</h4><ul><li><b>姓名</b> — 用于个性化您的个人资料</li><li><b>昵称</b> — 您在平台上的公开标识符</li><li><b>电子邮件</b> — 用于创建账户和找回密码</li><li><b>密码</b> — 以加密形式（哈希）存储</li><li><b>照片 / 头像</b> — 公开代表您的图像</li><li><b>横幅</b> — 个人资料背景图像</li><li><b>个人简介</b> — 关于您的描述性文本</li><li><b>国家和语言</b> — 用于本地化内容</li><li><b>社交媒体链接</b> — 自愿分享</li><li><b>发布的内容</b> — 文本、评论、帖子和指南</li></ul><h4>使用过程中生成的数据</h4><ul><li><b>公会</b> — 您创建或参与的公会</li><li><b>成就和徽章</b> — 奖章和认可</li><li><b>私信</b> — 与其他用户交换的内容</li><li><b>好友列表</b> — 已建立的连接</li><li><b>通知</b> — 通知记录</li><li><b>评论和点赞</b> — 内容互动</li><li><b>登录历史</b> — 访问日期和时间</li></ul><h4>自动收集的数据</h4><ul><li><b>IP 地址</b> — 用于安全和分析</li><li><b>浏览器和操作系统</b> — 技术标识</li><li><b>语言和时区</b> — 用于个性化</li><li><b>设备类型</b> — 桌面、平板或移动设备</li><li><b>Cookies 和标识符</b> — 用于功能和安全</li><li><b>服务器日志</b> — 自动技术记录</li></ul>"
       },
       {
         "id": "usage",
@@ -515,19 +515,19 @@
         "id": "legal",
         "num": "5",
         "title": "法律依据（LGPD）",
-        "content": "<p>GuildRealm 根据 <b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>处理您的数据。</p><table><thead><tr><th>法律依据</th><th>适用情况</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>当您接受我们的政策和非必要 Cookie 时</td></tr><tr><td><b>合同履行</b>（art. 7º, V）</td><td>创建账户并提供服务</td></tr><tr><td><b>法律义务</b>（art. 7º, II）</td><td>遵守法律和司法要求</td></tr><tr><td><b>权利行使</b>（art. 7º, VI）</td><td>保护 GuildRealm 和用户的权利</td></tr><tr><td><b>正当利益</b>（art. 7º, IX）</td><td>用于安全、防止欺诈和服务改进</td></tr></tbody></table><p>您可以随时撤回同意。</p>"
+        "content": "<p>ClanForge 根据 <b>Lei Geral de Proteção de Dados（Lei nº 13.709/2018 — LGPD）</b>处理您的数据。</p><table><thead><tr><th>法律依据</th><th>适用情况</th></tr></thead><tbody><tr><td><b>同意</b>（art. 7º, I）</td><td>当您接受我们的政策和非必要 Cookie 时</td></tr><tr><td><b>合同履行</b>（art. 7º, V）</td><td>创建账户并提供服务</td></tr><tr><td><b>法律义务</b>（art. 7º, II）</td><td>遵守法律和司法要求</td></tr><tr><td><b>权利行使</b>（art. 7º, VI）</td><td>保护 ClanForge 和用户的权利</td></tr><tr><td><b>正当利益</b>（art. 7º, IX）</td><td>用于安全、防止欺诈和服务改进</td></tr></tbody></table><p>您可以随时撤回同意。</p>"
       },
       {
         "id": "sharing",
         "num": "6",
         "title": "数据共享",
-        "content": "<p>GuildRealm <b>不出售</b>您的个人数据给第三方。</p><p>在以下情况下可能共享数据：</p><ul><li><b>服务提供商</b> — 帮助我们运营平台的公司</li><li><b>公共机构</b> — 法律或法院命令要求时</li><li><b>经同意</b> — 您明确授权时</li><li><b>企业转让</b> — 合并或收购情况</li></ul>"
+        "content": "<p>ClanForge <b>不出售</b>您的个人数据给第三方。</p><p>在以下情况下可能共享数据：</p><ul><li><b>服务提供商</b> — 帮助我们运营平台的公司</li><li><b>公共机构</b> — 法律或法院命令要求时</li><li><b>经同意</b> — 您明确授权时</li><li><b>企业转让</b> — 合并或收购情况</li></ul>"
       },
       {
         "id": "thirdparty",
         "num": "7",
         "title": "第三方服务",
-        "content": "<p>GuildRealm 使用第三方服务运营：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage 和 Hosting</li><li><b>Cloudflare</b> — DDoS 防护、CDN 和网络安全</li><li><b>Google Analytics</b> — 使用统计（启用时）</li><li><b>Google reCAPTCHA</b> — 机器人防护</li><li><b>Resend</b> — 事务性邮件发送</li></ul>"
+        "content": "<p>ClanForge 使用第三方服务运营：</p><ul><li><b>Firebase（Google）</b> — Authentication、Firestore、Storage 和 Hosting</li><li><b>Cloudflare</b> — DDoS 防护、CDN 和网络安全</li><li><b>Google Analytics</b> — 使用统计（启用时）</li><li><b>Google reCAPTCHA</b> — 机器人防护</li><li><b>Resend</b> — 事务性邮件发送</li></ul>"
       },
       {
         "id": "cookies",
@@ -545,7 +545,7 @@
         "id": "rights",
         "num": "10",
         "title": "您的权利（LGPD）",
-        "content": "<p>作为数据主体，您可以：</p><ul><li><b>确认和访问</b> — 请求数据副本</li><li><b>更正</b> — 请求更正不正确的数据</li><li><b>更新</b> — 更新平台上的信息</li><li><b>匿名化、屏蔽或删除</b> — 请求删除数据</li><li><b>数据可携带性</b> — 请求转移到其他服务</li><li><b>撤回同意</b> — 随时</li><li><b>共享信息</b> — 了解与谁共享</li><li><b>反对</b> — 反对基于正当利益的处理</li></ul><p>请通过 <b>privacy@guildrealm.com</b> 联系我们。我们将在 <b>15 天</b>内回复。</p>"
+        "content": "<p>作为数据主体，您可以：</p><ul><li><b>确认和访问</b> — 请求数据副本</li><li><b>更正</b> — 请求更正不正确的数据</li><li><b>更新</b> — 更新平台上的信息</li><li><b>匿名化、屏蔽或删除</b> — 请求删除数据</li><li><b>数据可携带性</b> — 请求转移到其他服务</li><li><b>撤回同意</b> — 随时</li><li><b>共享信息</b> — 了解与谁共享</li><li><b>反对</b> — 反对基于正当利益的处理</li></ul><p>请通过 <b>privacy@clanforge.com</b> 联系我们。我们将在 <b>15 天</b>内回复。</p>"
       },
       {
         "id": "deletion",
@@ -557,13 +557,13 @@
         "id": "security",
         "num": "12",
         "title": "数据安全",
-        "content": "<p>GuildRealm 采取的措施：</p><ul><li><b>加密</b> — 所有传输使用 HTTPS（SSL/TLS）</li><li><b>访问控制</b> — 受限和授权访问</li><li><b>监控</b> — 访问和入侵尝试日志</li><li><b>Firebase 安全</b> — 数据库安全规则</li><li><b>Cloudflare</b> — DDoS 防护</li><li><b>定期备份</b> — 确保数据完整性</li><li><b>加密密码</b> — bcrypt 算法</li></ul>"
+        "content": "<p>ClanForge 采取的措施：</p><ul><li><b>加密</b> — 所有传输使用 HTTPS（SSL/TLS）</li><li><b>访问控制</b> — 受限和授权访问</li><li><b>监控</b> — 访问和入侵尝试日志</li><li><b>Firebase 安全</b> — 数据库安全规则</li><li><b>Cloudflare</b> — DDoS 防护</li><li><b>定期备份</b> — 确保数据完整性</li><li><b>加密密码</b> — bcrypt 算法</li></ul>"
       },
       {
         "id": "children",
         "num": "13",
         "title": "儿童和青少年",
-        "content": "<p>GuildRealm 不针对 13 岁以下的儿童。</p><p>如果您在 13 至 18 岁之间，我们建议您的父母或监护人了解本政策。</p><p>我们不会故意收集 13 岁以下儿童的数据。如果我们发现此年龄段的账户，我们将删除数据并关闭账户。</p>"
+        "content": "<p>ClanForge 不针对 13 岁以下的儿童。</p><p>如果您在 13 至 18 岁之间，我们建议您的父母或监护人了解本政策。</p><p>我们不会故意收集 13 岁以下儿童的数据。如果我们发现此年龄段的账户，我们将删除数据并关闭账户。</p>"
       },
       {
         "id": "transfer",
@@ -581,7 +581,7 @@
         "id": "contact-priv",
         "num": "16",
         "title": "联系我们",
-        "content": "<p>有关隐私和数据保护的问题：</p><ul><li><b>隐私：</b> privacy@guildrealm.com</li><li><b>法务：</b> legal@guildrealm.com</li><li><b>一般：</b> contato@guildrealm.com</li></ul>"
+        "content": "<p>有关隐私和数据保护的问题：</p><ul><li><b>隐私：</b> privacy@clanforge.com</li><li><b>法务：</b> legal@clanforge.com</li><li><b>一般：</b> contato@clanforge.com</li></ul>"
       },
       {
         "id": "law-priv",
@@ -629,7 +629,7 @@
     "heroText": "输入您的账户邮箱，我们将发送重置密码的说明，帮助您回到旅程。",
     "backLink": "返回登录",
     "formTitle": "重置密码",
-    "formText": "输入与 GuildRealm 账户关联的邮箱。您将收到创建新密码的链接。",
+    "formText": "输入与 ClanForge 账户关联的邮箱。您将收到创建新密码的链接。",
     "emailLabel": "电子邮件或用户名",
     "emailPlaceholder": "输入您的电子邮件或用户名",
     "submit": "发送说明",
@@ -734,7 +734,11 @@
     "loadingGuilds": "正在加载公会...",
     "noOpenGuilds": "未找到正在招人的公会。",
     "join": "加入",
+    "applyToGuild": "申请",
     "joinError": "无法加入公会。请重试。",
+    "invalidPassword": "密码错误。",
+    "passwordPlaceholder": "公会密码",
+    "passwordGuildBadge": "密码",
     "leaveError": "无法退出公会。请重试。",
     "edit": "编辑",
     "delete": "删除",
@@ -935,7 +939,7 @@
       }
     ],
     "leaderCharacterLabel": "会长角色",
-    "leaderCharacterHint": "将成为会长并显示在成员列表中。",
+    "leaderCharacterHint": "自动成为会长，并显示在成员列表中。",
     "leaderRequired": "请选择领导公会的角色。",
     "noCharacters": "您还没有角色。",
     "createCharacterFirst": "创建角色",
@@ -981,7 +985,13 @@
         "label": "Chanter",
         "icon": "/games/aion2/classes/Chanter.webp"
       }
-    ]
+    ],
+    "flowTitle": "先创建角色，再创建公会",
+    "flowText": "每个公会都由角色创建。绑定角色后，它自动成为会长。新成员默认以\"成员\"身份加入，会长之后可以将其晋升为其他职位。",
+    "noCharactersSub": "创建公会需要一个角色：它会被绑定到公会并成为会长。请先创建角色，再回到这里。",
+    "allInGuild": "您的所有角色都已经在公会中。",
+    "allInGuildSub": "请退出当前公会，或创建一个新角色后再创建另一个公会。",
+    "leaderInGuild": "该角色已经在公会中。请选择另一个角色或新建一个。"
   },
   "GuildPage": {
     "notFound": "未找到公会。",
@@ -1066,7 +1076,10 @@
         "value": "tr",
         "label": "土耳其语"
       }
-    ]
+    ],
+    "focusLabel": "侧重",
+    "mentalityLabel": "心态",
+    "apply": "申请加入"
   },
   "GuildPanel": {
     "backToDashboard": "返回控制台",
@@ -1074,7 +1087,46 @@
     "subtitle": "在这里管理你的公会。",
     "menuOverview": "概览",
     "menuCalendar": "日历",
+    "menuAttendance": "出勤",
+    "attendanceSub": "查看并管理成员在活动中的出勤情况。",
+    "attendancePresent": "已参加",
+    "attendanceAbsent": "未参加",
+    "attendanceEmpty": "暂无",
+    "attendanceNoEvents": "还没有创建活动。",
+    "attendanceBadgeCode": "代码确认",
+    "attendanceBadgeJoin": "报名制",
+    "attendanceReportPresent": "生成出勤报告",
+    "attendanceReportAbsent": "生成缺勤报告",
+    "reportStartDate": "开始日期",
+    "reportEndDate": "结束日期",
+    "reportPeriodInvalid": "结束日期必须晚于开始日期。",
+    "reportType": "报告类型",
+    "reportSimple": "简单 — 仅绝对数量",
+    "reportDetailed": "详细 — 包含活动名称、日期和时间",
+    "reportGenerate": "生成 PDF",
+    "reportGenerating": "生成中...",
+    "reportTitlePresent": "出勤报告",
+    "reportTitleAbsent": "缺勤报告",
+    "reportPeriod": "期间",
+    "reportTo": "至",
+    "reportGuild": "公会",
+    "reportCountPresent": "次出勤",
+    "reportCountAbsent": "次缺勤",
+    "reportNoData": "所选期间内没有活动。",
+    "reportGenerateError": "无法生成报告，请重试。",
     "menuMembers": "成员",
+    "menuApplications": "申请",
+    "applicationsSub": "查看并管理公会申请。",
+    "applicationsPending": "待处理申请",
+    "applicationsEmpty": "暂无待处理申请。",
+    "applicationsHistory": "申请记录",
+    "applicationAccept": "接受",
+    "applicationReject": "拒绝",
+    "applicationAccepted": "已接受",
+    "applicationRejected": "已拒绝",
+    "applicationNoAnswers": "此申请没有回答内容。",
+    "applicationReviewError": "无法处理申请，请重试。",
+    "applicationAlreadyReviewed": "此申请已处理过。",
     "timezoneLabel": "时区",
     "createEvent": "创建活动",
     "eventTitle": "活动标题",
@@ -1240,7 +1292,103 @@
     "kickError": "无法移除成员。请重试。",
     "banError": "无法封禁成员。请重试。",
     "statusError": "无法更改状态。请重试。",
-    "roleError": "无法更改职能。请重试。"
+    "roleError": "无法更改职能。请重试。",
+    "menuSettings": "设置",
+    "settingsSub": "管理你的公会信息和外观。",
+    "tabGeneral": "常规",
+    "settingsNameLabel": "公会名称",
+    "settingsNamePlaceholder": "输入公会名称",
+    "settingsLogoLabel": "徽标",
+    "settingsLogoUpload": "上传徽标",
+    "settingsLogoChange": "更换徽标",
+    "settingsLogoRemove": "移除",
+    "settingsLogoSub": "PNG、JPG 或 WebP，最大 2 MB。",
+    "settingsLogoInvalid": "格式无效。请使用 PNG、JPG 或 WebP。",
+    "settingsLogoTooLarge": "图片最大为 2 MB。",
+    "settingsBannerLabel": "公开主页横幅",
+    "settingsBannerUpload": "上传横幅",
+    "settingsBannerChange": "更换横幅",
+    "settingsBannerRemove": "移除",
+    "settingsBannerSub": "PNG、JPG 或 WebP，最大 4 MB。推荐尺寸：1600 x 400。",
+    "settingsBannerInvalid": "格式无效。请使用 PNG、JPG 或 WebP。",
+    "settingsBannerTooLarge": "图片最大为 4 MB。",
+    "settingsDescriptionLabel": "简介",
+    "settingsDescriptionPlaceholder": "简单介绍一下你的公会...",
+    "settingsDescriptionHint": "显示在公会的公开主页上。",
+    "settingsFocusLabel": "公会侧重",
+    "settingsMentalityLabel": "游戏心态",
+    "settingsSave": "保存更改",
+    "settingsSaving": "保存中...",
+    "settingsSaved": "设置已保存！",
+    "settingsError": "保存失败。请重试。",
+    "settingsNameRequired": "公会名称不能为空。",
+    "settingsPermission": "你没有访问设置的权限。",
+    "tabRanks": "职位",
+    "ranksHint": "可以创建自定义职位，并编辑任何职位（包括默认职位）的权限。默认职位无法删除。",
+    "newRank": "新建职位",
+    "editRank": "编辑职位",
+    "rankName": "名称",
+    "rankNamePlaceholder": "例如：指挥官",
+    "rankColor": "颜色",
+    "rankPermissions": "权限",
+    "rankDefault": "默认",
+    "saveRank": "保存职位",
+    "cancelRank": "取消",
+    "rankNameRequired": "职位名称不能为空。",
+    "rankSaveError": "无法保存职位。请重试。",
+    "rankDeleteTitle": "删除职位",
+    "rankDeleteMessage": "确定删除职位 {name} 吗？拥有该职位的成员将回到默认职位。",
+    "rankDeleteError": "无法删除职位。请重试。",
+    "deleteRank": "删除",
+    "rankPermissionsLabels": [
+      {
+        "value": "manageMembers",
+        "label": "管理成员"
+      },
+      {
+        "value": "manageGroups",
+        "label": "管理分组"
+      },
+      {
+        "value": "manageEvents",
+        "label": "管理活动"
+      },
+      {
+        "value": "manageSettings",
+        "label": "管理设置"
+      },
+      {
+        "value": "manageRanks",
+        "label": "管理职位"
+      },
+      {
+        "value": "manageRecruitment",
+        "label": "管理招募"
+      }
+    ],
+    "assignRank": "分配职位",
+    "rankDefaultLabel": "默认",
+    "searchPlaceholder": "按玩家名称搜索...",
+    "filterAll": "全部",
+    "membersEmpty": "未找到成员。",
+    "tabRecruitment": "招募",
+    "tabDiscord": "Discord",
+    "discordTitle": "Discord 通知",
+    "discordSub": "自动将公会活动（活动、参与情况等）发送到你的 Discord 频道。",
+    "discordWebhookLabel": "Webhook 网址",
+    "discordWebhookPlaceholder": "https://discord.com/api/webhooks/...",
+    "discordWebhookHint": "在 Discord 中：服务器设置 → 集成 → Webhooks → 新建 Webhook。选择频道并复制网址。未配置 Webhook 则不会发送通知。",
+    "discordSave": "保存 Webhook",
+    "discordSaving": "保存中...",
+    "discordSaved": "Webhook 已保存！",
+    "discordRemove": "删除",
+    "discordTest": "测试连接",
+    "discordTesting": "发送中...",
+    "discordTested": "测试消息已发送到频道！",
+    "discordUrlInvalid": "Webhook 网址无效。请粘贴 Discord 完整网址。",
+    "discordError": "无法保存，请重试。",
+    "discordEmpty": "未配置 Webhook，通知不会发送到 Discord。",
+    "discordLoading": "加载中..."
   },
   "GuildCalendar": {
     "today": "今天",
@@ -1264,6 +1412,30 @@
     "maxParticipants": "最大参与人数",
     "unlimited": "无限",
     "allowRegistration": "允许报名",
+    "attendanceEnabled": "出勤确认",
+    "attendanceEnabledHint": "成员使用有权限的用户分享的代码，在下方设定的时间内确认出勤。",
+    "attendanceStartLabel": "确认开始",
+    "attendanceEndLabel": "确认结束",
+    "attendanceBeforeOption": "活动结束前{value}分钟",
+    "attendanceAfterOption": "活动结束后{value}分钟",
+    "attendanceWindow": "确认时间：{start} – {end}",
+    "attendanceConfirmedCount": "已确认",
+    "attendanceConfirmed": "出勤已确认！",
+    "attendanceNotOpen": "确认将于{time}开始",
+    "attendanceNotOpenText": "确认尚未开始。",
+    "attendanceGenerateCode": "生成确认代码",
+    "attendanceCodeHint": "将此代码分享给公会成员。所有人使用同一代码。",
+    "attendanceCodeCopy": "复制",
+    "attendanceCodeCopied": "已复制！",
+    "attendanceCodePlaceholder": "输入代码",
+    "attendanceConfirm": "确认出勤",
+    "attendanceInvalidCode": "代码无效。",
+    "attendanceClosed": "确认时间已结束。",
+    "attendanceAlreadyConfirmed": "您已确认过此活动的出勤。",
+    "attendanceGenerateError": "无法生成代码，请重试。",
+    "attendanceGenerateNotOpen": "代码将在确认开始前1分钟可用。",
+    "attendanceWaitCode": "请等待会长或官员分享代码。",
+    "attendanceConfirmError": "无法确认，请检查代码和时间。",
     "cancel": "取消",
     "create": "创建",
     "createError": "无法创建活动。请重试。",
@@ -1363,5 +1535,113 @@
     "editRole": "编辑职能",
     "deleteRole": "删除职能",
     "newRole": "新职能"
+  },
+  "Recruitment": {
+    "sectionRecruitment": "招募",
+    "recruitmentStatusSub": "设置新玩家是否可以申请加入公会。",
+    "openLabel": "开放",
+    "closedLabel": "关闭",
+    "openHint": "开放时，玩家可以提交加入公会的申请。",
+    "closedHint": "关闭时，外部玩家无法提交申请。",
+    "sectionMessage": "给申请人的消息",
+    "sectionMessageSub": "在申请表之前向申请人显示的消息。",
+    "messagePlaceholder": "为申请人写一条欢迎消息和说明...",
+    "sectionQuestions": "申请问题",
+    "sectionQuestionsSub": "设置申请人请求加入公会时必须回答的问题。",
+    "addQuestion": "添加问题",
+    "previewButton": "预览申请",
+    "previewTitle": "申请预览",
+    "noQuestions": "尚未添加任何问题。",
+    "saveSettings": "保存更改",
+    "savingSettings": "保存中...",
+    "savedSettings": "招募设置已保存。",
+    "saveError": "无法保存设置。",
+    "editQuestion": "编辑",
+    "duplicateQuestion": "复制",
+    "deleteQuestion": "删除",
+    "deleteQuestionTitle": "删除问题",
+    "deleteQuestionMessage": "确定要删除此问题吗？",
+    "requiredBadge": "必填",
+    "optionalBadge": "选填",
+    "dragHint": "拖动以排序",
+    "newQuestionTitle": "新问题",
+    "editQuestionTitle": "编辑问题",
+    "questionLabel": "问题",
+    "questionPlaceholder": "例如：你当前的战力是多少？",
+    "typeLabel": "类型",
+    "requiredLabel": "必填问题",
+    "optionsLabel": "选项",
+    "addOption": "添加选项",
+    "removeOption": "移除",
+    "optionPlaceholder": "例如：坦克",
+    "minLengthLabel": "最小长度",
+    "maxLengthLabel": "最大长度",
+    "minValueLabel": "最小值",
+    "maxValueLabel": "最大值",
+    "checkboxTextLabel": "复选框文本",
+    "checkboxTextPlaceholder": "例如：我接受公会的规则。",
+    "questionNameRequired": "请输入问题。",
+    "optionRequired": "请至少添加一个选项。",
+    "saveQuestion": "保存问题",
+    "cancelLabel": "取消",
+    "type_short_text": "短文本",
+    "type_long_text": "长文本",
+    "type_number": "数字",
+    "type_single_choice": "单选",
+    "type_multiple_choice": "多选",
+    "type_dropdown": "下拉列表",
+    "type_yes_no": "是/否",
+    "type_checkbox": "复选框",
+    "selectOption": "请选择...",
+    "yes": "是",
+    "no": "否",
+    "fieldRequired": "此问题为必填项。",
+    "errInvalidNumber": "请输入有效的数字。",
+    "errMinValue": "最小值为 {min}。",
+    "errMaxValue": "最大值为 {max}。",
+    "errMinLength": "最少 {min} 个字符。",
+    "errMaxLength": "最多 {max} 个字符。",
+    "errRequiredOption": "请选择一个选项。",
+    "errRequiredOptions": "请至少选择一个选项。",
+    "submitApplication": "提交申请",
+    "submitting": "提交中...",
+    "submitError": "无法提交申请，请重试。",
+    "pageTitle": "招募",
+    "openBadge": "招募开放",
+    "closedBadge": "招募关闭",
+    "closedMessage": "该公会目前不接受新的申请。",
+    "alreadyMember": "您已经是该公会的成员。",
+    "selectCharacter": "要加入的角色",
+    "selectCharacterPlaceholder": "选择一个角色",
+    "selectCharacterHint": "选择如果申请被接受后要加入公会的角色。",
+    "selectCharacterRequired": "提交前请先选择一个角色。",
+    "noCharacterTitle": "没有可用的角色",
+    "noCharacterMessage": "申请加入此公会需要一个没有公会的角色。",
+    "createCharacter": "创建角色",
+    "applicationSuccess": "申请已提交！",
+    "applicationSuccessSub": "您的申请已成功提交。公会审核后会通知您。",
+    "sectionPassword": "公会密码",
+    "sectionPasswordSub": "知道密码的人可以直接加入，无需申请——即使招募已关闭。",
+    "passwordOn": "已启用",
+    "passwordOff": "已停用",
+    "passwordLabel": "密码",
+    "passwordLabelReset": "重置密码",
+    "passwordPlaceholder": "新密码",
+    "passwordKeepPlaceholder": "留空则保持当前密码",
+    "passwordHint": "与你想邀请的人分享。知道密码的人可直接加入。",
+    "passwordRequiredError": "请设置密码后再启用。",
+    "passwordLengthError": "密码长度需为 4-64 个字符。",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "joinWithPassword": "使用公会密码加入",
+    "passwordInputPlaceholder": "公会密码",
+    "invalidPassword": "密码错误。",
+    "passwordRequired": "请输入公会密码。",
+    "joinedTitle": "欢迎加入公会！",
+    "joinedSub": "你的角色已使用密码加入公会。",
+    "orApply": "或申请加入",
+    "joinError": "无法加入公会，请重试。",
+    "notFound": "未找到公会。",
+    "backToGuild": "返回公会"
   }
 }

@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseApp, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { GuildGroup, GroupMemberEntry, GuildRole, GuildPreset, DEFAULT_ROLES } from './types';
+import { GuildGroup, GroupMemberEntry, GuildRole, GuildPreset, GuildRank, DEFAULT_ROLES, DEFAULT_RANKS, type RecruitmentSettings, type ApplicationAnswer } from './types';
 
 function tsToDate(val: unknown): Date | undefined {
   if (!val) return undefined;
@@ -41,6 +41,10 @@ const presetsCol = (guildId: string) =>
   collection(getFirebaseDb(), 'guilds', guildId, 'presets');
 const rolesCol = (guildId: string) =>
   collection(getFirebaseDb(), 'guilds', guildId, 'roles');
+const ranksCol = (guildId: string) =>
+  collection(getFirebaseDb(), 'guilds', guildId, 'ranks');
+const recruitmentDoc = (guildId: string) =>
+  doc(getFirebaseDb(), 'guilds', guildId, 'settings', 'recruitment');
 
 // ============ ROLES ============
 export function useGuildRoles(guildId: string | null) {
@@ -124,6 +128,197 @@ async function seedDefaultRoles(guildId: string) {
     const batch = writeBatch(getFirebaseDb());
     for (const r of DEFAULT_ROLES) {
       batch.set(doc(rolesCol(guildId)), {
+        ...r,
+        guildId,
+        createdBy: 'system',
+        createdAt: serverTimestamp(),
+      });
+    }
+    await batch.commit();
+  } catch {
+    // permissão negada ou concorrência: ignora
+  }
+}
+
+// ============ RANKS (CARGOS) ============
+export function useGuildRanks(guildId: string | null) {
+  const [ranks, setRanks] = useState<GuildRank[]>([]);
+  const [loading, setLoading] = useState(true);
+  const guildIdRef = useRef(guildId);
+  guildIdRef.current = guildId;
+
+  useEffect(() => {
+    if (!guildId) {
+      setRanks([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const unsub = onSnapshot(
+      query(ranksCol(guildId), orderBy('position', 'asc')),
+      (snap) => {
+        const list: GuildRank[] = [];
+        snap.forEach((d) => {
+          const data = d.data();
+          list.push({
+            id: d.id,
+            guildId: data.guildId ?? guildId,
+            name: data.name ?? '',
+            color: data.color ?? '#64748b',
+            position: data.position ?? 0,
+            isDefault: !!data.isDefault,
+            permissions: data.permissions ?? {},
+            createdBy: data.createdBy ?? '',
+            createdAt: tsToDate(data.createdAt),
+          });
+        });
+        setRanks(list);
+        setLoading(false);
+        if (snap.empty) void seedDefaultRanks(guildId);
+      },
+      () => setLoading(false),
+    );
+    return unsub;
+  }, [guildId]);
+
+  const createRank = useCallback(
+    async (data: {
+      name: string;
+      color: string;
+      permissions: GuildRank['permissions'];
+    }) => {
+      const gid = guildIdRef.current;
+      if (!gid) throw new Error('no-guild');
+      const ref = await addDoc(ranksCol(gid), {
+        ...data,
+        guildId: gid,
+        position: 999,
+        isDefault: false,
+        createdBy: 'user',
+        createdAt: serverTimestamp(),
+      });
+      return ref.id;
+    },
+    [],
+  );
+
+  const updateRank = useCallback(
+    async (
+      rankId: string,
+      data: Partial<Omit<GuildRank, 'id' | 'guildId' | 'createdAt'>>,
+    ) => {
+      const gid = guildIdRef.current;
+      if (!gid) return;
+      await updateDoc(doc(ranksCol(gid), rankId), data);
+    },
+    [],
+  );
+
+  const deleteRank = useCallback(
+    async (rankId: string) => {
+      const gid = guildIdRef.current;
+      if (!gid) return;
+      await deleteDoc(doc(ranksCol(gid), rankId));
+    },
+    [],
+  );
+
+  return { ranks, loading, createRank, updateRank, deleteRank };
+}
+
+// ============ RECRUTAMENTO ============
+export function useRecruitmentSettings(guildId: string | null) {
+  const [settings, setSettings] = useState<RecruitmentSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+  const guildIdRef = useRef(guildId);
+  guildIdRef.current = guildId;
+
+  useEffect(() => {
+    if (!guildId) {
+      setSettings(null);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const unsub = onSnapshot(
+      recruitmentDoc(guildId),
+      (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          setSettings({
+            enabled: data.enabled === true,
+            message: data.message ?? '',
+            questions: Array.isArray(data.questions) ? data.questions : [],
+            passwordEnabled: data.passwordEnabled === true,
+            passwordSet: data.passwordSet === true,
+            updatedBy: data.updatedBy,
+            updatedAt: tsToDate(data.updatedAt),
+          });
+        } else {
+          setSettings(null);
+        }
+        setLoading(false);
+      },
+      () => setLoading(false),
+    );
+    return unsub;
+  }, [guildId]);
+
+  const save = useCallback(
+    async (data: {
+      enabled: boolean;
+      message: string;
+      questions: RecruitmentSettings['questions'];
+      passwordEnabled: boolean;
+      password: string;
+    }) => {
+      const gid = guildIdRef.current;
+      if (!gid) throw new Error('no-guild');
+      const fn = httpsCallable<
+        {
+          guildId: string;
+          enabled: boolean;
+          message: string;
+          questions: RecruitmentSettings['questions'];
+          passwordEnabled: boolean;
+          password: string;
+        },
+        { success: boolean }
+      >(getFunctions(getFirebaseApp()), 'saveRecruitmentSettings');
+      const res = await fn({
+        guildId: gid,
+        enabled: data.enabled,
+        message: data.message,
+        questions: data.questions,
+        passwordEnabled: data.passwordEnabled,
+        password: data.password,
+      });
+      return res.data.success;
+    },
+    [],
+  );
+
+  return { settings, loading, save };
+}
+
+export async function submitGuildApplication(
+  guildId: string,
+  characterId: string,
+  answers: ApplicationAnswer[],
+): Promise<string> {
+  const fn = httpsCallable<
+    { guildId: string; characterId: string; answers: ApplicationAnswer[] },
+    { success: boolean; applicationId?: string }
+  >(getFunctions(getFirebaseApp()), 'submitGuildApplication');
+  const res = await fn({ guildId, characterId, answers });
+  return res.data.applicationId ?? '';
+}
+
+async function seedDefaultRanks(guildId: string) {
+  try {
+    const batch = writeBatch(getFirebaseDb());
+    for (const r of DEFAULT_RANKS) {
+      batch.set(doc(ranksCol(guildId)), {
         ...r,
         guildId,
         createdBy: 'system',
