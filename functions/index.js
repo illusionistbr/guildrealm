@@ -866,19 +866,21 @@ async function getEventForAttendance(eventId) {
 }
 
 function getAttendanceWindow(event) {
-  const startMs = event.attendanceStart?.toMillis?.() ?? null;
-  const endMs = event.attendanceEnd?.toMillis?.() ?? null;
-  if (!startMs || !endMs) {
+  const endMs = event.end?.toMillis?.() ?? null;
+  if (!endMs) {
     throw new CallableError(
       'invalid-argument',
-      'Event has no attendance window',
+      'Event has no end time',
     );
   }
-  return { startMs, endMs };
+  // Código disponível 1 minuto antes do fim, fecha 15 min após o fim.
+  const startMs = endMs - 60_000;
+  const closeMs = endMs + 15 * 60_000;
+  return { startMs, endMs: closeMs };
 }
 
 // Gera (ou reutiliza) o código de confirmação de presença do evento.
-// Disponível a partir de 1 minuto antes da abertura das confirmações.
+// Código disponível 1 minuto antes do fim do evento, fecha 15 min após o fim.
 // Apenas quem tem a permissão de gerenciar eventos (líder, oficiais etc.).
 exports.generateAttendanceCode = callable(async (data, context) => {
   if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
@@ -926,7 +928,7 @@ exports.generateAttendanceCode = callable(async (data, context) => {
 });
 
 // Confirma a presença do membro no evento com o código compartilhado.
-// Só funciona dentro da janela de confirmações [attendanceStart, attendanceEnd].
+// Janela: 1 min antes do fim até 15 min após o fim do evento.
 exports.confirmAttendance = callable(async (data, context) => {
   if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
 

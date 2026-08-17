@@ -11,9 +11,6 @@ import {
   Users,
   Loader2,
   Trash2,
-  Edit3,
-  UserPlus,
-  UserMinus,
   Check,
   KeyRound,
   Copy,
@@ -22,11 +19,9 @@ import {
 } from 'lucide-react';
 import {
   GuildCalendarEvent,
-  EventParticipant,
   EVENT_TYPE_CONFIG,
 } from '@/lib/calendar/types';
 import {
-  useEventParticipants,
   useEventConfirmations,
   generateAttendanceCode,
   confirmAttendance,
@@ -79,18 +74,11 @@ export function EventDetails({
   const t = useTranslations('GuildCalendar');
   const cfg = EVENT_TYPE_CONFIG[event.type];
   const {
-    participants,
-    loading: participantsLoading,
-    joinEvent,
-    leaveEvent,
-  } = useEventParticipants(event.id);
-  const {
     confirmations,
     loading: confirmationsLoading,
   } = useEventConfirmations(event.id);
 
   const [deleting, setDeleting] = useState(false);
-  const [joining, setJoining] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [now, setNow] = useState(() => Date.now());
@@ -107,8 +95,10 @@ export function EventDetails({
     return () => clearInterval(id);
   }, []);
 
-  const attStartMs = event.attendanceStart?.getTime() ?? 0;
-  const attEndMs = event.attendanceEnd?.getTime() ?? 0;
+  // Janela de confirmação: 1 min antes do fim → 15 min após o fim
+  const eventEndMs = event.end?.getTime?.() ?? event.end?.getTime?.() ?? 0;
+  const attStartMs = eventEndMs > 0 ? eventEndMs - 60_000 : 0;
+  const attEndMs = eventEndMs > 0 ? eventEndMs + 15 * 60_000 : 0;
   const isConfirmed = confirmations.some((c) => c.userId === uid);
 
   let phase: 'invalid' | 'before' | 'pre' | 'open' | 'after' = 'invalid';
@@ -165,31 +155,6 @@ export function EventDetails({
     } catch {
       // ignore
     }
-  };
-
-  const isParticipant = participants.some((p) => p.userId === uid);
-  const isFull =
-    event.maxParticipants !== null &&
-    participants.length >= event.maxParticipants;
-
-  const handleJoin = async () => {
-    setJoining(true);
-    try {
-      await joinEvent(event.id, uid, '');
-    } catch {
-      // ignore
-    }
-    setJoining(false);
-  };
-
-  const handleLeave = async () => {
-    setJoining(true);
-    try {
-      await leaveEvent(event.id, uid);
-    } catch {
-      // ignore
-    }
-    setJoining(false);
   };
 
   const handleDelete = async () => {
@@ -260,43 +225,9 @@ export function EventDetails({
 
           <div className="flex items-center gap-2 text-sm text-muted">
             <Users size={14} className="text-accent" />
-            {event.maxParticipants
-              ? `${participants.length} / ${event.maxParticipants} ${t('participants')}`
-              : `${participants.length} ${t('participants')}`}
+            {confirmations.length} {t('attendanceConfirmedCount')}
           </div>
         </div>
-
-        {event.allowRegistration && (
-          <div className="mb-4">
-            {isParticipant ? (
-              <button
-                onClick={handleLeave}
-                disabled={joining}
-                className="w-full h-10 rounded-lg border border-red-500/40 bg-red-500/10 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {joining ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  <UserMinus size={14} />
-                )}
-                {t('leaveEvent')}
-              </button>
-            ) : (
-              <button
-                onClick={handleJoin}
-                disabled={joining || isFull}
-                className="w-full h-10 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {joining ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  <UserPlus size={14} />
-                )}
-                {isFull ? t('eventFull') : t('joinEvent')}
-              </button>
-            )}
-          </div>
-        )}
 
         {event.attendanceEnabled && phase !== 'invalid' && (
           <div className="mb-4 rounded-lg border border-[rgba(38,51,86,0.5)] bg-[#070f1d] p-3 space-y-3">
@@ -304,8 +235,8 @@ export function EventDetails({
               <div className="flex items-center gap-2 text-sm text-white/80">
                 <Timer size={14} className="text-accent" />
                 {t('attendanceWindow', {
-                  start: formatTime(event.attendanceStart!),
-                  end: formatTime(event.attendanceEnd!),
+                  start: formatTime(new Date(attStartMs)),
+                  end: formatTime(new Date(attEndMs)),
                 })}
               </div>
               {!confirmationsLoading && (
@@ -327,7 +258,7 @@ export function EventDetails({
             ) : phase === 'before' ? (
               <p className="text-xs text-muted">
                 {t('attendanceNotOpen', {
-                  time: formatTime(event.attendanceStart!),
+                  time: formatTime(new Date(attStartMs)),
                 })}
               </p>
             ) : phase === 'pre' ? (
@@ -369,7 +300,7 @@ export function EventDetails({
               ) : (
                 <p className="text-xs text-muted">
                   {t('attendanceNotOpen', {
-                    time: formatTime(event.attendanceStart!),
+                    time: formatTime(new Date(attStartMs)),
                   })}
                 </p>
               )
@@ -434,25 +365,6 @@ export function EventDetails({
             ) : (
               <p className="text-xs text-muted">{t('attendanceClosed')}</p>
             )}
-          </div>
-        )}
-
-        {participants.length > 0 && (
-          <div className="mb-4">
-            <h4 className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">
-              {t('participantsList')}
-            </h4>
-            <div className="space-y-1.5 max-h-40 overflow-auto">
-              {participants.map((p) => (
-                <div
-                  key={p.userId}
-                  className="flex items-center gap-2 text-sm text-white/80"
-                >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  {p.displayName || 'Player'}
-                </div>
-              ))}
-            </div>
           </div>
         )}
 

@@ -5,23 +5,18 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { doc, getDoc } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
-import { getFirebaseDb, getFirebaseAuth } from '@/lib/admin/firebase/client';
+import { doc, getDoc, collection, onSnapshot } from 'firebase/firestore';
+import { getFirebaseDb } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import { EVENT_TYPE_CONFIG } from '@/lib/calendar/types';
-import { useEventParticipants, tsToDate } from '@/lib/calendar/hooks';
+import { tsToDate } from '@/lib/calendar/hooks';
 import {
   AlertTriangle,
-  Check,
-  CheckCircle2,
   ChevronLeft,
   Clock,
-  LogIn,
   MapPin,
   Shield,
   Users,
-  X,
 } from 'lucide-react';
 
 const fadeUp = {
@@ -39,12 +34,9 @@ type EventDoc = {
   end?: { seconds: number };
   location?: string;
   maxParticipants?: number | null;
-  allowRegistration?: boolean;
   status?: 'active' | 'cancelled' | 'completed';
   createdByName?: string;
 };
-
-type AuthUser = { uid: string; displayName: string | null };
 
 export default function PublicEventPage() {
   const t = useTranslations('EventPage');
@@ -53,13 +45,8 @@ export default function PublicEventPage() {
 
   const [event, setEvent] = useState<EventDoc | null>(null);
   const [guildName, setGuildName] = useState<string | null>(null);
+  const [confirmationCount, setConfirmationCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [joining, setJoining] = useState(false);
-  const [error, setError] = useState('');
-
-  const { participants, loading: participantsLoading, joinEvent, leaveEvent } =
-    useEventParticipants(params.eventId);
 
   useEffect(() => {
     let disposed = false;
@@ -91,19 +78,17 @@ export default function PublicEventPage() {
   }, [params.eventId]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getFirebaseAuth(), (u) => {
-      setUser(u ? { uid: u.uid, displayName: u.displayName } : null);
+    const colRef = collection(
+      getFirebaseDb(),
+      COLLECTIONS.GUILD_EVENTS,
+      params.eventId,
+      'confirmations',
+    );
+    const unsubscribe = onSnapshot(colRef, (snap) => {
+      setConfirmationCount(snap.size);
     });
     return unsubscribe;
-  }, []);
-
-  const isParticipant = participants.some((p) => p.userId === user?.uid);
-  const isFull =
-    typeof event?.maxParticipants === 'number' &&
-    event.maxParticipants > 0 &&
-    participants.length >= event.maxParticipants;
-  const registrationOpen =
-    !!event?.allowRegistration && event?.status === 'active';
+  }, [params.eventId]);
 
   const formatDate = (ts?: { seconds: number }) => {
     if (!ts) return '—';
@@ -114,36 +99,6 @@ export default function PublicEventPage() {
       }).format(tsToDate(ts));
     } catch {
       return '—';
-    }
-  };
-
-  const handleJoin = async () => {
-    if (!user || !params.eventId) return;
-    setJoining(true);
-    setError('');
-    try {
-      await joinEvent(params.eventId, user.uid, user.displayName || 'Player');
-    } catch (err: unknown) {
-      setError(
-        (err as { message?: string }).message ?? 'Não foi possível confirmar.',
-      );
-    } finally {
-      setJoining(false);
-    }
-  };
-
-  const handleLeave = async () => {
-    if (!user || !params.eventId) return;
-    setJoining(true);
-    setError('');
-    try {
-      await leaveEvent(params.eventId, user.uid);
-    } catch (err: unknown) {
-      setError(
-        (err as { message?: string }).message ?? 'Não foi possível sair.',
-      );
-    } finally {
-      setJoining(false);
     }
   };
 
@@ -248,7 +203,7 @@ export default function PublicEventPage() {
                 <InfoTile
                   icon={<Users size={15} className="text-accent" />}
                   label={t('participantsLabel')}
-                  value={`${participants.length}${
+                  value={`${confirmationCount}${
                     typeof event.maxParticipants === 'number' &&
                     event.maxParticipants > 0
                       ? ` / ${event.maxParticipants}`
@@ -263,85 +218,18 @@ export default function PublicEventPage() {
                 </p>
               )}
 
-              {!participantsLoading && participants.length > 0 && (
-                <div className="mt-5">
-                  <p className="text-xs text-muted mb-2">
-                    {t('participants', { count: participants.length })}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {participants.map((p) => (
-                      <span
-                        key={p.userId}
-                        className="text-xs px-2 py-1 rounded-full bg-[rgba(38,51,86,0.4)] text-white"
-                      >
-                        {p.displayName}
-                      </span>
-                    ))}
-                  </div>
+              {cancelled && (
+                <div className="mt-5 flex items-center gap-2 text-sm text-red-400">
+                  <AlertTriangle size={16} />
+                  {t('cancelledHint')}
                 </div>
               )}
-
-              <div className="mt-6 pt-5 border-t border-[rgba(38,51,86,0.3)]">
-                {cancelled || completed ? (
-                  <div className="w-full h-11 rounded-lg bg-white/5 border border-[rgba(38,51,86,0.5)] flex items-center justify-center gap-2 text-sm text-muted">
-                    <AlertTriangle size={16} />
-                    {cancelled
-                      ? t('cancelledHint')
-                      : t('completedHint')}
-                  </div>
-                ) : !registrationOpen ? (
-                  <div className="w-full h-11 rounded-lg bg-white/5 border border-[rgba(38,51,86,0.5)] flex items-center justify-center gap-2 text-sm text-muted">
-                    <X size={16} />
-                    {t('registrationClosed')}
-                  </div>
-                ) : isParticipant ? (
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm text-emerald-400 flex items-center gap-2">
-                      <CheckCircle2 size={16} /> {t('confirmed')}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleLeave}
-                      disabled={joining}
-                      className="h-9 px-4 rounded-lg bg-white/5 border border-[rgba(38,51,86,0.5)] text-sm text-muted hover:text-white hover:border-white/20 transition-colors disabled:opacity-50"
-                    >
-                      {joining ? '…' : t('leaveEvent')}
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    {!user && (
-                      <p className="text-xs text-muted mb-3">
-                        {t('loginHint')}
-                      </p>
-                    )}
-                    {isFull ? (
-                      <div className="w-full h-11 rounded-lg bg-white/5 border border-[rgba(38,51,86,0.5)] flex items-center justify-center gap-2 text-sm text-muted">
-                        <AlertTriangle size={16} /> {t('full')}
-                      </div>
-                    ) : user ? (
-                      <button
-                        type="button"
-                        onClick={handleJoin}
-                        disabled={joining}
-                        className="w-full h-11 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                      >
-                        <Check size={16} /> {t('confirmPresence')}
-                      </button>
-                    ) : (
-                      <Link
-                        href={`/login?next=/guilds/${params.id}/events/${params.eventId}`}
-                        className="w-full h-11 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors flex items-center justify-center gap-2"
-                      >
-                        <LogIn size={16} /> {t('confirmPresence')}
-                      </Link>
-                    )}
-                    {error && (
-                      <p className="mt-2 text-xs text-red-400">{error}</p>
-                    )}
-                  </div>
-                )}
-              </div>
+              {completed && (
+                <div className="mt-5 flex items-center gap-2 text-sm text-emerald-400">
+                  <AlertTriangle size={16} />
+                  {t('completedHint')}
+                </div>
+              )}
             </div>
           </motion.div>
 

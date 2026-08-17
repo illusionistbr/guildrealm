@@ -98,8 +98,6 @@ export interface GuildCalendarEvent {
   createdAt: Date;
   updatedAt: Date;
   attendanceEnabled: boolean;
-  attendanceStart: Date | null;
-  attendanceEnd: Date | null;
 }
 
 export interface EventConfirmation {

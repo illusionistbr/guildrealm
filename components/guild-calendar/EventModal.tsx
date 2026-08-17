@@ -54,8 +54,6 @@ export function EventModal({
   const [maxParticipants, setMaxParticipants] = useState('');
   const [allowRegistration, setAllowRegistration] = useState(true);
   const [attendanceEnabled, setAttendanceEnabled] = useState(false);
-  const [attendanceBeforeMin, setAttendanceBeforeMin] = useState(5);
-  const [attendanceAfterMin, setAttendanceAfterMin] = useState(5);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -97,12 +95,6 @@ export function EventModal({
         createdBy: uid,
         createdByName: displayName,
         attendanceEnabled,
-        attendanceStart: attendanceEnabled
-          ? new Date(end.getTime() - attendanceBeforeMin * 60000)
-          : null,
-        attendanceEnd: attendanceEnabled
-          ? new Date(end.getTime() + attendanceAfterMin * 60000)
-          : null,
       });
     } catch {
       setError(t('createError'));
@@ -281,45 +273,9 @@ export function EventModal({
             </label>
 
             {attendanceEnabled && (
-              <>
-                <p className="text-xs text-muted/80 leading-relaxed">
-                  {t('attendanceEnabledHint')}
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm text-muted mb-1.5">
-                      {t('attendanceStartLabel')}
-                    </label>
-                    <select
-                      value={attendanceBeforeMin}
-                      onChange={(e) => setAttendanceBeforeMin(Number(e.target.value))}
-                      className="w-full h-11 px-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white focus:outline-none focus:border-accent/50 transition-colors"
-                    >
-                      {[5, 10, 15].map((m) => (
-                        <option key={m} value={m}>
-                          {t('attendanceBeforeOption', { value: m })}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-muted mb-1.5">
-                      {t('attendanceEndLabel')}
-                    </label>
-                    <select
-                      value={attendanceAfterMin}
-                      onChange={(e) => setAttendanceAfterMin(Number(e.target.value))}
-                      className="w-full h-11 px-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white focus:outline-none focus:border-accent/50 transition-colors"
-                    >
-                      {[5, 10, 15].map((m) => (
-                        <option key={m} value={m}>
-                          {t('attendanceAfterOption', { value: m })}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </>
+              <p className="text-xs text-muted/80 leading-relaxed">
+                {t('attendanceEnabledHint')}
+              </p>
             )}
           </div>
 
