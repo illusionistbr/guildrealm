@@ -183,11 +183,11 @@ match /members/{userId} {
         allow read, write: if false;
       }
 
-      // Confirmações de presença: leitura para membros da guild (página de
-      // presenças); escrita exclusivamente pela Cloud Function.
+      // Confirmações de presença: leitura livre para autenticados (a validação
+      // de membro/código é feita inteiramente pela Cloud Function; aqui só
+      // precisamos que o usuário logado possa ler seu próprio status).
       match /confirmations/{userId} {
-        allow read: if isSignedIn() &&
-          isGuildMember(resource.data.guildId);
+        allow read: if isSignedIn();
         allow write: if false;
       }
     }
