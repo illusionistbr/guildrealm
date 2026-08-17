@@ -993,6 +993,26 @@
     "allInGuildSub": "現在のギルドを脱退するか、新しいキャラクターを作成してください。",
     "leaderInGuild": "このキャラクターはすでにギルドに所属しています。別のキャラクターを選ぶか、新しく作成してください。"
   },
+  "EventPage": {
+    "notFound": "イベントが見つかりません。",
+    "backToGuild": "ギルドに戻る",
+    "backToHome": "ホームページに戻る",
+    "startsAt": "開始",
+    "endsAt": "終了",
+    "location": "場所",
+    "participantsLabel": "参加者",
+    "participants": "{count}人が参加を確定しました",
+    "confirmPresence": "参加を確定する",
+    "confirmed": "参加確定済み",
+    "leaveEvent": "イベントを退出する",
+    "loginHint": "参加を確定するにはログインしてください。",
+    "full": "定員に達しました",
+    "registrationClosed": "受付終了",
+    "cancelled": "キャンセル",
+    "completed": "終了",
+    "cancelledHint": "このイベントはキャンセルされました。",
+    "completedHint": "このイベントは終了しました。"
+  },
   "GuildPage": {
     "notFound": "ギルドが見つかりませんでした。",
     "backToHome": "ホームページに戻る",

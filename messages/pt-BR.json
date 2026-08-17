@@ -993,6 +993,26 @@
     "allInGuildSub": "Deixe a guild atual ou crie um novo personagem antes de criar outra guild.",
     "leaderInGuild": "Este personagem já está em uma guild. Escolha outro ou crie um novo."
   },
+  "EventPage": {
+    "notFound": "Evento não encontrado.",
+    "backToGuild": "Voltar para a guild",
+    "backToHome": "Voltar para a página inicial",
+    "startsAt": "Início",
+    "endsAt": "Fim",
+    "location": "Local",
+    "participantsLabel": "Participantes",
+    "participants": "{count} confirmaram presença",
+    "confirmPresence": "Confirmar presença",
+    "confirmed": "Presença confirmada",
+    "leaveEvent": "Sair do evento",
+    "loginHint": "Entre com sua conta para confirmar presença no evento.",
+    "full": "Vagas esgotadas",
+    "registrationClosed": "Inscrições encerradas",
+    "cancelled": "Cancelado",
+    "completed": "Concluído",
+    "cancelledHint": "Este evento foi cancelado.",
+    "completedHint": "Este evento já foi concluído."
+  },
   "GuildPage": {
     "notFound": "Guild não encontrada.",
     "backToHome": "Voltar para a página inicial",

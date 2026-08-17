@@ -47,7 +47,12 @@ export default function LoginPage() {
       }
 
       setTimeout(() => {
-        window.location.href = '/app/dashboard';
+        const next = new URLSearchParams(window.location.search).get('next');
+        const target =
+          next && next.startsWith('/') && !next.startsWith('//')
+            ? next
+            : '/app/dashboard';
+        window.location.href = target;
       }, 300);
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code ?? '';

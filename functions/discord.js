@@ -15,6 +15,9 @@ const COLOR_GREEN = 0x22c55e;
 const COLOR_RED = 0xef4444;
 const COLOR_ORANGE = 0xf97316;
 
+// URL base pública do produto (usada nos links para o evento)
+const BASE_URL = process.env.CLANFORGE_BASE_URL || 'https://clanforge.app';
+
 const START_WINDOW_MINUTES = 5;
 const STARTED_WINDOW_MINUTES = 10;
 const ENDED_WINDOW_MINUTES = 30;
@@ -75,7 +78,16 @@ async function sendDiscordWebhook(webhookUrl, embed) {
   }
 }
 
-function buildEventEmbed(event, guildName, color, title, extraFields = []) {
+function buildEventEmbed(
+  event,
+  guildId,
+  eventId,
+  guildName,
+  color,
+  title,
+  extraFields = [],
+  confirmLink = false,
+) {
   const fields = [];
   if (event.start) fields.push({ name: '📅 Início', value: toDiscordTimestamp(event.start), inline: true });
   if (event.end) fields.push({ name: '🏁 Fim', value: toDiscordTimestamp(event.end), inline: true });
@@ -85,9 +97,17 @@ function buildEventEmbed(event, guildName, color, title, extraFields = []) {
     fields.push({ name: '👥 Vagas', value: String(event.maxParticipants), inline: true });
   }
   fields.push(...extraFields);
+  const url = eventId ? `${BASE_URL}/guilds/${guildId}/events/${eventId}` : undefined;
+  if (confirmLink && url) {
+    fields.push({
+      name: '✅ Confirme sua presença',
+      value: `[Clique aqui para confirmar](<${url}>)`,
+    });
+  }
   return {
     color,
     title: String(title).slice(0, 256),
+    url,
     description: event.description
       ? String(event.description).slice(0, 1000)
       : undefined,
@@ -95,24 +115,6 @@ function buildEventEmbed(event, guildName, color, title, extraFields = []) {
     timestamp: new Date().toISOString(),
     footer: { text: guildName ? `${guildName} · ClanForge` : 'ClanForge' },
   };
-}
-
-async function countParticipants(eventId) {
-  try {
-    const snap = await admin
-      .firestore()
-      .collection(`guild_events/${eventId}/participants`)
-      .count()
-      .get();
-    return snap.data().count;
-  } catch {
-    return null;
-  }
-}
-
-async function loadEvent(eventId) {
-  const snap = await admin.firestore().doc(`guild_events/${eventId}`).get();
-  return snap.exists ? snap.data() : null;
 }
 
 // Novo evento criado na guild
@@ -129,9 +131,13 @@ exports.discordEventCreated = onDocumentCreated(
       webhook,
       buildEventEmbed(
         data,
+        guildId,
+        event.params.eventId,
         guildName,
         COLOR_ACCENT,
         `📅 Novo evento: ${data.title ?? 'Evento'}`,
+        [],
+        true,
       ),
     );
   },
@@ -163,7 +169,14 @@ exports.discordEventStatusChanged = onDocumentUpdated(
     const guildName = await getGuildName(guildId);
     await sendDiscordWebhook(
       webhook,
-      buildEventEmbed(after, guildName, color, title),
+      buildEventEmbed(
+        after,
+        guildId,
+        event.params.eventId,
+        guildName,
+        color,
+        title,
+      ),
     );
     if (after.status === 'completed') {
       await event.data.after.ref.update({
@@ -181,65 +194,9 @@ exports.discordEventStatusChanged = onDocumentUpdated(
   },
 );
 
-// Jogador confirmou presença no evento
-exports.discordParticipantJoined = onDocumentCreated(
-  'guild_events/{eventId}/participants/{userId}',
-  async (event) => {
-    const { eventId, userId } = event.params;
-    const participant = event.data.data();
-    const guildEvent = await loadEvent(eventId);
-    if (!guildEvent || !guildEvent.guildId) return;
-    const webhook = await getGuildDiscordWebhook(guildEvent.guildId);
-    if (!webhook) return;
-    const guildName = await getGuildName(guildEvent.guildId);
-    const displayName = participant.displayName || userId;
-    const count = await countParticipants(eventId);
-    const extra = [];
-    if (count !== null) {
-      extra.push({ name: '👥 Confirmados', value: String(count), inline: true });
-    }
-    await sendDiscordWebhook(
-      webhook,
-      buildEventEmbed(
-        guildEvent,
-        guildName,
-        COLOR_GREEN,
-        `✅ ${displayName} confirmou presença`,
-        extra,
-      ),
-    );
-  },
-);
-
-// Jogador saiu do evento
-exports.discordParticipantLeft = onDocumentDeleted(
-  'guild_events/{eventId}/participants/{userId}',
-  async (event) => {
-    const { eventId, userId } = event.params;
-    const participant = event.data.data();
-    const guildEvent = await loadEvent(eventId);
-    if (!guildEvent || !guildEvent.guildId) return;
-    const webhook = await getGuildDiscordWebhook(guildEvent.guildId);
-    if (!webhook) return;
-    const guildName = await getGuildName(guildEvent.guildId);
-    const displayName = participant ? participant.displayName || userId : userId;
-    const count = await countParticipants(eventId);
-    const extra = [];
-    if (count !== null) {
-      extra.push({ name: '👥 Confirmados', value: String(count), inline: true });
-    }
-    await sendDiscordWebhook(
-      webhook,
-      buildEventEmbed(
-        guildEvent,
-        guildName,
-        COLOR_ORANGE,
-        `↩️ ${displayName} saiu do evento`,
-        extra,
-      ),
-    );
-  },
-);
+// Jogador confirmou presença / saiu do evento: notificações removidas a
+// pedido da equipe (poluíam o canal). A confirmação acontece na página
+// pública do evento, linkada nas embeds.
 
 // Lembrete de início (5 min antes), início do evento e término do evento.
 // Roda a cada 5 minutos; cada notificação dispara uma única vez por evento
@@ -301,9 +258,13 @@ exports.discordEventsStartingSoon = onSchedule('every 5 minutes', async () => {
         webhook,
         buildEventEmbed(
           event,
+          guildId,
+          doc.id,
           guildNameCache.get(guildId),
           COLOR_ORANGE,
           `⏰ ${event.title ?? 'Evento'} começa em ${START_WINDOW_MINUTES} minutos!`,
+          [],
+          true,
         ),
       );
       await markNotified(doc.ref, 'startNotified');
@@ -329,6 +290,8 @@ exports.discordEventsStartingSoon = onSchedule('every 5 minutes', async () => {
         webhook,
         buildEventEmbed(
           event,
+          guildId,
+          doc.id,
           guildNameCache.get(guildId),
           COLOR_GREEN,
           `🚀 ${event.title ?? 'Evento'} iniciou!`,
@@ -356,6 +319,8 @@ exports.discordEventsStartingSoon = onSchedule('every 5 minutes', async () => {
         webhook,
         buildEventEmbed(
           event,
+          guildId,
+          doc.id,
           guildNameCache.get(guildId),
           COLOR_ACCENT,
           `🏁 ${event.title ?? 'Evento'} finalizou!`,

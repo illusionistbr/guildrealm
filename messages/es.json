@@ -993,6 +993,26 @@
     "allInGuildSub": "Abandona la guild actual o crea un personaje nuevo antes de crear otra guild.",
     "leaderInGuild": "Este personaje ya está en una guild. Elige otro o crea uno nuevo."
   },
+  "EventPage": {
+    "notFound": "Evento no encontrado.",
+    "backToGuild": "Volver a la guild",
+    "backToHome": "Volver a la página de inicio",
+    "startsAt": "Inicio",
+    "endsAt": "Fin",
+    "location": "Ubicación",
+    "participantsLabel": "Participantes",
+    "participants": "{count} confirmaron asistencia",
+    "confirmPresence": "Confirmar asistencia",
+    "confirmed": "Asistencia confirmada",
+    "leaveEvent": "Salir del evento",
+    "loginHint": "Inicia sesión para confirmar tu asistencia al evento.",
+    "full": "Cupos agotados",
+    "registrationClosed": "Inscripciones cerradas",
+    "cancelled": "Cancelado",
+    "completed": "Concluido",
+    "cancelledHint": "Este evento fue cancelado.",
+    "completedHint": "Este evento ya ha terminado."
+  },
   "GuildPage": {
     "notFound": "Gremio no encontrado.",
     "backToHome": "Volver a la página de inicio",

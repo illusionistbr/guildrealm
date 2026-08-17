@@ -154,8 +154,11 @@ match /members/{userId} {
     }
 
     // ============ EVENTOS DE GUILD (calendario) ============
+    // Leitura pública: a página pública do evento é acessada sem login (link
+    // compartilhado, ex.: notificações do Discord). Criação/edição seguem
+    // exigindo o dono/criador da guild.
     match /guild_events/{eventId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create: if isSignedIn() &&
         request.resource.data.createdBy == request.auth.uid &&
         isGuildOwner(request.resource.data.guildId);
@@ -166,9 +169,10 @@ match /members/{userId} {
         (resource.data.createdBy == request.auth.uid ||
          isGuildOwner(resource.data.guildId));
 
-      // Participantes do evento
+      // Participantes do evento: lista pública (nome + data); confirmar/sair
+      // exige login do próprio usuário.
       match /participants/{userId} {
-        allow read: if isSignedIn();
+        allow read: if true;
         allow create: if isSignedIn() && request.auth.uid == userId;
         allow delete: if isSignedIn() && request.auth.uid == userId;
       }

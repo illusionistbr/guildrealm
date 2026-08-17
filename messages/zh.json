@@ -993,6 +993,26 @@
     "allInGuildSub": "请退出当前公会，或创建一个新角色后再创建另一个公会。",
     "leaderInGuild": "该角色已经在公会中。请选择另一个角色或新建一个。"
   },
+  "EventPage": {
+    "notFound": "未找到该活动。",
+    "backToGuild": "返回公会",
+    "backToHome": "返回首页",
+    "startsAt": "开始",
+    "endsAt": "结束",
+    "location": "地点",
+    "participantsLabel": "参与者",
+    "participants": "{count} 人已确认参加",
+    "confirmPresence": "确认参加",
+    "confirmed": "已确认参加",
+    "leaveEvent": "退出活动",
+    "loginHint": "请登录后确认参加该活动。",
+    "full": "名额已满",
+    "registrationClosed": "报名已截止",
+    "cancelled": "已取消",
+    "completed": "已结束",
+    "cancelledHint": "该活动已被取消。",
+    "completedHint": "该活动已经结束。"
+  },
   "GuildPage": {
     "notFound": "未找到公会。",
     "backToHome": "返回首页",

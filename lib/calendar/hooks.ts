@@ -30,7 +30,7 @@ import { getFirebaseApp } from '@/lib/admin/firebase/client';
 
 const EVENTS_COL = COLLECTIONS.GUILD_EVENTS;
 
-function tsToDate(val: unknown): Date {
+export function tsToDate(val: unknown): Date {
   if (!val) return new Date(0);
   if (val instanceof Date) return val;
   if (val && typeof val === 'object' && 'toDate' in val && typeof (val as { toDate: () => Date }).toDate === 'function') {
