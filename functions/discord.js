@@ -19,7 +19,10 @@ const COLOR_ORANGE = 0xf97316;
 const BASE_URL = process.env.CLANFORGE_BASE_URL || 'https://clanforge.app';
 
 const START_WINDOW_MINUTES = 5;
-const STARTED_WINDOW_MINUTES = 10;
+// Janela "iniciou": com o scheduler rodando a cada 1 minuto, um buffer de 3
+// minutos cobre execuções perdidas sem notificar eventos que começaram há
+// muito tempo.
+const STARTED_WINDOW_MINUTES = 3;
 const ENDED_WINDOW_MINUTES = 30;
 
 function discordSettingsDoc(guildId) {
@@ -199,9 +202,11 @@ exports.discordEventStatusChanged = onDocumentUpdated(
 // pública do evento, linkada nas embeds.
 
 // Lembrete de início (5 min antes), início do evento e término do evento.
-// Roda a cada 5 minutos; cada notificação dispara uma única vez por evento
-// (flags startNotified / startedNotified / endedNotified no documento).
-exports.discordEventsStartingSoon = onSchedule('every 5 minutes', async () => {
+// Roda a cada 1 minuto para minimizar o atraso (antes: 5 minutos, o que
+// podia atrasar as notificações em até ~5 min); cada notificação dispara uma
+// única vez por evento (flags startNotified / startedNotified / endedNotified
+// no documento).
+exports.discordEventsStartingSoon = onSchedule('every 1 minutes', async () => {
   const now = admin.firestore.Timestamp.now();
   const guildNameCache = new Map();
 
