@@ -1509,9 +1509,7 @@
     "noUpcomingEvents": "예정된 이벤트가 없습니다.",
     "eventToday": "오늘",
     "eventTomorrow": "내일",
-    "viewAll": "모두 보기",
-    "newsFeed": "뉴스",
-    "twitterFeedNote": "Aion 2 Twitter/X 피드"
+    "viewAll": "모두 보기"
   },
   "GuildCalendar": {
     "today": "오늘",

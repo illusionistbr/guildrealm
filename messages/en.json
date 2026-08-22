@@ -1509,9 +1509,7 @@
     "noUpcomingEvents": "No events scheduled.",
     "eventToday": "Today",
     "eventTomorrow": "Tomorrow",
-    "viewAll": "View all",
-    "newsFeed": "News",
-    "twitterFeedNote": "Aion 2 Twitter/X feed"
+    "viewAll": "View all"
   },
   "GuildCalendar": {
     "today": "Today",

@@ -1509,9 +1509,7 @@
     "noUpcomingEvents": "Нет запланированных событий.",
     "eventToday": "Сегодня",
     "eventTomorrow": "Завтра",
-    "viewAll": "Посмотреть все",
-    "newsFeed": "Новости",
-    "twitterFeedNote": "Лента Twitter/X Aion 2"
+    "viewAll": "Посмотреть все"
   },
   "GuildCalendar": {
     "today": "Сегодня",

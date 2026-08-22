@@ -44,7 +44,6 @@ import { DiscordSettings } from '@/components/guild-settings/DiscordSettings';
 import { AnalysisTabs } from '@/components/analyses/AnalysisTabs';
 import { GuildActivityFeed } from '@/components/panel/GuildActivityFeed';
 import { UpcomingEvents } from '@/components/panel/UpcomingEvents';
-import { TwitterFeed } from '@/components/panel/TwitterFeed';
 import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
 import { useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
 import {
@@ -877,9 +876,6 @@ function OverviewView({
         {/* Upcoming Events */}
         <UpcomingEvents guildId={guild.id} />
       </div>
-
-      {/* Twitter Feed */}
-      <TwitterFeed />
     </div>
   );
 }

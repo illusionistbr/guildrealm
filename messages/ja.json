@@ -1509,9 +1509,7 @@
     "noUpcomingEvents": "スケジュールされたイベントはありません。",
     "eventToday": "今日",
     "eventTomorrow": "明日",
-    "viewAll": "すべて見る",
-    "newsFeed": "ニュース",
-    "twitterFeedNote": "Aion 2のTwitter/Xフィード"
+    "viewAll": "すべて見る"
   },
   "GuildCalendar": {
     "today": "今日",

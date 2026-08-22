@@ -1509,9 +1509,7 @@
     "noUpcomingEvents": "暂无计划活动。",
     "eventToday": "今天",
     "eventTomorrow": "明天",
-    "viewAll": "查看全部",
-    "newsFeed": "新闻",
-    "twitterFeedNote": "Aion 2 Twitter/X 动态"
+    "viewAll": "查看全部"
   },
   "GuildCalendar": {
     "today": "今天",
