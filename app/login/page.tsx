@@ -83,10 +83,12 @@ export default function LoginPage() {
 
       setTimeout(() => {
         const next = new URLSearchParams(window.location.search).get('next');
-        const target =
-          next && next.startsWith('/') && !next.startsWith('//')
-            ? next
-            : '/app/dashboard';
+        const isSafePath = next
+          && next.startsWith('/')
+          && !next.startsWith('//')
+          && !next.includes('://')
+          && !next.includes('\\');
+        const target = isSafePath ? next : '/app/dashboard';
         window.location.href = target;
       }, 300);
     } catch (err: unknown) {

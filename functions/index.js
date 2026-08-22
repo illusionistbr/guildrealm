@@ -267,6 +267,8 @@ exports.sendVerificationEmail = callable(async (data, context) => {
   const resend = new Resend(apiKey);
 
   const from = process.env.RESEND_FROM || 'ClanForge <noreply@clanforge.app>';
+  const escapeHtml = (str) => str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const safeLink = escapeHtml(link);
   const { error } = await resend.emails.send({
     from,
     to: [email],
@@ -278,12 +280,12 @@ exports.sendVerificationEmail = callable(async (data, context) => {
           <p style="color:#bdc6d8;font-size:14px;line-height:1.6;margin:0 0 24px;">
             Confirm your email to activate your account and start managing your guild.
           </p>
-          <a href="${link}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+          <a href="${safeLink}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
             Confirm email
           </a>
           <p style="color:#5a6580;font-size:12px;line-height:1.6;margin:24px 0 0;">
             If the button doesn't work, copy and paste this link into your browser:<br>
-            <span style="color:#a763ff;word-break:break-all;">${link}</span>
+            <span style="color:#a763ff;word-break:break-all;">${safeLink}</span>
           </p>
           <p style="color:#3e4f6e;font-size:11px;margin:24px 0 0;">
             If you didn't create an account on ClanForge, you can ignore this email.
@@ -338,6 +340,8 @@ exports.sendPasswordResetEmail = callable(async (data, context) => {
   const resend = new Resend(apiKey);
 
   const from = process.env.RESEND_FROM || 'ClanForge <noreply@clanforge.app>';
+  const escapeHtml = (str) => str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const safeLink = escapeHtml(link);
   const { error } = await resend.emails.send({
     from,
     to: [email],
@@ -350,12 +354,12 @@ exports.sendPasswordResetEmail = callable(async (data, context) => {
             We received a request to reset the password for your ClanForge account.
             Click the button below to choose a new password.
           </p>
-          <a href="${link}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+          <a href="${safeLink}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
             Reset password
           </a>
           <p style="color:#5a6580;font-size:12px;line-height:1.6;margin:24px 0 0;">
             If the button doesn't work, copy and paste this link into your browser:<br>
-            <span style="color:#a763ff;word-break:break-all;">${link}</span>
+            <span style="color:#a763ff;word-break:break-all;">${safeLink}</span>
           </p>
           <p style="color:#3e4f6e;font-size:11px;margin:24px 0 0;">
             If you didn't request a password reset, you can ignore this email. Your password won't change.
