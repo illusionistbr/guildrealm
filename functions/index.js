@@ -4,6 +4,7 @@ const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { onInit } = require('firebase-functions/v2/core');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
+const { Resend } = require('resend');
 
 // Notificações no Discord (webhooks) via triggers do Firestore
 Object.assign(exports, require('./discord'));
@@ -226,6 +227,148 @@ exports.verifySignup = callable(async (data, context) => {
 
   // 3) Turnstile (Cloudflare) — validado server-side
   await verifyTurnstileToken(token);
+
+  return { success: true };
+});
+
+// Valida o token do Turnstile na tela de login (não exige autenticação).
+exports.verifyLogin = callable(async (data, context) => {
+  const token = typeof data?.token === 'string' ? data.token.trim() : '';
+  await verifyTurnstileToken(token);
+  return { success: true };
+});
+
+// ============ E-MAIL DE VERIFICAÇÃO (Resend) ============
+// Envia o e-mail de confirmação com link customizado via Resend,
+// substituindo o envio nativo do Firebase (entrega mais confiável).
+exports.sendVerificationEmail = callable(async (data, context) => {
+  if (!context.auth) {
+    throw new CallableError('unauthenticated', 'User must be signed in');
+  }
+
+  const uid = context.auth.uid;
+  const email = context.auth.token.email;
+  if (!email) {
+    throw new CallableError('invalid-argument', 'User has no email');
+  }
+
+  // 1) Gera o link de verificação com o Firebase Admin SDK
+  const actionCodeSettings = {
+    url: process.env.CLANFORGE_BASE_URL || 'https://clanforge.app',
+    handleCodeInApp: false,
+  };
+  const link = await admin.auth().generateEmailVerificationLink(email, actionCodeSettings);
+
+  // 2) Envia via Resend
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new CallableError('internal', 'RESEND_API_KEY not set');
+  }
+  const resend = new Resend(apiKey);
+
+  const from = process.env.RESEND_FROM || 'ClanForge <noreply@clanforge.app>';
+  const { error } = await resend.emails.send({
+    from,
+    to: [email],
+    subject: 'Confirm your email - ClanForge',
+    html: `
+      <div style="background:#050912;padding:48px 24px;font-family:Arial,sans-serif;">
+        <div style="max-width:480px;margin:0 auto;background:#0b1224;border:1px solid #243353;border-radius:12px;padding:40px;">
+          <h1 style="color:#e8edfa;font-size:22px;margin:0 0 8px;">Welcome to ClanForge</h1>
+          <p style="color:#bdc6d8;font-size:14px;line-height:1.6;margin:0 0 24px;">
+            Confirm your email to activate your account and start managing your guild.
+          </p>
+          <a href="${link}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+            Confirm email
+          </a>
+          <p style="color:#5a6580;font-size:12px;line-height:1.6;margin:24px 0 0;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <span style="color:#a763ff;word-break:break-all;">${link}</span>
+          </p>
+          <p style="color:#3e4f6e;font-size:11px;margin:24px 0 0;">
+            If you didn't create an account on ClanForge, you can ignore this email.
+          </p>
+        </div>
+      </div>
+    `,
+  });
+
+  if (error) {
+    console.error('Resend send failed:', error);
+    throw new CallableError('internal', 'Failed to send verification email');
+  }
+
+  return { success: true };
+});
+
+// ============ E-MAIL DE RECUPERAÇÃO DE SENHA (Resend) ============
+// Gera o link de redefinição de senha e envia via Resend (inglês).
+// Não exige login — o usuário esqueceu a senha. Rate limit por IP + e-mail.
+exports.sendPasswordResetEmail = callable(async (data, context) => {
+  const email =
+    typeof data?.email === 'string' ? data.email.trim().toLowerCase() : '';
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new CallableError('invalid-argument', 'Valid email is required');
+  }
+
+  // Rate limit: 3 tentativas / 15 min por IP e por e-mail
+  await enforceSignupRateLimit(
+    `reset_ip_${hashValue(clientIp(context))}`,
+    3,
+    15 * 60 * 1000,
+  );
+  await enforceSignupRateLimit(
+    `reset_email_${hashValue(email)}`,
+    3,
+    15 * 60 * 1000,
+  );
+
+  // 1) Gera o link de redefinição com o Firebase Admin SDK
+  const actionCodeSettings = {
+    url: process.env.CLANFORGE_BASE_URL || 'https://clanforge.app',
+    handleCodeInApp: false,
+  };
+  const link = await admin.auth().generatePasswordResetLink(email, actionCodeSettings);
+
+  // 2) Envia via Resend
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new CallableError('internal', 'RESEND_API_KEY not set');
+  }
+  const resend = new Resend(apiKey);
+
+  const from = process.env.RESEND_FROM || 'ClanForge <noreply@clanforge.app>';
+  const { error } = await resend.emails.send({
+    from,
+    to: [email],
+    subject: 'Reset your password - ClanForge',
+    html: `
+      <div style="background:#050912;padding:48px 24px;font-family:Arial,sans-serif;">
+        <div style="max-width:480px;margin:0 auto;background:#0b1224;border:1px solid #243353;border-radius:12px;padding:40px;">
+          <h1 style="color:#e8edfa;font-size:22px;margin:0 0 8px;">Reset your password</h1>
+          <p style="color:#bdc6d8;font-size:14px;line-height:1.6;margin:0 0 24px;">
+            We received a request to reset the password for your ClanForge account.
+            Click the button below to choose a new password.
+          </p>
+          <a href="${link}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">
+            Reset password
+          </a>
+          <p style="color:#5a6580;font-size:12px;line-height:1.6;margin:24px 0 0;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <span style="color:#a763ff;word-break:break-all;">${link}</span>
+          </p>
+          <p style="color:#3e4f6e;font-size:11px;margin:24px 0 0;">
+            If you didn't request a password reset, you can ignore this email. Your password won't change.
+          </p>
+        </div>
+      </div>
+    `,
+  });
+
+  if (error) {
+    console.error('Resend send failed:', error);
+    throw new CallableError('internal', 'Failed to send password reset email');
+  }
 
   return { success: true };
 });
@@ -1569,3 +1712,6 @@ exports.reconcileGuildGroups = onSchedule('every 15 minutes', async () => {
 
   console.log(`[reconcileGuildGroups] concluído. Itens corrigidos: ${fixed}`);
 });
+
+// ============ ANÁLISES ============
+Object.assign(exports, require('./analyses'));

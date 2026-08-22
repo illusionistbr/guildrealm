@@ -41,11 +41,13 @@ import { RanksTab } from '@/components/guild-settings/RanksTab';
 import { RecruitmentSettings } from '@/components/guild-settings/RecruitmentSettings';
 import { ApplicationsView } from '@/components/guild-settings/ApplicationsView';
 import { DiscordSettings } from '@/components/guild-settings/DiscordSettings';
+import { AnalysisTabs } from '@/components/analyses/AnalysisTabs';
 import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
 import { useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
 import {
   AlertTriangle,
   Ban,
+  BarChart3,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -80,7 +82,7 @@ const fadeUp = {
 type Option = { value: string; label: string };
 type ClassOption = Option & { icon?: string };
 
-export type View = 'overview' | 'calendar' | 'attendance' | 'groups' | 'members' | 'applications' | 'settings';
+export type View = 'overview' | 'calendar' | 'attendance' | 'groups' | 'members' | 'applications' | 'settings' | 'analyses';
 
 type GuildDoc = {
   id: string;
@@ -326,7 +328,9 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
             ? t('menuMembers')
             : view === 'applications'
               ? t('menuApplications')
-              : t('menuSettings');
+              : view === 'analyses'
+                ? t('menuAnalyses')
+                : t('menuSettings');
 
   return (
     <div className="min-h-screen bg-[#050912] flex">
@@ -464,6 +468,24 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                 </div>
               )}
             </div>
+          ) : view === 'analyses' ? (
+            <div>
+              <div className="mb-4">
+                <h1 className="text-2xl md:text-3xl font-heading font-bold text-white">
+                  {t('menuAnalyses')}{' '}
+                  <span className="text-accent">{guild.name}</span>
+                </h1>
+                <p className="text-muted mt-1">{t('analysisSub')}</p>
+              </div>
+              <AnalysisTabs
+                guildId={guild.id}
+                isLeader={isLeader}
+                canManageEvents={canManageEvents}
+                canManageMembers={canManageMembers}
+                memberIds={guild.memberOwnerIds ?? []}
+                memberNames={memberNames}
+              />
+            </div>
           ) : (
             <div className="shell">
               <motion.div
@@ -586,6 +608,12 @@ function PanelSidebar({
           },
         ]
       : []),
+    {
+      key: 'analyses',
+      href: `${base}/analyses`,
+      icon: <BarChart3 size={20} />,
+      label: t('menuAnalyses'),
+    },
   ];
 
   return (

@@ -243,6 +243,9 @@ button {
   padding-top: 119px;
 }
 .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 16px;
   color: #a763ff;
   font-size: 14px;
@@ -1659,6 +1662,15 @@ button {
 .input input::placeholder {
   color: #3e4f6e;
 }
+.input input:-webkit-autofill,
+.input input:-webkit-autofill:hover,
+.input input:-webkit-autofill:focus,
+.input input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #0b1224 inset !important;
+  -webkit-text-fill-color: #e8edfa !important;
+  caret-color: #e8edfa;
+  transition: background-color 5000s ease-in-out 0s;
+}
 .signup-fields small {
   display: block;
   margin-top: 6px;
@@ -2274,14 +2286,7 @@ button {
 .login-bg-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(5, 9, 18, 0.05) 0%,
-    rgba(5, 9, 18, 0.25) 30%,
-    rgba(5, 9, 18, 0.6) 55%,
-    rgba(5, 9, 18, 0.9) 75%,
-    #050912 100%
-  );
+  background: rgba(5, 9, 18, 0.2);
   pointer-events: none;
 }
 .login-brand {
@@ -2430,6 +2435,36 @@ button {
 }
 .login-forgot:hover {
   text-decoration: underline;
+}
+.login-warning {
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  color: #fbbf24;
+  font-size: 13px;
+}
+.login-resend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 6px;
+  background: rgba(234, 179, 8, 0.1);
+  color: #fbbf24;
+  font: 500 12px 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.login-resend-btn:hover:not(:disabled) {
+  background: rgba(234, 179, 8, 0.2);
+}
+.login-resend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .login-submit {
   width: 100% !important;
@@ -2586,8 +2621,11 @@ button {
 .signup-submit {
   width: 100% !important;
   height: 52px;
-  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
+  font-size: 15px;
   background: #6d28d9;
   border: 1px solid #6d28d9;
   border-radius: 7px;

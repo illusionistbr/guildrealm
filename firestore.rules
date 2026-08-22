@@ -304,6 +304,28 @@ match /members/{userId} {
       allow write: if isAdmin();
     }
 
+    // ============ ANALISES (video analysis) ============
+    match /guilds/{guildId}/analysisRequests/{requestId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow create: if isSignedIn() && isGuildOwner(guildId);
+      allow update: if isSignedIn() && isGuildOwner(guildId);
+      allow delete: if isSignedIn() && isGuildOwner(guildId);
+
+      match /submissions/{submissionId} {
+        allow read: if isSignedIn() && isGuildMember(guildId);
+        allow create: if isSignedIn() && isGuildMember(guildId);
+        allow update: if isSignedIn() && isGuildMember(guildId);
+        allow delete: if isSignedIn() && isGuildOwner(guildId);
+
+        match /comments/{commentId} {
+          allow read: if isSignedIn() && isGuildMember(guildId);
+          allow create: if isSignedIn() && isGuildMember(guildId);
+          allow update: if isSignedIn() && isGuildMember(guildId);
+          allow delete: if isSignedIn() && isGuildOwner(guildId);
+        }
+      }
+    }
+
     // ============ NEGA TODO O RESTO ============
     match /{document=**} {
       allow read, write: if false;

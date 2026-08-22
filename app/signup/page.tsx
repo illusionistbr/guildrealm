@@ -4,7 +4,7 @@ import { Eye, EyeOff, Mail, ShieldCheck, Trophy, UserPlus, UsersRound, AlertTria
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PrimaryButton } from '@/components/ui/primary-button';
@@ -97,8 +97,7 @@ export default function Signup() {
         const fn = httpsCallable(getFunctions(getFirebaseApp()), 'verifySignup');
         await fn({ token: turnstileToken ?? '', email: email.trim() });
       }
-      const userCredential = await createUserWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
-      const user = userCredential.user;
+      await createUserWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
 
       try {
         const fn = httpsCallable(getFunctions(getFirebaseApp()), 'createUserProfile');
@@ -108,7 +107,8 @@ export default function Signup() {
       }
 
       try {
-        await sendEmailVerification(user);
+        const fn = httpsCallable(getFunctions(getFirebaseApp()), 'sendVerificationEmail');
+        await fn({});
       } catch {
         // Falha no envio de verificação não bloqueia o cadastro
       }

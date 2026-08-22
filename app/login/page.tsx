@@ -1,16 +1,16 @@
 'use client';
 
-import { Eye, EyeOff, Lock, LogIn, Mail, ShieldCheck, Trophy, UsersRound, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PrimaryButton } from '@/components/ui/primary-button';
+import { Turnstile } from '@/components/signup/Turnstile';
 import { useState } from 'react';
-import { getFirebaseAuth } from '@/lib/admin/firebase/client';
+import { getFirebaseApp, getFirebaseAuth } from '@/lib/admin/firebase/client';
 
-const trustIcons = [ShieldCheck, UsersRound, Trophy, ShieldCheck] as const;
-
-type TrustBadge = { title: string; text: string };
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const ERROR_MESSAGES: Record<string, string> = {
   'auth/invalid-credential': 'E-mail ou senha inválidos.',
@@ -21,29 +21,61 @@ const ERROR_MESSAGES: Record<string, string> = {
   'auth/user-disabled': 'Esta conta foi desativada. Contate o suporte.',
   'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
   'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.',
+  'signup-turnstile-invalid': 'Falha na verificação de segurança. Tente novamente.',
 };
 
 export default function LoginPage() {
   const t = useTranslations('Login');
-  const badges = t.raw('badges') as TrustBadge[];
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileNonce, setTurnstileNonce] = useState(0);
+
+  const handleResend = async () => {
+    setResending(true);
+    setResendSuccess('');
+    try {
+      const fn = httpsCallable(getFunctions(getFirebaseApp()), 'sendVerificationEmail');
+      await fn({});
+      setResendSuccess('E-mail de confirmação reenviado! Verifique sua caixa de entrada.');
+    } catch {
+      setResendSuccess('Erro ao reenviar. Tente novamente em alguns minutos.');
+    } finally {
+      setResending(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setWarning('');
+    setResendSuccess('');
     setLoading(true);
 
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError('Resolva o desafio de segurança para continuar.');
+      setLoading(false);
+      return;
+    }
+
     try {
+      if (TURNSTILE_SITE_KEY) {
+        const fn = httpsCallable(getFunctions(getFirebaseApp()), 'verifyLogin');
+        await fn({ token: turnstileToken ?? '' });
+      }
+
       const credential = await signInWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
 
       if (!credential.user.emailVerified) {
-        setWarning('Seu e-mail ainda não foi verificado. Confira sua caixa de entrada e, se necessário, reenvie o link de confirmação.');
+        setWarning('Seu e-mail ainda não foi verificado. Confira sua caixa de entrada e confirme o link.');
+        setLoading(false);
+        return;
       }
 
       setTimeout(() => {
@@ -55,7 +87,11 @@ export default function LoginPage() {
         window.location.href = target;
       }, 300);
     } catch (err: unknown) {
-      const code = (err as { code?: string })?.code ?? '';
+      const code = ((err as { code?: string })?.code ?? '').replace('functions/', '');
+      if (code === 'signup-turnstile-invalid') {
+        setTurnstileNonce((n) => n + 1);
+        setTurnstileToken(null);
+      }
       setError(ERROR_MESSAGES[code] ?? 'Erro ao entrar. Tente novamente em instantes.');
       setLoading(false);
     }
@@ -77,8 +113,20 @@ export default function LoginPage() {
           )}
 
           {warning && (
-            <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
-              <AlertCircle size={16} /> {warning}
+            <div className="login-warning">
+              <div className="flex items-center gap-2">
+                <AlertCircle size={16} className="shrink-0" /> {warning}
+              </div>
+              <button type="button" className="login-resend-btn" onClick={handleResend} disabled={resending}>
+                <Send size={14} />
+                {resending ? 'Reenviando...' : 'Reenviar e-mail de confirmação'}
+              </button>
+            </div>
+          )}
+
+          {resendSuccess && (
+            <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm">
+              <AlertCircle size={16} /> {resendSuccess}
             </div>
           )}
 
@@ -99,6 +147,15 @@ export default function LoginPage() {
               </div>
             </label>
             <a href="/forgot-password" className="login-forgot">{t('forgotPassword')}</a>
+            {TURNSTILE_SITE_KEY && (
+              <div className="mb-4">
+                <Turnstile
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onToken={setTurnstileToken}
+                  resetNonce={turnstileNonce}
+                />
+              </div>
+            )}
             <PrimaryButton className="login-submit" disabled={loading}>
               {loading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <LogIn />}
               {t('submit')}
@@ -122,19 +179,6 @@ export default function LoginPage() {
           <div className="login-signup-link">
             {t('noAccount')} <a href="/signup">{t('signupLink')}</a>
           </div>
-        </div>
-      </div>
-      <div className="login-trust">
-        <div className="login-trust-inner">
-          {badges.map(({ title, text }, index) => {
-            const Icon = trustIcons[index];
-            return (
-              <div className="login-trust-item" key={title}>
-                <span><Icon size={22} /></span>
-                <div><b>{title}</b><p>{text}</p></div>
-              </div>
-            );
-          })}
         </div>
       </div>
     </main>
