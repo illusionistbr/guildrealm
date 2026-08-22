@@ -5,6 +5,10 @@ const ADMIN_LOGIN_PATH = '/admin/login';
 const ADMIN_PATHS = ['/admin'];
 const PUBLIC_ADMIN_PATHS = ['/admin/login', '/admin/forgot-password'];
 
+function isValidFirebaseUid(value: string): boolean {
+  return /^[a-zA-Z0-9_-]{20,128}$/.test(value);
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -16,7 +20,7 @@ export function middleware(request: NextRequest) {
 
   const adminSession = request.cookies.get('admin_session')?.value;
 
-  if (!adminSession) {
+  if (!adminSession || !isValidFirebaseUid(adminSession)) {
     const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);

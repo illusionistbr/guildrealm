@@ -155,6 +155,10 @@ exports.initMultipartUpload = callable(async (data, context) => {
   if (!requestSnap.exists) throw new AnalysisError('not-found', 'Analysis request not found');
   const analysisRequest = requestSnap.data();
   if (analysisRequest.status !== 'open') throw new AnalysisError('failed-precondition', 'Request is not open');
+  if (!analysisRequest.allowMultipleSubmissions) {
+    const existing = await guildDoc(guildId).collection('analysisRequests').doc(requestId).collection('submissions').where('userId', '==', context.auth.uid).get();
+    if (!existing.empty) throw new AnalysisError('already-exists', 'Already submitted');
+  }
   const maxVideoSize = analysisRequest.maxVideoSize || MAX_VIDEO_SIZE_DEFAULT;
   validateVideoFile(fileName, contentType, fileSize, maxVideoSize);
   const objectKey = generateObjectKey(guildId, requestId, context.auth.uid, fileName);
@@ -173,6 +177,12 @@ exports.presignMultipartPart = callable(async (data, context) => {
   const { objectKey, partNumber, contentType } = data || {};
   if (!objectKey || !partNumber) throw new AnalysisError('invalid-argument', 'objectKey and partNumber required');
   if (!objectKey.startsWith('guilds/')) throw new AnalysisError('invalid-argument', 'Invalid object key');
+  const keyParts = objectKey.split('/');
+  if (keyParts.length < 5) throw new AnalysisError('invalid-argument', 'Invalid object key structure');
+  const keyGuildId = keyParts[1];
+  const keyUserId = keyParts[4];
+  if (keyUserId !== context.auth.uid) throw new AnalysisError('permission-denied', 'Not your upload');
+  await requireGuildAuth(keyGuildId, context.auth.uid);
   const command = new PutObjectCommand({ Bucket: BUCKET_NAME, Key: objectKey, PartNumber: partNumber, ContentType: contentType || 'video/mp4' });
   const presignedUrl = await getSignedUrl(r2Client, command, { expiresIn: PRESIGNED_URL_EXPIRY });
   return { presignedUrl, partNumber };
