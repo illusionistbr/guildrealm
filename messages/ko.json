@@ -621,7 +621,8 @@
         "title": "게이머를 위해 제작",
         "text": "길드에 필요한 모든 도구를 제공합니다."
       }
-    ]
+    ],
+    "stayLoggedIn": "로그인 유지"
   },
   "ForgotPassword": {
     "heroEyebrow": "비밀번호 복구",

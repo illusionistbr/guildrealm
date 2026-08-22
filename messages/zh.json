@@ -621,7 +621,8 @@
         "title": "为玩家打造",
         "text": "公会需要的所有工具。"
       }
-    ]
+    ],
+    "stayLoggedIn": "保持登录状态"
   },
   "ForgotPassword": {
     "heroEyebrow": "找回密码",

@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff, Lock, LogIn, Mail, AlertCircle, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PrimaryButton } from '@/components/ui/primary-button';
@@ -36,6 +36,7 @@ export default function LoginPage() {
   const [resendSuccess, setResendSuccess] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileNonce, setTurnstileNonce] = useState(0);
+  const [stayLoggedIn, setStayLoggedIn] = useState(true);
 
   const handleResend = async () => {
     setResending(true);
@@ -70,7 +71,9 @@ export default function LoginPage() {
         await fn({ token: turnstileToken ?? '' });
       }
 
-      const credential = await signInWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
+      const auth = getFirebaseAuth();
+      await setPersistence(auth, stayLoggedIn ? browserLocalPersistence : browserSessionPersistence);
+      const credential = await signInWithEmailAndPassword(auth, email.trim(), password);
 
       if (!credential.user.emailVerified) {
         setWarning('Seu e-mail ainda não foi verificado. Confira sua caixa de entrada e confirme o link.');
@@ -147,6 +150,15 @@ export default function LoginPage() {
               </div>
             </label>
             <a href="/forgot-password" className="login-forgot">{t('forgotPassword')}</a>
+            <label className="flex items-center gap-2 mb-4 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={stayLoggedIn}
+                onChange={(e) => setStayLoggedIn(e.target.checked)}
+                className="w-4 h-4 rounded border-[rgba(38,51,86,0.5)] bg-[#0a1122] text-accent focus:ring-accent/50 cursor-pointer"
+              />
+              <span className="text-sm text-muted">{t('stayLoggedIn')}</span>
+            </label>
             {TURNSTILE_SITE_KEY && (
               <div className="mb-4">
                 <Turnstile

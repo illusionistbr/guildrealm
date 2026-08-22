@@ -621,7 +621,8 @@
         "title": "Built for Gamers",
         "text": "All the tools your guild needs."
       }
-    ]
+    ],
+    "stayLoggedIn": "Stay logged in"
   },
   "ForgotPassword": {
     "heroEyebrow": "RECOVER PASSWORD",

@@ -621,7 +621,8 @@
         "title": "ゲーマー向け",
         "text": "ギルドに必要なすべてのツールを提供します。"
       }
-    ]
+    ],
+    "stayLoggedIn": "ログイン状態を維持"
   },
   "ForgotPassword": {
     "heroEyebrow": "パスワード復旧",

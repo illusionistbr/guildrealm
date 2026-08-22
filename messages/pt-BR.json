@@ -621,7 +621,8 @@
         "title": "Feito para Gamers",
         "text": "Todas as ferramentas que sua guild precisa."
       }
-    ]
+    ],
+    "stayLoggedIn": "Permanecer logado"
   },
   "ForgotPassword": {
     "heroEyebrow": "RECUPERAR SENHA",
