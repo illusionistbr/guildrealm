@@ -7,18 +7,12 @@ import {
   collection,
   query,
   where,
-  orderBy,
-  limit,
   onSnapshot,
 } from 'firebase/firestore';
 import { getFirebaseDb } from '@/lib/admin/firebase/client';
 import {
-  ANALYSIS_TYPE_CONFIG,
-} from '@/lib/analyses/types';
-import {
   CalendarDays,
   MapPin,
-  Users,
   ChevronRight,
 } from 'lucide-react';
 
@@ -65,21 +59,31 @@ export function UpcomingEvents({ guildId }: UpcomingEventsProps) {
     const q = query(
       collection(getFirebaseDb(), 'guild_events'),
       where('guildId', '==', guildId),
-      where('status', '==', 'active'),
-      orderBy('start', 'asc'),
-      limit(5)
     );
 
     const unsub = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs
-        .map((d) => ({
-          ...d.data(),
+      const all = snapshot.docs.map((d) => {
+        const data = d.data();
+        return {
           id: d.id,
-          start: d.data().start?.toDate() || new Date(),
-          end: d.data().end?.toDate() || new Date(),
-        }))
-        .filter((e) => e.start >= now) as GuildEvent[];
-      setEvents(items.slice(0, 4));
+          guildId: data.guildId as string,
+          title: data.title as string,
+          description: data.description as string,
+          type: data.type as string,
+          start: data.start?.toDate() || new Date(),
+          end: data.end?.toDate() || new Date(),
+          location: data.location as string,
+          maxParticipants: data.maxParticipants as number | null,
+          status: data.status as string,
+          createdBy: data.createdBy as string,
+          createdByName: data.createdByName as string,
+        };
+      });
+      const items = all
+        .filter((e) => e.status === 'active' && e.start >= now)
+        .sort((a, b) => a.start.getTime() - b.start.getTime())
+        .slice(0, 4);
+      setEvents(items);
       setLoading(false);
     });
 
