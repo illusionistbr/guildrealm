@@ -19,6 +19,7 @@ const MAX_VIDEO_SIZE_DEFAULT = 2 * 1024 * 1024 * 1024;
 const MULTIPART_THRESHOLD = 100 * 1024 * 1024;
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
 const ALLOWED_EXTENSIONS = ['mp4', 'webm', 'mov', 'avi', 'mkv'];
+const VIDEO_RETENTION_DAYS = 7;
 
 const rateLimitStore = new Map();
 const RATE_LIMIT_WINDOW = 60 * 1000;
@@ -185,7 +186,13 @@ exports.completeMultipartUpload = callable(async (data, context) => {
   if (!submissionSnap.exists) throw new AnalysisError('not-found', 'Submission not found');
   const submission = submissionSnap.data();
   if (submission.userId !== context.auth.uid) throw new AnalysisError('permission-denied', 'Not your submission');
-  await submissionSnap.ref.update({ status: 'uploaded', updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+  const videoExpiresAt = new Date(Date.now() + VIDEO_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+  await submissionSnap.ref.update({
+    status: 'uploaded',
+    videoStatus: 'available',
+    videoExpiresAt: admin.firestore.Timestamp.fromDate(videoExpiresAt),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
   return { success: true, objectKey };
 });
 
@@ -203,7 +210,13 @@ exports.confirmAnalysisUpload = callable(async (data, context) => {
   try {
     await r2Client.send(new HeadObjectCommand({ Bucket: BUCKET_NAME, Key: objectKey }));
   } catch { throw new AnalysisError('not-found', 'Video not found in storage'); }
-  await submissionSnap.ref.update({ status: 'uploaded', fileSize, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+  const videoExpiresAt = new Date(Date.now() + VIDEO_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+  await submissionSnap.ref.update({
+    status: 'uploaded', fileSize,
+    videoStatus: 'available',
+    videoExpiresAt: admin.firestore.Timestamp.fromDate(videoExpiresAt),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
   return { success: true, submissionId };
 });
 
@@ -217,9 +230,30 @@ exports.getAnalysisPlayUrl = callable(async (data, context) => {
   if (submission.status !== 'uploaded' && submission.status !== 'reviewed') {
     throw new AnalysisError('failed-precondition', 'Video not ready');
   }
-  const command = new GetObjectCommand({ Bucket: BUCKET_NAME, Key: submission.objectKey });
-  const presignedUrl = await getSignedUrl(r2Client, command, { expiresIn: 60 * 60 });
-  return { url: presignedUrl, contentType: submission.contentType };
+  const now = new Date();
+  let expiresAt;
+  if (submission.videoExpiresAt) {
+    expiresAt = submission.videoExpiresAt.toDate ? submission.videoExpiresAt.toDate() : new Date(submission.videoExpiresAt);
+  } else if (submission.uploadedAt) {
+    const uploaded = submission.uploadedAt.toDate ? submission.uploadedAt.toDate() : new Date(submission.uploadedAt);
+    expiresAt = new Date(uploaded.getTime() + VIDEO_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+  }
+  if (expiresAt && now >= expiresAt) {
+    if (submission.videoStatus !== 'expired') {
+      await submissionSnap.ref.update({ videoStatus: 'expired', updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+    }
+    return { expired: true };
+  }
+  try {
+    const command = new GetObjectCommand({ Bucket: BUCKET_NAME, Key: submission.objectKey });
+    const presignedUrl = await getSignedUrl(r2Client, command, { expiresIn: 60 * 60 });
+    return { url: presignedUrl, contentType: submission.contentType, expired: false };
+  } catch (err) {
+    if (submission.videoStatus !== 'expired') {
+      await submissionSnap.ref.update({ videoStatus: 'expired', updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+    }
+    return { expired: true, reason: 'video_not_found' };
+  }
 });
 
 exports.createAnalysisRequest = callable(async (data, context) => {

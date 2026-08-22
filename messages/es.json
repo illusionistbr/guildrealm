@@ -1479,7 +1479,22 @@
     "analysisRecommendation": "Recomendación",
     "analysisRecommendationPlaceholder": "Da una recomendación final al jugador...",
     "analysisSaveReview": "Guardar análisis",
-    "analysisSaved": "Análisis guardado"
+    "analysisSaved": "Análisis guardado",
+    "analysisVideoExpired": "Video expirado",
+    "analysisVideoExpiredDesc": "Este video fue eliminado automáticamente después de 7 días, según la política de retención de la guild. El análisis, las notas y la retroalimentación siguen disponibles.",
+    "analysisVideoExpiredShort": "Video expirado",
+    "analysisVideoExpiringSoon": "⏱ Video disponible por {days} día(s) más",
+    "analysisAvailableUntil": "Disponible hasta",
+    "analysisOriginalFile": "Archivo original",
+    "analysisUploadedAt": "Enviado el",
+    "analysisFileSize": "Tamaño",
+    "analysisExpiredAt": "Expirado el",
+    "analysisVideosAvailable": "Videos disponibles",
+    "analysisVideosExpired": "Videos expirados",
+    "analysisTimestampReference": "Las marcas de tiempo son solo referencia — el video ya no está disponible.",
+    "analysisCommentExpiredNote": "El video fue eliminado, pero tu comentario se guardará como referencia.",
+    "analysisAddCommentExpired": "Agregar comentario de referencia...",
+    "analysisVideoExpiredMemberNote": "Tu video fue eliminado después de 7 días. Tu análisis sigue disponible."
   },
   "GuildCalendar": {
     "today": "Hoy",

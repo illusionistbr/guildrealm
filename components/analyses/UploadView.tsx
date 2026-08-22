@@ -18,6 +18,8 @@ import { cn } from '@/lib/admin/utils/cn';
 import { uploadVideo, type UploadProgress } from '@/lib/analyses/upload';
 import {
   ANALYSIS_TYPE_CONFIG,
+  isVideoExpired,
+  VIDEO_RETENTION_DAYS,
   type AnalysisRequest,
   type AnalysisSubmission,
 } from '@/lib/analyses/types';
@@ -29,6 +31,8 @@ import {
   FileVideo,
   X,
   Loader2,
+  Film,
+  AlertTriangle,
 } from 'lucide-react';
 
 const fadeUp = {
@@ -335,18 +339,49 @@ export function UploadView({ guildId, uid, memberIds }: UploadViewProps) {
               {/* Existing Submissions */}
               {hasSubmitted && (
                 <div className="mt-3 pt-3 border-t border-[rgba(38,51,86,0.3)]">
-                  {userSubmissions.map((sub) => (
-                    <div key={sub.id} className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 size={14} className="text-emerald-400" />
-                      <span className="text-muted">{sub.originalFileName}</span>
-                      <span className="text-xs text-muted">• {formatFileSize(sub.fileSize)}</span>
-                      {sub.reviewStatus === 'completed' && (
-                        <span className="text-xs px-2 py-0.5 rounded bg-accent/10 text-accent">
-                          {t('analysisReviewed')}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  {userSubmissions.map((sub) => {
+                    const expired = isVideoExpired(sub);
+                    const uploadedAt = sub.uploadedAt instanceof Date ? sub.uploadedAt : new Date(sub.uploadedAt);
+                    let expiresAt: Date;
+                    if (sub.videoExpiresAt) {
+                      expiresAt = sub.videoExpiresAt instanceof Date ? sub.videoExpiresAt : new Date(sub.videoExpiresAt);
+                    } else {
+                      expiresAt = new Date(uploadedAt.getTime() + VIDEO_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+                    }
+                    const daysLeft = Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                    return (
+                      <div key={sub.id} className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm">
+                          {expired ? (
+                            <Film size={14} className="text-orange-400" />
+                          ) : (
+                            <CheckCircle2 size={14} className="text-emerald-400" />
+                          )}
+                          <span className="text-muted">{sub.originalFileName}</span>
+                          <span className="text-xs text-muted">• {formatFileSize(sub.fileSize)}</span>
+                          {expired && (
+                            <span className="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400">
+                              {t('analysisVideoExpiredShort')}
+                            </span>
+                          )}
+                          {sub.reviewStatus === 'completed' && (
+                            <span className="text-xs px-2 py-0.5 rounded bg-accent/10 text-accent">
+                              {t('analysisReviewed')}
+                            </span>
+                          )}
+                        </div>
+                        {!expired && daysLeft <= 2 && daysLeft > 0 && (
+                          <div className="flex items-center gap-1 text-xs text-yellow-400 pl-5">
+                            <AlertTriangle size={12} />
+                            {t('analysisVideoExpiringSoon', { days: daysLeft })}
+                          </div>
+                        )}
+                        {expired && (
+                          <p className="text-xs text-muted pl-5">{t('analysisVideoExpiredMemberNote')}</p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>

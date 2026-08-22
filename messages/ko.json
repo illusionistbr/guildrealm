@@ -1479,7 +1479,22 @@
     "analysisRecommendation": "권고사항",
     "analysisRecommendationPlaceholder": "플레이어에게 최종 권고사항을 작성하세요...",
     "analysisSaveReview": "검토 저장",
-    "analysisSaved": "검토가 저장되었습니다"
+    "analysisSaved": "검토가 저장되었습니다",
+    "analysisVideoExpired": "영상 만료",
+    "analysisVideoExpiredDesc": "이 영상은 길드 보존 정책에 따라 7일 후 자동으로 삭제되었습니다. 분석, 점수 및 피드백은 계속 이용 가능합니다.",
+    "analysisVideoExpiredShort": "영상 만료",
+    "analysisVideoExpiringSoon": "⏱ 영상 {days}일 후 만료",
+    "analysisAvailableUntil": "이용 가능 기한",
+    "analysisOriginalFile": "원본 파일",
+    "analysisUploadedAt": "업로드 일시",
+    "analysisFileSize": "크기",
+    "analysisExpiredAt": "만료 일시",
+    "analysisVideosAvailable": "이용 가능한 영상",
+    "analysisVideosExpired": "만료된 영상",
+    "analysisTimestampReference": "타임스탬프는 참고용입니다 — 영상을 더 이상 이용할 수 없습니다.",
+    "analysisCommentExpiredNote": "영상은 삭제되었지만 댓글은 참고용으로 저장됩니다.",
+    "analysisAddCommentExpired": "참고 댓글 추가...",
+    "analysisVideoExpiredMemberNote": "영상이 7일 후 삭제되었습니다. 분석은 계속 이용 가능합니다."
   },
   "GuildCalendar": {
     "today": "오늘",

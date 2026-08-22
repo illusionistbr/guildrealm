@@ -1479,7 +1479,22 @@
     "analysisRecommendation": "Рекомендация",
     "analysisRecommendationPlaceholder": "Дайте финальную рекомендацию игроку...",
     "analysisSaveReview": "Сохранить обзор",
-    "analysisSaved": "Обзор сохранён"
+    "analysisSaved": "Обзор сохранён",
+    "analysisVideoExpired": "Видео истекло",
+    "analysisVideoExpiredDesc": "Это видео было автоматически удалено через 7 дней в соответствии с политикой хранения гильдии. Анализ, оценки и отзывы по-прежнему доступны.",
+    "analysisVideoExpiredShort": "Видео истекло",
+    "analysisVideoExpiringSoon": "⏱ Видео доступно ещё {days} дн.",
+    "analysisAvailableUntil": "Доступно до",
+    "analysisOriginalFile": "Оригинальный файл",
+    "analysisUploadedAt": "Загружено",
+    "analysisFileSize": "Размер",
+    "analysisExpiredAt": "Истекло",
+    "analysisVideosAvailable": "Доступные видео",
+    "analysisVideosExpired": "Истёкшие видео",
+    "analysisTimestampReference": "Таймкоды仅供参考 — видео больше недоступно.",
+    "analysisCommentExpiredNote": "Видео удалено, но ваш комментарий сохранится как справочная информация.",
+    "analysisAddCommentExpired": "Добавить справочный комментарий...",
+    "analysisVideoExpiredMemberNote": "Ваше видео было удалено через 7 дней. Анализ по-прежнему доступен."
   },
   "GuildCalendar": {
     "today": "Сегодня",

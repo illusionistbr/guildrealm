@@ -1479,7 +1479,22 @@
     "analysisRecommendation": "推奨事項",
     "analysisRecommendationPlaceholder": "プレイヤーへの最終的な推奨事項を書いてください...",
     "analysisSaveReview": "レビューを保存",
-    "analysisSaved": "レビューが保存されました"
+    "analysisSaved": "レビューが保存されました",
+    "analysisVideoExpired": "動画の有効期限切れ",
+    "analysisVideoExpiredDesc": "この動画はギルドの保持ポリシーに従い、7日後に自動的に削除されました。分析、スコア、フィードバックは引き続き利用可能です。",
+    "analysisVideoExpiredShort": "有効期限切れ",
+    "analysisVideoExpiringSoon": "⏱ 動画はあと{days}日で利用できなくなります",
+    "analysisAvailableUntil": "利用可能期限",
+    "analysisOriginalFile": "元のファイル",
+    "analysisUploadedAt": "アップロード日",
+    "analysisFileSize": "サイズ",
+    "analysisExpiredAt": "有効期限",
+    "analysisVideosAvailable": "利用可能な動画",
+    "analysisVideosExpired": "期限切れ動画",
+    "analysisTimestampReference": "タイムスタンプは参考情報です — 動画は利用できません。",
+    "analysisCommentExpiredNote": "動画は削除されましたが、コメントは参考として保存されます。",
+    "analysisAddCommentExpired": "参考コメントを追加...",
+    "analysisVideoExpiredMemberNote": "動画は7日後に削除されました。分析は引き続き利用可能です。"
   },
   "GuildCalendar": {
     "today": "今日",

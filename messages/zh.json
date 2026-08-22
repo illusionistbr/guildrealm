@@ -1479,7 +1479,22 @@
     "analysisRecommendation": "建议",
     "analysisRecommendationPlaceholder": "给玩家一个最终建议...",
     "analysisSaveReview": "保存审核",
-    "analysisSaved": "审核已保存"
+    "analysisSaved": "审核已保存",
+    "analysisVideoExpired": "视频已过期",
+    "analysisVideoExpiredDesc": "根据公会保留政策，此视频已在7天后自动删除。分析、评分和反馈仍然可用。",
+    "analysisVideoExpiredShort": "视频已过期",
+    "analysisVideoExpiringSoon": "⏱ 视频还有{days}天可用",
+    "analysisAvailableUntil": "可用至",
+    "analysisOriginalFile": "原始文件",
+    "analysisUploadedAt": "上传时间",
+    "analysisFileSize": "大小",
+    "analysisExpiredAt": "过期时间",
+    "analysisVideosAvailable": "可用视频",
+    "analysisVideosExpired": "已过期视频",
+    "analysisTimestampReference": "时间戳仅供参考 — 视频不再可用。",
+    "analysisCommentExpiredNote": "视频已被删除，但您的评论将作为参考保存。",
+    "analysisAddCommentExpired": "添加参考评论...",
+    "analysisVideoExpiredMemberNote": "您的视频在7天后已被删除。分析仍然可用。"
   },
   "GuildCalendar": {
     "today": "今天",

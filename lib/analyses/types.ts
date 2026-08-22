@@ -35,6 +35,18 @@ export type SubmissionStatus = (typeof SUBMISSION_STATUSES)[number];
 export const REVIEW_STATUSES = ['pending', 'in_progress', 'completed'] as const;
 export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
 
+export const VIDEO_STATUSES = ['available', 'expired'] as const;
+export type VideoStatus = (typeof VIDEO_STATUSES)[number];
+
+export const VIDEO_RETENTION_DAYS = 7;
+
+export function isVideoExpired(sub: { videoExpiresAt?: Date | null; uploadedAt?: Date | null; videoStatus?: VideoStatus }): boolean {
+  if (sub.videoStatus === 'expired') return true;
+  const expiresAt = sub.videoExpiresAt || (sub.uploadedAt ? new Date(sub.uploadedAt.getTime() + VIDEO_RETENTION_DAYS * 24 * 60 * 60 * 1000) : null);
+  if (!expiresAt) return false;
+  return new Date() >= expiresAt;
+}
+
 export const RETENTION_OPTIONS = [
   { value: 30, label: '30 dias' },
   { value: 60, label: '60 dias' },
@@ -72,6 +84,8 @@ export interface AnalysisSubmission {
   uploadedAt: Date;
   updatedAt: Date;
   reviewStatus: ReviewStatus;
+  videoStatus?: VideoStatus;
+  videoExpiresAt?: Date | null;
   reviewerId?: string;
   reviewedAt?: Date;
   overallScore?: number;

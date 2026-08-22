@@ -90,7 +90,7 @@ export async function getPlayUrl(params: {
   requestId: string;
   submissionId: string;
 }) {
-  const fn = getFn<typeof params, { url: string; contentType: string }>('getAnalysisPlayUrl');
+  const fn = getFn<typeof params, { url?: string; contentType?: string; expired?: boolean; reason?: string }>('getAnalysisPlayUrl');
   const res = await fn(params);
   return res.data;
 }

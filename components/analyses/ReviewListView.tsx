@@ -15,6 +15,7 @@ import { getFirebaseDb } from '@/lib/admin/firebase/client';
 import { cn } from '@/lib/admin/utils/cn';
 import {
   ANALYSIS_TYPE_CONFIG,
+  isVideoExpired,
   type AnalysisRequest,
   type AnalysisSubmission,
 } from '@/lib/analyses/types';
@@ -27,6 +28,7 @@ import {
   ChevronRight,
   BarChart3,
   Filter,
+  Film,
 } from 'lucide-react';
 
 const fadeUp = {
@@ -114,6 +116,8 @@ export function ReviewListView({ guildId, uid, isLeader, memberNames }: ReviewLi
     submitted: submissions.length,
     pending: guildMembers.length - submissions.length,
     reviewed: submissions.filter((s) => s.reviewStatus === 'completed').length,
+    videosExpired: submissions.filter((s) => isVideoExpired(s)).length,
+    videosAvailable: submissions.filter((s) => !isVideoExpired(s) && (s.status === 'uploaded' || s.status === 'reviewed')).length,
   };
 
   // Filter submissions
@@ -157,12 +161,14 @@ export function ReviewListView({ guildId, uid, isLeader, memberNames }: ReviewLi
         </div>
 
         {/* Stats Dashboard */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
           {[
             { label: t('analysisMembers'), value: stats.total, icon: Users, color: 'text-blue-400' },
             { label: t('analysisSubmitted'), value: stats.submitted, icon: CheckCircle2, color: 'text-emerald-400' },
             { label: t('analysisPending'), value: stats.pending, icon: Clock, color: 'text-yellow-400' },
             { label: t('analysisReviewed'), value: stats.reviewed, icon: Eye, color: 'text-accent' },
+            { label: t('analysisVideosAvailable'), value: stats.videosAvailable, icon: Film, color: 'text-emerald-400' },
+            { label: t('analysisVideosExpired'), value: stats.videosExpired, icon: Film, color: 'text-orange-400' },
           ].map((stat) => (
             <div
               key={stat.label}
@@ -222,6 +228,11 @@ export function ReviewListView({ guildId, uid, isLeader, memberNames }: ReviewLi
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
+                    {isVideoExpired(sub) && (
+                      <span className="text-xs px-2 py-0.5 rounded bg-orange-500/10 text-orange-400">
+                        {t('analysisVideoExpiredShort')}
+                      </span>
+                    )}
                     {sub.reviewStatus === 'completed' && (
                       <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">
                         {t('analysisReviewed')}

@@ -13,7 +13,7 @@ import {
 import { getFirebaseDb } from '@/lib/admin/firebase/client';
 import { cn } from '@/lib/admin/utils/cn';
 import { getPlayUrl, addComment, saveReview } from '@/lib/analyses/hooks';
-import type { AnalysisSubmission, AnalysisComment } from '@/lib/analyses/types';
+import { isVideoExpired, VIDEO_RETENTION_DAYS, type AnalysisSubmission, type AnalysisComment } from '@/lib/analyses/types';
 import {
   ArrowLeft,
   MessageSquare,
@@ -23,6 +23,9 @@ import {
   CheckCircle2,
   Play,
   Pause,
+  Film,
+  Clock,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface VideoReviewProps {
@@ -51,6 +54,8 @@ export function VideoReview({
   const t = useTranslations('GuildPanel');
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoExpired, setVideoExpired] = useState(false);
+  const [videoExpiryInfo, setVideoExpiryInfo] = useState<{ uploadedAt: Date; expiresAt: Date } | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(true);
   const [comments, setComments] = useState<AnalysisComment[]>([]);
   const [newComment, setNewComment] = useState('');
@@ -68,9 +73,27 @@ export function VideoReview({
 
   const memberName = memberNames[submission.userId] || submission.userId.slice(0, 8);
 
+  // Compute expiry info
+  useEffect(() => {
+    const uploadedAt = submission.uploadedAt instanceof Date ? submission.uploadedAt : new Date(submission.uploadedAt);
+    let expiresAt: Date;
+    if (submission.videoExpiresAt) {
+      expiresAt = submission.videoExpiresAt instanceof Date ? submission.videoExpiresAt : new Date(submission.videoExpiresAt);
+    } else {
+      expiresAt = new Date(uploadedAt.getTime() + VIDEO_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+    }
+    setVideoExpiryInfo({ uploadedAt, expiresAt });
+    if (isVideoExpired(submission)) {
+      setVideoExpired(true);
+    }
+  }, [submission]);
+
   // Load video URL
   useEffect(() => {
-    if (!guildId || !requestId || !submission.id) return;
+    if (!guildId || !requestId || !submission.id || videoExpired) {
+      setLoadingVideo(false);
+      return;
+    }
 
     const loadUrl = async () => {
       try {
@@ -79,7 +102,11 @@ export function VideoReview({
           requestId,
           submissionId: submission.id,
         });
-        setVideoUrl(result.url);
+        if (result.expired) {
+          setVideoExpired(true);
+        } else if (result.url) {
+          setVideoUrl(result.url);
+        }
       } catch (error) {
         console.error('Failed to load video:', error);
       } finally {
@@ -88,7 +115,7 @@ export function VideoReview({
     };
 
     loadUrl();
-  }, [guildId, requestId, submission.id]);
+  }, [guildId, requestId, submission.id, videoExpired]);
 
   // Load comments
   useEffect(() => {
@@ -148,6 +175,7 @@ export function VideoReview({
   };
 
   const handleSeek = (timestamp: number) => {
+    if (videoExpired) return;
     const video = videoRef.current;
     if (video) {
       video.currentTime = timestamp;
@@ -231,13 +259,48 @@ export function VideoReview({
 
       {/* Video Player */}
       <div className="rounded-xl overflow-hidden border border-[rgba(38,51,86,0.5)] bg-black">
-        {videoUrl ? (
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            controls
-            className="w-full aspect-video"
-          />
+        {videoExpired ? (
+          <div className="aspect-video flex flex-col items-center justify-center bg-[#0a1122] p-8 text-center">
+            <Film size={48} className="text-muted mb-4" />
+            <h4 className="text-white font-heading font-semibold text-lg mb-2">{t('analysisVideoExpired')}</h4>
+            <p className="text-muted text-sm max-w-md">{t('analysisVideoExpiredDesc')}</p>
+            {videoExpiryInfo && (
+              <div className="mt-4 space-y-1 text-sm text-muted">
+                <p><span className="text-white">{t('analysisOriginalFile')}:</span> {submission.originalFileName}</p>
+                <p><span className="text-white">{t('analysisUploadedAt')}:</span> {videoExpiryInfo.uploadedAt.toLocaleDateString('pt-BR')} às {videoExpiryInfo.uploadedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                <p><span className="text-white">{t('analysisFileSize')}:</span> {(submission.fileSize / (1024 * 1024 * 1024)).toFixed(2)} GB</p>
+                <p><span className="text-white">{t('analysisExpiredAt')}:</span> {videoExpiryInfo.expiresAt.toLocaleDateString('pt-BR')}</p>
+              </div>
+            )}
+          </div>
+        ) : videoUrl ? (
+          <>
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              controls
+              className="w-full aspect-video"
+            />
+            {videoExpiryInfo && (() => {
+              const now = new Date();
+              const daysLeft = Math.ceil((videoExpiryInfo.expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+              if (daysLeft <= 0) return null;
+              if (daysLeft <= 2) {
+                return (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-yellow-500/10 border-t border-yellow-500/20 text-yellow-400 text-sm">
+                    <AlertTriangle size={14} />
+                    {t('analysisVideoExpiringSoon', { days: daysLeft })}
+                  </div>
+                );
+              }
+              return (
+                <div className="flex items-center gap-2 px-4 py-2 bg-[#0a1122] border-t border-[rgba(38,51,86,0.3)] text-muted text-sm">
+                  <Clock size={14} />
+                  {t('analysisAvailableUntil')} {videoExpiryInfo.expiresAt.toLocaleDateString('pt-BR')}
+                </div>
+              );
+            })()}
+          </>
         ) : (
           <div className="aspect-video flex items-center justify-center bg-[#0a1122]">
             <p className="text-muted">{t('analysisVideoNotAvailable')}</p>
@@ -256,7 +319,12 @@ export function VideoReview({
           {comments.map((comment) => (
             <div
               key={comment.id}
-              className="flex gap-3 p-3 rounded-lg bg-[#0a1122] hover:bg-[rgba(109,40,217,0.08)] transition-colors cursor-pointer"
+              className={cn(
+                'flex gap-3 p-3 rounded-lg transition-colors',
+                videoExpired
+                  ? 'bg-[#0a1122]'
+                  : 'bg-[#0a1122] hover:bg-[rgba(109,40,217,0.08)] cursor-pointer'
+              )}
               onClick={() => handleSeek(comment.timestamp)}
             >
               <span className="text-accent font-mono text-sm shrink-0">
@@ -265,25 +333,33 @@ export function VideoReview({
               <p className="text-white text-sm">{comment.text}</p>
             </div>
           ))}
+          {videoExpired && comments.length > 0 && (
+            <p className="text-muted text-xs italic">{t('analysisTimestampReference')}</p>
+          )}
         </div>
 
         {/* Add Comment */}
-        <div className="mt-4 flex gap-2">
-          <input
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder={t('analysisAddComment')}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-[#0a1122] border border-[rgba(38,51,86,0.5)] text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors text-sm"
-            onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
-          />
-          <button
-            onClick={handleAddComment}
-            disabled={!newComment.trim()}
-            className="px-4 py-2.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-sm font-medium transition-colors disabled:opacity-50"
-          >
-            {t('analysisAdd')}
-          </button>
+        <div className="mt-4">
+          {videoExpired && (
+            <p className="text-muted text-xs mb-2 italic">{t('analysisCommentExpiredNote')}</p>
+          )}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder={videoExpired ? t('analysisAddCommentExpired') : t('analysisAddComment')}
+              className="flex-1 px-4 py-2.5 rounded-lg bg-[#0a1122] border border-[rgba(38,51,86,0.5)] text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors text-sm"
+              onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
+            />
+            <button
+              onClick={handleAddComment}
+              disabled={!newComment.trim()}
+              className="px-4 py-2.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              {t('analysisAdd')}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -1479,7 +1479,22 @@
     "analysisRecommendation": "Recommendation",
     "analysisRecommendationPlaceholder": "Give a final recommendation to the player...",
     "analysisSaveReview": "Save review",
-    "analysisSaved": "Review saved"
+    "analysisSaved": "Review saved",
+    "analysisVideoExpired": "Video expired",
+    "analysisVideoExpiredDesc": "This video was automatically removed after 7 days, per the guild retention policy. The analysis, scores, and feedback remain available.",
+    "analysisVideoExpiredShort": "Video expired",
+    "analysisVideoExpiringSoon": "⏱ Video available for {days} more day(s)",
+    "analysisAvailableUntil": "Available until",
+    "analysisOriginalFile": "Original file",
+    "analysisUploadedAt": "Uploaded on",
+    "analysisFileSize": "Size",
+    "analysisExpiredAt": "Expired on",
+    "analysisVideosAvailable": "Videos available",
+    "analysisVideosExpired": "Videos expired",
+    "analysisTimestampReference": "Timestamps are reference only — the video is no longer available.",
+    "analysisCommentExpiredNote": "The video was removed, but your comment will be saved as reference.",
+    "analysisAddCommentExpired": "Add reference comment...",
+    "analysisVideoExpiredMemberNote": "Your video was removed after 7 days. Your analysis remains available."
   },
   "GuildCalendar": {
     "today": "Today",
