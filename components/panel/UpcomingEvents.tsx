@@ -43,6 +43,18 @@ interface GuildEvent {
   createdByName: string;
 }
 
+function toDate(val: unknown): Date {
+  if (!val) return new Date(0);
+  if (val instanceof Date) return val;
+  if (val && typeof val === 'object' && 'toDate' in val && typeof (val as { toDate: () => Date }).toDate === 'function') {
+    return (val as { toDate: () => Date }).toDate();
+  }
+  if (val && typeof val === 'object' && 'seconds' in val) {
+    return new Date((val as { seconds: number }).seconds * 1000);
+  }
+  return new Date(0);
+}
+
 interface UpcomingEventsProps {
   guildId: string;
 }
@@ -70,8 +82,8 @@ export function UpcomingEvents({ guildId }: UpcomingEventsProps) {
           title: data.title as string,
           description: data.description as string,
           type: data.type as string,
-          start: data.start?.toDate() || new Date(),
-          end: data.end?.toDate() || new Date(),
+          start: toDate(data.start),
+          end: toDate(data.end),
           location: data.location as string,
           maxParticipants: data.maxParticipants as number | null,
           status: data.status as string,
@@ -84,6 +96,9 @@ export function UpcomingEvents({ guildId }: UpcomingEventsProps) {
         .sort((a, b) => a.start.getTime() - b.start.getTime())
         .slice(0, 4);
       setEvents(items);
+      setLoading(false);
+    }, (err) => {
+      console.error('[UpcomingEvents] query error:', err);
       setLoading(false);
     });
 
