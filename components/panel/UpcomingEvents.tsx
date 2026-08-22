@@ -107,7 +107,9 @@ export function UpcomingEvents({ guildId }: UpcomingEventsProps) {
 
   const formatEventDate = (date: Date) => {
     const now = new Date();
-    const diffDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const eventDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const diffDays = Math.round((eventDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     if (diffDays === 0) return t('eventToday');
     if (diffDays === 1) return t('eventTomorrow');
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
