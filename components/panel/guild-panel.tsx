@@ -42,6 +42,9 @@ import { RecruitmentSettings } from '@/components/guild-settings/RecruitmentSett
 import { ApplicationsView } from '@/components/guild-settings/ApplicationsView';
 import { DiscordSettings } from '@/components/guild-settings/DiscordSettings';
 import { AnalysisTabs } from '@/components/analyses/AnalysisTabs';
+import { GuildActivityFeed } from '@/components/panel/GuildActivityFeed';
+import { UpcomingEvents } from '@/components/panel/UpcomingEvents';
+import { TwitterFeed } from '@/components/panel/TwitterFeed';
 import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
 import { useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
 import {
@@ -824,7 +827,8 @@ function OverviewView({
       : recruitmentOpen;
 
   return (
-    <>
+    <div className="space-y-6">
+      {/* Guild Header */}
       <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.8)] to-[rgba(10,18,32,0.6)] p-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#0a1122] flex items-center justify-center overflow-hidden shrink-0">
@@ -862,8 +866,21 @@ function OverviewView({
         </div>
       </div>
 
+      {/* Info Section */}
       <InfoSection guild={guild} />
-    </>
+
+      {/* Live Feed Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Activity Feed */}
+        <GuildActivityFeed guildId={guild.id} />
+
+        {/* Upcoming Events */}
+        <UpcomingEvents guildId={guild.id} />
+      </div>
+
+      {/* Twitter Feed */}
+      <TwitterFeed />
+    </div>
   );
 }
 

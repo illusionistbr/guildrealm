@@ -304,6 +304,13 @@ match /members/{userId} {
       allow write: if isAdmin();
     }
 
+    // ============ ACTIVITY FEED (guild-level audit) ============
+    match /guilds/{guildId}/activity/{activityId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow create: if false;
+      allow update, delete: if false;
+    }
+
     // ============ ANALISES (video analysis) ============
     match /guilds/{guildId}/analysisRequests/{requestId} {
       allow read: if isSignedIn() && isGuildMember(guildId);

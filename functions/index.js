@@ -117,6 +117,17 @@ function callable(handler, options) {
   });
 }
 
+async function logGuildActivity(guildId, entry) {
+  try {
+    await admin.firestore().collection('guilds').doc(guildId).collection('activity').add({
+      ...entry,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    console.error('Failed to log guild activity:', err);
+  }
+}
+
 function requireSuperAdmin(context) {
   if (!context.auth || context.auth.token.role !== 'super_admin') {
     throw new CallableError('permission-denied', 'Only super admins can manage roles');
@@ -528,6 +539,12 @@ exports.joinGuild = callable(async (data, context) => {
     });
   });
 
+  try {
+    const charSnap = await characterDoc(characterId).get();
+    const charName = charSnap.exists ? (charSnap.data().name || charSnap.data().nickname || 'Unknown') : 'Unknown';
+    await logGuildActivity(guildId, { type: 'join', userId: uid, characterId, characterName: charName });
+  } catch {}
+
   return { success: true };
 });
 
@@ -563,7 +580,9 @@ exports.leaveGuild = callable(async (data, context) => {
     }
   }
 
+  const charName = character.name || character.nickname || 'Unknown';
   await removeCharacterFromGuild(guildId, characterId);
+  await logGuildActivity(guildId, { type: 'leave', userId: uid, characterId, characterName: charName });
 
   return { success: true };
 });
@@ -666,6 +685,12 @@ exports.kickGuildMember = callable(async (data, context) => {
 
   await removeCharacterFromGuild(guildId, characterId);
 
+  try {
+    const charSnap = await characterDoc(characterId).get();
+    const charName = charSnap.exists ? (charSnap.data().name || charSnap.data().nickname || 'Unknown') : 'Unknown';
+    await logGuildActivity(guildId, { type: 'kick', userId: context.auth.uid, characterId, characterName: charName });
+  } catch {}
+
   return { success: true };
 });
 
@@ -693,6 +718,12 @@ exports.banGuildMember = callable(async (data, context) => {
     updatedAt: fv.serverTimestamp(),
   });
 
+  try {
+    const charSnap = await characterDoc(characterId).get();
+    const charName = charSnap.exists ? (charSnap.data().name || charSnap.data().nickname || 'Unknown') : 'Unknown';
+    await logGuildActivity(guildId, { type: 'ban', userId: context.auth.uid, characterId, characterName: charName });
+  } catch {}
+
   return { success: true };
 });
 
@@ -714,14 +745,22 @@ exports.setGuildMemberRank = callable(async (data, context) => {
   }
 
   const update = { updatedAt: fv.serverTimestamp() };
+  let rankName = null;
   if (rankId) {
     const rankSnap = await guildDoc(guildId).collection('ranks').doc(rankId).get();
     if (!rankSnap.exists) throw new CallableError('not-found', 'Rank not found');
+    rankName = rankSnap.data().name || rankId;
     update[`memberRanks.${characterId}`] = rankId;
   } else {
     update[`memberRanks.${characterId}`] = admin.firestore.FieldValue.delete();
   }
   await guildDoc(guildId).update(update);
+
+  try {
+    const charSnap = await characterDoc(characterId).get();
+    const charName = charSnap.exists ? (charSnap.data().name || charSnap.data().nickname || 'Unknown') : 'Unknown';
+    await logGuildActivity(guildId, { type: 'rank_change', userId: context.auth.uid, characterId, characterName: charName, details: { rankId, rankName } });
+  } catch {}
 
   return { success: true };
 });
@@ -749,6 +788,12 @@ exports.setGuildMemberStatus = callable(async (data, context) => {
       : admin.firestore.FieldValue.arrayRemove(characterId),
     updatedAt: fv.serverTimestamp(),
   });
+
+  try {
+    const charSnap = await characterDoc(characterId).get();
+    const charName = charSnap.exists ? (charSnap.data().name || charSnap.data().nickname || 'Unknown') : 'Unknown';
+    await logGuildActivity(guildId, { type: 'status_change', userId: context.auth.uid, characterId, characterName: charName, details: { inactive } });
+  } catch {}
 
   return { success: true };
 });
@@ -1386,6 +1431,12 @@ exports.reviewGuildApplication = callable(async (data, context) => {
       updatedAt: fv.serverTimestamp(),
     });
   });
+
+  try {
+    const charSnap = await characterDoc(characterId).get();
+    const charName = charSnap.exists ? (charSnap.data().name || charSnap.data().nickname || 'Unknown') : 'Unknown';
+    await logGuildActivity(guildId, { type: 'join', userId: application.applicantId, characterId, characterName: charName, details: { via: 'application' } });
+  } catch {}
 
   return { success: true };
 });
