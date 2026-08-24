@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, Menu, ShieldCheck, X } from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import ReactCountryFlag from 'react-country-flag';
 import { useState } from 'react';
@@ -30,7 +30,7 @@ export function SiteHeader() {
   return (
     <header className="nav">
       <a href="/" className="brand" aria-label="ClanForge, início">
-        <span className="brand-mark"><ShieldCheck size={25} /></span><span>ClanForge</span>
+        <img src="/images/clanforge-logo.png" alt="ClanForge" width={28} height={28} className="brand-mark object-contain rounded-md" /><span>ClanForge</span>
       </a>
       <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
         {navigationItems.map((item) => <a key={item.label} href={item.href} onClick={closeMenu}>{item.label}</a>)}
