@@ -16,6 +16,7 @@ import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import { DEFAULT_VISIBILITY } from '@/lib/app/use-current-user-profile';
 import { ProfileMural } from '@/components/app/profile-mural';
 import {
+  ArrowLeft,
   Calendar,
   Image as ImageIcon,
   Loader2,
@@ -214,6 +215,15 @@ export default function PublicProfilePage() {
           variants={{ animate: { transition: { staggerChildren: 0.05 } } }}
           className="space-y-6"
         >
+          {/* Voltar */}
+          <motion.div variants={fadeUp}>
+            <button
+              onClick={() => router.push('/app/dashboard')}
+              className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-white transition-colors"
+            >
+              <ArrowLeft size={16} /> Voltar ao dashboard
+            </button>
+          </motion.div>
           {/* Header */}
           <motion.div variants={fadeUp} className="flex items-end gap-5">
             <div className="w-28 h-28 rounded-full border-4 border-[#050912] bg-accent/20 flex items-center justify-center overflow-hidden shrink-0">
