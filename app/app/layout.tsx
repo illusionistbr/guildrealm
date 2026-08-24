@@ -69,8 +69,7 @@ function AppSidebar({ open, onToggle }: { open: boolean; onToggle: () => void })
       )}>
         {open && (
           <Link href="/app/dashboard" className="flex items-center gap-2">
-            <img src="/images/clanforge-logo.png" alt="ClanForge" width={28} height={28} className="w-7 h-7 object-contain rounded-md" />
-            <span className="font-heading font-bold text-white text-lg">ClanForge</span>
+            <img src="/images/clanforge-logo.png" alt="ClanForge" width={120} height={32} className="h-7 w-auto object-contain" />
           </Link>
         )}
         <button
