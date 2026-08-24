@@ -232,13 +232,15 @@ exports.updateProfileNickname = callable(async (data, context) => {
 
   const userRef = admin.firestore().collection('users').doc(uid);
   const snap = await userRef.get();
-  if (!snap.exists) throw new CallableError('not-found', 'Profile not found');
-  const profile = snap.data() || {};
+  const profile = snap.exists ? (snap.data() || {}) : {};
+  // Se perfil não existe, cria na hora (usuários legados que nunca chamaram createUserProfile)
+  // Nesse caso, primeira alteração ainda é permitida – não há nicknameChanged prévio.
   if (profile.nicknameChanged === true) {
     throw new CallableError('failed-precondition', 'Nickname can only be changed once');
   }
   if (profile.nickname === raw) {
-    throw new CallableError('already-exists', 'This is already your nickname');
+    // Já é o nickname atual: considera sucesso idempotente
+    return { success: true, nickname: raw };
   }
 
   // Unicidade: verifica se outro usuário já usa o nickname
@@ -247,15 +249,24 @@ exports.updateProfileNickname = callable(async (data, context) => {
     throw new CallableError('already-exists', 'Nickname already taken');
   }
 
-  await userRef.set(
-    {
-      nickname: raw,
-      nicknameChanged: true,
-      nicknameChangedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true }
-  );
+  const payload = {
+    nickname: raw,
+    nicknameChanged: true,
+    nicknameChangedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+  // Se doc não existia, preenche campos mínimos para não quebrar leitura futura
+  if (!snap.exists) {
+    payload.email = context.auth.token.email || '';
+    payload.displayName = profile.displayName || '';
+    payload.createdAt = admin.firestore.FieldValue.serverTimestamp();
+    payload.isActive = true;
+    payload.xp = 0;
+    payload.premium = false;
+    payload.role = 'user';
+  }
+
+  await userRef.set(payload, { merge: true });
 
   return { success: true, nickname: raw };
 });
