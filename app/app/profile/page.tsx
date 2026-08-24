@@ -31,6 +31,7 @@ import { cn } from '@/lib/admin/utils/cn';
 import { ProfileMural } from '@/components/app/profile-mural';
 import {
   AlertTriangle,
+  ArrowLeft,
   Camera,
   Check,
   Eye,
@@ -452,6 +453,14 @@ export default function ProfilePage() {
       variants={{ animate: { transition: { staggerChildren: 0.05 } } }}
       className="space-y-6"
     >
+      <motion.div variants={fadeUp}>
+        <button
+          onClick={() => router.push('/app/dashboard')}
+          className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-white transition-colors mb-3"
+        >
+          <ArrowLeft size={16} /> Voltar ao dashboard
+        </button>
+      </motion.div>
       <motion.div variants={fadeUp} className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-heading font-bold text-white">Perfil</h1>
