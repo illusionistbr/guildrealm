@@ -1,13 +1,27 @@
 'use client';
 
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/admin/utils/cn';
+import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
+import {
+  collection,
+  getDocs,
+  limit,
+  query,
+  where,
+} from 'firebase/firestore';
+import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
+import { COLLECTIONS } from '@/lib/admin/firebase/collections';
+import { DEFAULT_VISIBILITY } from '@/lib/app/use-current-user-profile';
 import { ProfileMural } from '@/components/app/profile-mural';
 import {
-  User, Shield, Trophy, Users, Calendar,
-  MapPin, Clock, Swords, MessageCircle,
+  Calendar,
+  Image as ImageIcon,
+  Loader2,
+  MessageCircle,
+  SearchX,
+  User,
 } from 'lucide-react';
 
 const fadeUp = {
@@ -25,139 +39,272 @@ function SocialIcon({ platform, size = 14 }: { platform: string; size?: number }
     youtube: <svg viewBox="0 0 24 24" width={s} height={s} fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>,
     twitch: <svg viewBox="0 0 24 24" width={s} height={s} fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>,
     steam: <svg viewBox="0 0 24 24" width={s} height={s} fill="currentColor"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 12.001-5.373 12.001-12S18.606 0 11.979 0z"/></svg>,
-    website: null,
   };
-  if (platform === 'website') return <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>;
+  if (platform === 'website') {
+    return (
+      <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="2" y1="12" x2="22" y2="12" />
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+      </svg>
+    );
+  }
   return icons[platform] || null;
 }
 
-// Simulated profile data — in production this would come from Firestore
-const profileData = {
-  displayName: 'Jogador',
-  nickname: 'jogador',
-  bio: 'Aventureiro apaixonado por explorar masmorras e colecionar conquistas. Líder dos Dragões de Fogo.',
-  level: 42,
-  className: 'Mago',
-  region: 'América do Sul',
-  memberSince: 'Jan 2024',
-  lastOnline: 'Hoje, 14:32',
-  totalHours: 1247,
-  guilds: [
-    { name: 'Dragões de Fogo', rank: '#3', role: 'Líder', members: 128, color: 'bg-red-500/20 text-red-400' },
-    { name: 'Guardiões do Vale', rank: '#12', role: 'Oficial', members: 94, color: 'bg-blue-500/20 text-blue-400' },
-    { name: 'Irmandade Noturna', rank: '#28', role: 'Membro', members: 67, color: 'bg-purple-500/20 text-purple-400' },
-  ],
-  achievements: [
-    { name: 'Caçador de Sombras', rarity: 'Épico', icon: '⚔️' },
-    { name: 'Aventureiro Curioso', rarity: 'Raro', icon: '🗺️' },
-    { name: 'Guerreiro Lendário', rarity: 'Lendário', icon: '👑' },
-  ],
-  friends: [
-    { name: 'Thalos', level: 45, online: true },
-    { name: 'Lyra', level: 39, online: true },
-    { name: 'Auron', level: 37, online: false },
-    { name: 'Seraphina', level: 41, online: true },
-    { name: 'Draven', level: 33, online: false },
-    { name: 'Elara', level: 40, online: true },
-  ],
-  socialLinks: {
-    discord: 'jogador#0001',
-    instagram: '@jogador_gr',
-    twitter: '@jogador_gr',
-  },
-  visibility: {
-    showGuilds: true,
-    showAchievements: true,
-    showFriends: true,
-    showBio: true,
-  },
+const SOCIAL_LABELS: Record<string, string> = {
+  twitter: 'X / Twitter',
+};
+
+type PublicProfile = {
+  id: string;
+  displayName?: string;
+  nickname?: string;
+  bio?: string;
+  photoURL?: string | null;
+  coverUrl?: string | null;
+  socialLinks?: Record<string, string>;
+  visibility?: Partial<typeof DEFAULT_VISIBILITY>;
+  createdAt?: { seconds: number } | null;
 };
 
 export default function PublicProfilePage() {
-  const p = profileData;
+  const params = useParams<{ nickname: string }>();
+  const router = useRouter();
+  const routeNickname = decodeURIComponent(
+    Array.isArray(params?.nickname) ? params.nickname[0] : params?.nickname ?? '',
+  );
+
+  const [viewer, setViewer] = useState<FirebaseUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [profile, setProfile] = useState<PublicProfile | null>(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(getFirebaseAuth(), (user) => {
+      setViewer(user);
+      setAuthChecked(true);
+      if (!user) router.replace('/login');
+    });
+    return unsub;
+  }, [router]);
+
+  useEffect(() => {
+    if (!authChecked || !routeNickname) return;
+
+    let disposed = false;
+    const loadProfile = async () => {
+      setLoading(true);
+      setNotFound(false);
+      setLoadError(false);
+      setProfile(null);
+
+      try {
+        const db = getFirebaseDb();
+        // 1) Busca pelo nickname (definido no cadastro)
+        const byNickname = await getDocs(
+          query(
+            collection(db, COLLECTIONS.USERS),
+            where('nickname', '==', routeNickname.toLowerCase()),
+            limit(1),
+          ),
+        );
+        let found = byNickname.docs[0];
+
+        // 2) Contas antigas sem campo nickname: busca pelo displayName exato
+        if (!found) {
+          const byDisplayName = await getDocs(
+            query(
+              collection(db, COLLECTIONS.USERS),
+              where('displayName', '==', routeNickname),
+              limit(1),
+            ),
+          );
+          found = byDisplayName.docs[0];
+        }
+
+        if (disposed) return;
+
+        if (!found || !found.exists()) {
+          setNotFound(true);
+        } else {
+          setProfile({ id: found.id, ...found.data() } as PublicProfile);
+        }
+      } catch {
+        if (!disposed) setLoadError(true);
+      }
+      if (!disposed) setLoading(false);
+    };
+
+    loadProfile();
+    return () => {
+      disposed = true;
+    };
+  }, [authChecked, routeNickname]);
+
+  if (!authChecked || loading) {
+    return (
+      <div className="min-h-screen bg-[#050912] flex items-center justify-center text-muted">
+        <Loader2 size={24} className="animate-spin mr-2" /> Carregando perfil...
+      </div>
+    );
+  }
+
+  if (notFound || !profile) {
+    return (
+      <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center text-center px-4">
+        <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mb-3">
+          <SearchX size={24} className="text-accent" />
+        </div>
+        <p className="text-white font-heading font-bold text-lg">Perfil não encontrado</p>
+        <p className="text-muted text-sm mt-1 max-w-xs">
+          O perfil @{routeNickname} não existe ou está indisponível.
+        </p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center text-center px-4">
+        <p className="text-sm text-red-400">Não foi possível carregar este perfil.</p>
+      </div>
+    );
+  }
+
+  const v = { ...DEFAULT_VISIBILITY, ...(profile.visibility ?? {}) };
+  const socialEntries = Object.entries(profile.socialLinks ?? {}).filter(
+    ([, value]) => !!value.trim(),
+  );
+  const memberSince = profile.createdAt?.seconds
+    ? new Date(profile.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+  const isOwner = viewer?.uid === profile.id;
 
   return (
     <div className="min-h-screen bg-[#050912]">
       {/* Cover */}
-      <div className="relative h-48 md:h-64 bg-[#0a1122]">
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050912] to-transparent" />
+      <div className="relative h-48 md:h-64 bg-[#0a1122] overflow-hidden">
+        {profile.coverUrl ? (
+          <img
+            src={profile.coverUrl}
+            alt={`Capa de ${profile.displayName ?? 'jogador'}`}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-[rgba(109,40,217,0.12)] to-transparent" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050912] to-transparent pointer-events-none" />
+        {!profile.coverUrl && (
+          <div className="absolute bottom-4 right-4 flex items-center gap-2 text-muted opacity-60">
+            <ImageIcon size={18} />
+          </div>
+        )}
       </div>
 
       <div className="shell -mt-16 relative z-10 pb-10">
-        <motion.div initial="initial" animate="animate" variants={{ animate: { transition: { staggerChildren: 0.05 } } }} className="space-y-6">
+        <motion.div
+          initial="initial"
+          animate="animate"
+          variants={{ animate: { transition: { staggerChildren: 0.05 } } }}
+          className="space-y-6"
+        >
           {/* Header */}
-          <motion.div variants={fadeUp} className="flex flex-col md:flex-row items-start md:items-end gap-5">
-            <div className="w-28 h-28 rounded-full border-4 border-[#050912] bg-accent/20 flex items-center justify-center">
-              <User size={48} className="text-accent" />
+          <motion.div variants={fadeUp} className="flex items-end gap-5">
+            <div className="w-28 h-28 rounded-full border-4 border-[#050912] bg-accent/20 flex items-center justify-center overflow-hidden shrink-0">
+              {profile.photoURL ? (
+                <img
+                  src={profile.photoURL}
+                  alt={profile.displayName ?? 'Avatar'}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User size={48} className="text-accent" />
+              )}
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-heading font-bold text-white">{p.displayName}</h1>
-              <p className="text-muted text-sm">@{p.nickname}</p>
-              <div className="flex items-center gap-3 mt-2 flex-wrap">
-                <span className="text-xs px-2 py-0.5 rounded-full bg-accent/10 text-accent">Nível {p.level}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400">{p.className}</span>
-                <span className="text-xs text-muted flex items-center gap-1"><MapPin size={12} /> {p.region}</span>
-              </div>
+            <div className="flex-1 min-w-0 pb-1">
+              <h1 className="text-2xl font-heading font-bold text-white truncate">
+                {profile.displayName?.trim() || 'Jogador'}
+              </h1>
+              <p className="text-muted text-sm">@{profile.nickname}</p>
+              {memberSince && (
+                <div className="flex items-center gap-1.5 mt-2 text-xs text-muted">
+                  <Calendar size={12} />
+                  Membro desde {memberSince}
+                </div>
+              )}
             </div>
-            <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors">
-                <Users size={16} /> Adicionar Amigo
-              </button>
-              <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-sm hover:text-white hover:border-accent/30 transition-colors">
-                <MessageCircle size={16} /> Mensagem
-              </button>
-            </div>
+            {isOwner && (
+              <a
+                href="/app/profile"
+                className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-sm hover:text-white hover:border-accent/30 transition-colors shrink-0"
+              >
+                Editar perfil
+              </a>
+            )}
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column */}
             <div className="space-y-6">
               {/* Bio */}
-              {p.visibility.showBio && (
-                <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5">
-                  <h3 className="text-sm font-heading font-bold text-white mb-2">Sobre</h3>
-                  <p className="text-sm text-muted leading-relaxed">{p.bio}</p>
-                  <div className="mt-4 space-y-2 text-xs text-muted">
-                    <div className="flex items-center gap-2"><Calendar size={14} /> Membro desde {p.memberSince}</div>
-                    <div className="flex items-center gap-2"><Clock size={14} /> Último acesso: {p.lastOnline}</div>
-                    <div className="flex items-center gap-2"><Swords size={14} /> {p.totalHours.toLocaleString('pt-BR')}h jogadas</div>
-                  </div>
+              {v.showBio && (
+                <motion.div
+                  variants={fadeUp}
+                  className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5"
+                >
+                  <h3 className="text-sm font-heading font-bold text-white mb-2">
+                    Sobre
+                  </h3>
+                  {profile.bio?.trim() ? (
+                    <p className="text-sm text-muted leading-relaxed whitespace-pre-wrap">
+                      {profile.bio}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted/60 italic">
+                      Este jogador ainda não escreveu uma biografia.
+                    </p>
+                  )}
                 </motion.div>
               )}
 
               {/* Social Links */}
-              {Object.keys(p.socialLinks).length > 0 && (
-                <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5">
-                  <h3 className="text-sm font-heading font-bold text-white mb-3">Redes Sociais</h3>
-                  <div className="space-y-2">
-                    {Object.entries(p.socialLinks).map(([platform, value]) => (
-                      <div key={platform} className="flex items-center gap-2 text-sm">
-                        <span className="text-accent"><SocialIcon platform={platform} /></span>
-                        <span className="text-muted capitalize">{platform === 'twitter' ? 'X / Twitter' : platform}:</span>
-                        <span className="text-white">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Guilds */}
-              {p.visibility.showGuilds && (
-                <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5">
-                  <h3 className="text-sm font-heading font-bold text-white mb-3 flex items-center gap-2">
-                    <Shield size={16} className="text-accent" /> Guildas
+              {socialEntries.length > 0 && (
+                <motion.div
+                  variants={fadeUp}
+                  className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5"
+                >
+                  <h3 className="text-sm font-heading font-bold text-white mb-3">
+                    Redes Sociais
                   </h3>
                   <div className="space-y-2">
-                    {p.guilds.map((g) => (
-                      <div key={g.name} className="flex items-center gap-3 p-2 rounded-lg bg-[rgba(10,18,32,0.4)]">
-                        <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs', g.color)}>
-                          {g.name.charAt(0)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-white font-medium truncate">{g.name}</p>
-                          <p className="text-[10px] text-muted">{g.members} membros • {g.role}</p>
-                        </div>
-                        <span className="text-[10px] text-muted">{g.rank}</span>
+                    {socialEntries.map(([platform, value]) => (
+                      <div key={platform} className="flex items-center gap-2 text-sm min-w-0">
+                        <span className="text-accent shrink-0">
+                          <SocialIcon platform={platform} />
+                        </span>
+                        <span className="text-muted shrink-0">
+                          {SOCIAL_LABELS[platform] ??
+                            platform.charAt(0).toUpperCase() + platform.slice(1)}
+                          :
+                        </span>
+                        <a
+                          href={
+                            value.startsWith('http://') || value.startsWith('https://')
+                              ? value
+                              : undefined
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-white truncate hover:text-accent transition-colors"
+                        >
+                          {value}
+                        </a>
                       </div>
                     ))}
                   </div>
@@ -167,63 +314,15 @@ export default function PublicProfilePage() {
 
             {/* Right Column */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Achievements */}
-              {p.visibility.showAchievements && (
-                <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5">
-                  <h3 className="text-sm font-heading font-bold text-white mb-3 flex items-center gap-2">
-                    <Trophy size={16} className="text-yellow-400" /> Conquistas Recentes
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {p.achievements.map((a) => (
-                      <div key={a.name} className={cn(
-                        'flex items-center gap-2 px-3 py-2 rounded-lg border text-xs',
-                        a.rarity === 'Lendário' ? 'border-orange-500/30 bg-orange-500/10 text-orange-400' :
-                        a.rarity === 'Épico' ? 'border-purple-500/30 bg-purple-500/10 text-purple-400' :
-                        'border-blue-500/30 bg-blue-500/10 text-blue-400',
-                      )}>
-                        <span>{a.icon}</span>
-                        <span className="font-medium">{a.name}</span>
-                        <span className="text-[10px] opacity-60">• {a.rarity}</span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Friends */}
-              {p.visibility.showFriends && (
-                <motion.div variants={fadeUp} className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5">
-                  <h3 className="text-sm font-heading font-bold text-white mb-3 flex items-center gap-2">
-                    <Users size={16} className="text-accent" /> Amigos ({p.friends.length})
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {p.friends.map((f) => (
-                      <div key={f.name} className="flex items-center gap-2 p-2 rounded-lg bg-[rgba(10,18,32,0.4)]">
-                        <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
-                            <User size={14} className="text-accent" />
-                          </div>
-                          <div className={cn(
-                            'absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#050912]',
-                            f.online ? 'bg-green-400' : 'bg-[rgba(38,51,86,0.5)]',
-                          )} />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs text-white font-medium truncate">{f.name}</p>
-                          <p className="text-[10px] text-muted">Lv. {f.level}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
               {/* Mural */}
               <motion.div variants={fadeUp}>
                 <h3 className="text-lg font-heading font-bold text-white mb-4 flex items-center gap-2">
                   <MessageCircle size={18} className="text-accent" /> Mural de Recados
                 </h3>
-                <ProfileMural isOwner={false} />
+                <ProfileMural
+                  targetUserId={profile.id}
+                  isOwner={isOwner}
+                />
               </motion.div>
             </div>
           </div>

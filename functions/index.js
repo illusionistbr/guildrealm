@@ -194,10 +194,18 @@ exports.createUserProfile = callable(async (data, context) => {
   const uid = context.auth.uid;
   const { displayName, photoURL } = data ?? {};
 
+  // Nickname imutável usado na URL pública do perfil (/profile/{nickname}).
+  // O cadastro já valida [a-zA-Z0-9_-]{3,}; aqui normalizamos para minúsculas.
+  const nickname =
+    typeof displayName === 'string'
+      ? displayName.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '')
+      : '';
+
   await admin.firestore().collection('users').doc(uid).set(
     {
       email: context.auth.token.email ?? '',
       displayName: displayName ?? '',
+      nickname,
       photoURL: photoURL ?? null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       isActive: true,

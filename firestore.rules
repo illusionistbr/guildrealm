@@ -33,12 +33,58 @@ service cloud.firestore {
     }
 
     // ============ USUARIOS ============
+    // Atualização pelo próprio usuário limitada aos campos do perfil;
+    // campos sensíveis (email, xp, role, premium, nickname...) exigem staff.
+    function isOwnProfileFieldUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly([
+          'displayName', 'bio', 'socialLinks', 'visibility',
+          'photoURL', 'coverUrl', 'updatedAt',
+        ]);
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.auth.uid == userId;
       allow update: if isSignedIn() &&
-        (request.auth.uid == userId || isStaff());
+        ((request.auth.uid == userId && isOwnProfileFieldUpdate()) || isStaff());
       allow delete: if isAdmin();
+    }
+
+    // ============ MURAL DO PERFIL ============
+    // Recados no mural de um usuário. Qualquer usuário logado pode publicar,
+    // reagir e comentar; autor ou dono do mural podem excluir.
+    match /users/{wallId}/mural/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.authorId == request.auth.uid &&
+        request.resource.data.content is string &&
+        request.resource.data.content.size() > 0 &&
+        request.resource.data.content.size() <= 500;
+      allow update, delete: if isSignedIn() &&
+        (resource.data.authorId == request.auth.uid ||
+         request.auth.uid == wallId);
+
+      // Uma reação por usuário (id do doc = uid do autor da reação)
+      match /reactions/{reactorUid} {
+        allow read: if isSignedIn();
+        allow create, update: if isSignedIn() &&
+          reactorUid == request.auth.uid &&
+          request.resource.data.type is string;
+        allow delete: if isSignedIn() && reactorUid == request.auth.uid;
+      }
+
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() &&
+          request.resource.data.authorId == request.auth.uid &&
+          request.resource.data.content is string &&
+          request.resource.data.content.size() > 0 &&
+          request.resource.data.content.size() <= 300;
+        allow delete: if isSignedIn() &&
+          (resource.data.authorId == request.auth.uid ||
+           request.auth.uid == wallId);
+      }
     }
 
     // ============ PERSONAGENS ============

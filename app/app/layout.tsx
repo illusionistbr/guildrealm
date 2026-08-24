@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+import { getFirebaseAuth } from '@/lib/admin/firebase/client';
+import {
+  profileNickname,
+  useCurrentUserProfile,
+} from '@/lib/app/use-current-user-profile';
 import { cn } from '@/lib/admin/utils/cn';
 import {
   LayoutDashboard,
@@ -35,7 +41,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#050912] flex">
-      <AppSidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <AppSidebar
+        open={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+      />
       <div className={cn(
         'flex-1 flex flex-col transition-all duration-300 min-h-screen',
         sidebarOpen ? 'ml-64' : 'ml-16',
@@ -84,26 +93,64 @@ function AppSidebar({ open, onToggle }: { open: boolean; onToggle: () => void })
         ))}
       </nav>
 
-      <div className={cn(
-        'p-3 border-t border-[rgba(38,51,86,0.5)]',
-        open ? 'px-4' : 'px-2',
-      )}>
-        <div className={cn(
-          'flex items-center gap-3',
-          open ? '' : 'justify-center',
-        )}>
-          <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
-            <User size={16} className="text-accent" />
-          </div>
+      <SidebarUser open={open} />
+    </aside>
+  );
+}
+
+function SidebarUser({ open }: { open: boolean }) {
+  const { fbUser, profile, loading } = useCurrentUserProfile();
+  const nickname = profileNickname(profile);
+
+  if (loading || !fbUser) {
+    return (
+      <div className={cn('p-3 border-t border-[rgba(38,51,86,0.5)]', open ? 'px-4' : 'px-2')}>
+        <div className={cn('flex items-center gap-3', !open && 'justify-center')}>
+          <div className="w-8 h-8 rounded-full bg-accent/20 animate-pulse shrink-0" />
           {open && (
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">Jogador</p>
-              <p className="text-muted text-xs truncate">Nível 42 • Mago</p>
+            <div className="flex-1 space-y-1.5">
+              <div className="h-3 w-20 rounded bg-[rgba(38,51,86,0.4)] animate-pulse" />
+              <div className="h-2.5 w-14 rounded bg-[rgba(38,51,86,0.3)] animate-pulse" />
             </div>
           )}
         </div>
       </div>
-    </aside>
+    );
+  }
+
+  const name =
+    profile?.displayName?.trim() ||
+    fbUser.displayName?.trim() ||
+    fbUser.email?.split('@')[0] ||
+    'Usuário';
+
+  return (
+    <div className={cn('p-3 border-t border-[rgba(38,51,86,0.5)]', open ? 'px-4' : 'px-2')}>
+      <div className={cn(
+        'flex items-center gap-3',
+        open ? '' : 'justify-center',
+      )}>
+        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center overflow-hidden shrink-0">
+          {(profile?.photoURL || fbUser.photoURL) ? (
+            <img
+              src={(profile?.photoURL ?? fbUser.photoURL)!}
+              alt={name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <User size={16} className="text-accent" />
+          )}
+        </div>
+        {open && (
+          <div className="flex-1 min-w-0">
+            <p className="text-white text-sm font-medium truncate">{name}</p>
+            {nickname && (
+              <p className="text-muted text-xs truncate">@{nickname}</p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -133,6 +180,28 @@ function SidebarItem({
 }
 
 function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }) {
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+  const { fbUser, profile, loading } = useCurrentUserProfile();
+  const nickname = profileNickname(profile);
+
+  const handleSignOut = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await signOut(getFirebaseAuth());
+      router.replace('/login');
+    } catch {
+      setSigningOut(false);
+    }
+  };
+
+  const name =
+    profile?.displayName?.trim() ||
+    fbUser?.displayName?.trim() ||
+    fbUser?.email?.split('@')[0] ||
+    '';
+
   return (
     <header className="h-16 border-b border-[rgba(38,51,86,0.5)] bg-[#080f1e]/80 backdrop-blur-md flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
@@ -159,25 +228,37 @@ function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }) {
           <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full" />
         </button>
 
-        <Link
-          href="/profile/jogador"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-xs hover:text-white hover:border-accent/30 transition-all"
-        >
-          <Eye size={14} /> Ver perfil
-        </Link>
+        {!loading && nickname && (
+          <Link
+            href={`/profile/${nickname}`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-xs hover:text-white hover:border-accent/30 transition-all"
+          >
+            <Eye size={14} /> Ver perfil
+          </Link>
+        )}
 
         <div className="flex items-center gap-3 pl-3 border-l border-[rgba(38,51,86,0.5)]">
-          <div className="text-right">
-            <p className="text-white text-sm font-medium">Jogador</p>
-            <p className="text-muted text-xs">Online</p>
-          </div>
-          <Link
-            href="/"
-            className="p-2 text-muted hover:text-red-400 transition-colors"
-            title="Sair"
+          {loading ? (
+            <div className="space-y-1.5 text-right">
+              <div className="h-3 w-20 rounded bg-[rgba(38,51,86,0.4)] animate-pulse ml-auto" />
+              <div className="h-2.5 w-12 rounded bg-[rgba(38,51,86,0.3)] animate-pulse ml-auto" />
+            </div>
+          ) : (
+            <div className="text-right max-w-[160px]">
+              <p className="text-white text-sm font-medium truncate">{name}</p>
+              {nickname && (
+                <p className="text-muted text-xs truncate">@{nickname}</p>
+              )}
+            </div>
+          )}
+          <button
+            onClick={handleSignOut}
+            disabled={signingOut}
+            title={signingOut ? 'Saindo...' : 'Sair'}
+            className="p-2 text-muted hover:text-red-400 transition-colors disabled:opacity-50"
           >
             <LogOut size={18} />
-          </Link>
+          </button>
         </div>
       </div>
     </header>
