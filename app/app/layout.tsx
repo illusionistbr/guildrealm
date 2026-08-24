@@ -36,6 +36,8 @@ const navItems: { label: string; href: string; icon: LucideIcon }[] = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const pathname = usePathname();
+  const isGuildsPage = pathname === '/app/guilds' || pathname?.startsWith('/app/guilds/');
 
   return (
     <div className="min-h-screen bg-[#050912] flex">
@@ -48,10 +50,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         sidebarOpen ? 'ml-64' : 'ml-16',
       )}>
         <AppHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="flex-1 overflow-auto p-6">
-          <div className="shell">
-            {children}
-          </div>
+        <main className={cn('flex-1 overflow-auto', isGuildsPage ? 'p-0' : 'p-6')}>
+          {isGuildsPage ? children : <div className="shell">{children}</div>}
         </main>
       </div>
     </div>

@@ -136,8 +136,7 @@ export default function AppGuildsCataloguePage() {
   ];
 
   return (
-    <div className="-m-6">
-      <main className="guilds-page">
+    <main className="guilds-page">
         <section className="catalogue-hero">
           <div className="catalogue-art" />
           <div className="shell catalogue-heading">
@@ -270,7 +269,6 @@ export default function AppGuildsCataloguePage() {
           )}
         </section>
       </main>
-    </div>
   );
 }
 
