@@ -44,6 +44,7 @@ import { DiscordSettings } from '@/components/guild-settings/DiscordSettings';
 import { AnalysisTabs } from '@/components/analyses/AnalysisTabs';
 import { GuildActivityFeed } from '@/components/panel/GuildActivityFeed';
 import { UpcomingEvents } from '@/components/panel/UpcomingEvents';
+import { GuildAuditView } from '@/components/panel/GuildAuditView';
 import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
 import { useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
 import {
@@ -57,6 +58,7 @@ import {
   ChevronRight,
   ClipboardList,
   Crown,
+  FileSearch,
   Gamepad2,
   Globe2,
   ImagePlus,
@@ -84,7 +86,7 @@ const fadeUp = {
 type Option = { value: string; label: string };
 type ClassOption = Option & { icon?: string };
 
-export type View = 'overview' | 'calendar' | 'attendance' | 'groups' | 'members' | 'applications' | 'settings' | 'analyses';
+export type View = 'overview' | 'calendar' | 'attendance' | 'groups' | 'members' | 'applications' | 'settings' | 'analyses' | 'audit';
 
 type GuildDoc = {
   id: string;
@@ -299,6 +301,7 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
     !!userPerms.manageRecruitment;
   const canManageRanks = isLeader || !!userPerms.manageRanks;
   const canManageRecruitment = isLeader || !!userPerms.manageRecruitment;
+  const canViewAudit = isLeader || !!userPerms.manageMembers || !!userPerms.manageSettings;
 
   if (!loading && !guild) {
     return (
@@ -332,7 +335,9 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
               ? t('menuApplications')
               : view === 'analyses'
                 ? t('menuAnalyses')
-                : t('menuSettings');
+                : view === 'audit'
+                  ? 'Auditoria'
+                  : t('menuSettings');
 
   return (
     <div className="min-h-screen bg-[#050912] flex">
@@ -346,6 +351,7 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
         canManageRecruitment={canManageRecruitment}
         canManageEvents={canManageEvents}
         recruitmentOpen={recruitmentOpen}
+        canViewAudit={canViewAudit}
       />
 
       <div
@@ -488,6 +494,24 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                 memberNames={memberNames}
               />
             </div>
+          ) : view === 'audit' ? (
+            <div>
+              <div className="mb-4">
+                <h1 className="text-2xl md:text-3xl font-heading font-bold text-white">
+                  Auditoria <span className="text-accent">{guild.name}</span>
+                </h1>
+                <p className="text-muted mt-1">
+                  Registro completo de ações na guild — sem dados pessoais. Acesso restrito ao líder e cargos com permissão.
+                </p>
+              </div>
+              {canViewAudit ? (
+                <GuildAuditView guildId={guild.id} guild={guild} memberNames={memberNames} />
+              ) : (
+                <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] p-6 flex items-center gap-2 text-muted">
+                  <Shield size={16} /> Você não tem permissão para acessar a auditoria. Apenas líderes e oficiais autorizados.
+                </div>
+              )}
+            </div>
           ) : (
             <div className="shell">
               <motion.div
@@ -544,6 +568,7 @@ function PanelSidebar({
   canManageRecruitment,
   canManageEvents,
   recruitmentOpen,
+  canViewAudit,
 }: {
   open: boolean;
   onToggle: () => void;
@@ -554,6 +579,7 @@ function PanelSidebar({
   canManageRecruitment: boolean;
   canManageEvents: boolean;
   recruitmentOpen: boolean | null;
+  canViewAudit?: boolean;
 }) {
   const t = useTranslations('GuildPanel');
   const isRecruiting =
@@ -616,6 +642,16 @@ function PanelSidebar({
       icon: <BarChart3 size={20} />,
       label: t('menuAnalyses'),
     },
+    ...(canViewAudit
+      ? [
+          {
+            key: 'audit' as const,
+            href: `${base}/audit`,
+            icon: <FileSearch size={20} />,
+            label: 'Auditoria',
+          },
+        ]
+      : []),
   ];
 
   return (
