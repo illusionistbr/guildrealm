@@ -13,6 +13,11 @@ onInit(() => {
   admin.initializeApp();
 });
 
+// Conquistas helper (lazy require após init para evitar ciclo)
+function getAchievements() {
+  try { return require('./achievements'); } catch { return null; }
+}
+
 const VALID_ROLES = ['super_admin', 'admin', 'moderator', 'editor', 'support'];
 
 const CODE_TO_STATUS = {
@@ -216,6 +221,9 @@ exports.createUserProfile = callable(async (data, context) => {
     },
     { merge: true }
   );
+
+  // Conquista: Criou a conta
+  try { const ach = getAchievements(); if (ach) await ach.awardAchievement(uid, 'common_account_created'); } catch {}
 
   return { success: true, nickname };
 });
@@ -1826,6 +1834,143 @@ exports.reconcileGuildGroups = onSchedule('every 15 minutes', async () => {
   }
 
   console.log(`[reconcileGuildGroups] concluído. Itens corrigidos: ${fixed}`);
+});
+
+// ============ CONQUISTAS ============
+/* Criou uma guild: trigger em criação de guilda */
+exports.achievementOnGuildCreated = onDocumentCreated('guilds/{guildId}', async (event) => {
+  const data = event.data?.data();
+  const ownerId = data?.ownerId;
+  if (!ownerId) return;
+  try {
+    const ach = getAchievements();
+    if (ach) await ach.awardAchievement(ownerId, 'common_created_guild');
+  } catch {}
+});
+
+/* Entrou em uma guild: detecta via atualização do array members (joinGuild ou aceite de candidatura)
+   Como join é feito via callable que já premia, aqui usamos trigger leve como fallback:
+   quando guild ganha novo membro, premia quem entrou */
+exports.achievementOnGuildMemberAdded = onDocumentWritten('guilds/{guildId}', async (event) => {
+  const before = event.data?.before?.data();
+  const after = event.data?.after?.data();
+  if (!before || !after) return;
+  const beforeMembers = new Set(before.members ?? []);
+  const afterMembers = after.members ?? [];
+  const newMembers = afterMembers.filter((id) => !beforeMembers.has(id));
+  if (newMembers.length === 0) return;
+  const ach = getAchievements();
+  if (!ach) return;
+  for (const charId of newMembers) {
+    try {
+      const charSnap = await admin.firestore().doc(`characters/${charId}`).get();
+      if (!charSnap.exists) continue;
+      const ownerId = charSnap.data()?.ownerId;
+      if (ownerId) await ach.awardAchievement(ownerId, 'common_joined_guild');
+    } catch {}
+  }
+});
+
+/* Atualizou perfil: bio/displayName/socialLinks/photoURL/coverUrl */
+exports.achievementOnProfileUpdated = onDocumentWritten('users/{userId}', async (event) => {
+  const before = event.data?.before?.data();
+  const after = event.data?.after?.data();
+  if (!before || !after) return; // criação tratada em createUserProfile
+  const fields = ['displayName', 'bio', 'socialLinks', 'photoURL', 'coverUrl'];
+  const changed = fields.some((f) => JSON.stringify(before[f] ?? null) !== JSON.stringify(after[f] ?? null));
+  if (!changed) return;
+  try {
+    const ach = getAchievements();
+    if (ach) await ach.awardAchievement(event.params.userId, 'common_updated_profile');
+  } catch {}
+});
+
+/* Comentou no perfil de alguém */
+exports.achievementOnMuralComment = onDocumentCreated('users/{wallId}/mural/{postId}/comments/{commentId}', async (event) => {
+  const data = event.data?.data();
+  const authorId = data?.authorId;
+  if (!authorId) return;
+  try {
+    const ach = getAchievements();
+    if (ach) await ach.awardAchievement(authorId, 'common_commented_profile');
+  } catch {}
+});
+/* Também conta post no mural como interação social fallback */
+exports.achievementOnMuralPost = onDocumentCreated('users/{wallId}/mural/{postId}', async (event) => {
+  // não premia post no próprio mural para evitar spam? premia author
+  const data = event.data?.data();
+  const authorId = data?.authorId;
+  const wallId = event.params.wallId;
+  if (!authorId || authorId === wallId) return;
+  // considera como interação social também, mas usa mesma conquista de comentário para cobrir "Comentou no perfil"
+  try {
+    const ach = getAchievements();
+    if (ach) await ach.awardAchievement(authorId, 'common_commented_profile');
+  } catch {}
+});
+
+// Helpers para incrementar contadores (eventos, dkp, amigos, streams)
+exports.grantEventAttendanceAchievement = async (uid) => {
+  try {
+    const ach = getAchievements();
+    if (!ach) return;
+    await ach.handleSingleTrigger(uid, 'event_attended'); // common_event_1
+    await ach.incrementStatAndCheck(uid, 'event_attended');
+  } catch (e) { console.error('[ach grantEvent]', e.message); }
+};
+
+// Wrap confirmAttendance para premiar após sucesso – monkey patch via trigger em confirmations
+exports.achievementOnEventConfirmation = onDocumentCreated('guild_events/{eventId}/confirmations/{userId}', async (event) => {
+  const uid = event.params.userId;
+  try {
+    const ach = getAchievements();
+    if (!ach) return;
+    await ach.handleSingleTrigger(uid, 'event_attended');
+    await ach.incrementStatAndCheck(uid, 'event_attended');
+  } catch (e) { console.error('[ach eventConfirmation]', e.message); }
+});
+
+// Stubs callable para DKP / amigos / streams (serão chamados pelo futuro sistema)
+exports.recordDkpLoot = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+  const uid = context.auth.uid;
+  const ach = getAchievements();
+  if (!ach) return { success: true };
+  await ach.handleSingleTrigger(uid, 'dkp_loot');
+  await ach.incrementStatAndCheck(uid, 'dkp_loot');
+  return { success: true };
+});
+exports.recordFriendAdded = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+  const uid = context.auth.uid;
+  const ach = getAchievements();
+  if (!ach) return { success: true };
+  await ach.handleSingleTrigger(uid, 'friend_added');
+  await ach.incrementStatAndCheck(uid, 'friend_added');
+  return { success: true };
+});
+exports.recordLivestream = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+  const uid = context.auth.uid;
+  const { platform } = data ?? {};
+  // platform: twitch/kick/youtube – reservado para futura validação via API externa
+  const ach = getAchievements();
+  if (!ach) return { success: true, platform: platform ?? null };
+  await ach.handleSingleTrigger(uid, 'livestream');
+  await ach.incrementStatAndCheck(uid, 'livestream');
+  return { success: true, platform: platform ?? null };
+});
+// Endpoint para consultar progresso (útil para debug e UI)
+exports.getMyAchievements = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+  const uid = context.auth.uid;
+  const [achSnap, statsSnap] = await Promise.all([
+    admin.firestore().collection(`users/${uid}/achievements`).get(),
+    admin.firestore().doc(`users/${uid}/stats/counters`).get(),
+  ]);
+  const unlocked = achSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const counters = statsSnap.exists ? statsSnap.data() : {};
+  return { unlocked, counters };
 });
 
 // ============ ANÁLISES ============

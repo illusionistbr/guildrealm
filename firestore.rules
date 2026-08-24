@@ -71,6 +71,19 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Estatísticas de conquistas: contadores cumulativos (events, dkp, friends, streams)
+    // Escrita apenas via Cloud Functions (awardAchievement)
+    match /users/{userId}/stats/{statId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // Conquistas desbloqueadas por usuário
+    match /users/{userId}/achievements/{achievementId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isStaff());
+      allow write: if false;
+    }
+
     // ============ MURAL DO PERFIL ============
     // Recados no mural de um usuário. Qualquer usuário logado pode publicar,
     // reagir e comentar; autor ou dono do mural podem excluir.
