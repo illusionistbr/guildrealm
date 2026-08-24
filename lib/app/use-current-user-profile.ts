@@ -28,6 +28,8 @@ export type UserProfileData = {
   email?: string;
   displayName?: string;
   nickname?: string;
+  nicknameChanged?: boolean;
+  nicknameChangedAt?: { seconds: number; nanoseconds?: number } | null;
   bio?: string;
   photoURL?: string | null;
   coverUrl?: string | null;

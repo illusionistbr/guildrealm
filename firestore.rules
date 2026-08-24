@@ -34,13 +34,33 @@ service cloud.firestore {
 
     // ============ USUARIOS ============
     // Atualização pelo próprio usuário limitada aos campos do perfil;
-    // campos sensíveis (email, xp, role, premium, nickname...) exigem staff.
+    // campos sensíveis (email, xp, role, premium...) exigem staff.
+    // Nickname (URL /profile/{nickname}) pode ser alterado UMA única vez.
+    function isValidNickname(nick) {
+      return nick is string
+        && nick.size() >= 3
+        && nick.size() <= 32
+        && nick.matches('^[a-z0-9_-]{3,32}$');
+    }
+    function canChangeNickname() {
+      return !('nicknameChanged' in resource.data)
+        || resource.data.nicknameChanged == false
+        || resource.data.nicknameChanged == null;
+    }
     function isOwnProfileFieldUpdate() {
-      return request.resource.data.diff(resource.data).affectedKeys()
-        .hasOnly([
-          'displayName', 'bio', 'socialLinks', 'visibility',
-          'photoURL', 'coverUrl', 'updatedAt',
-        ]);
+      let keys = request.resource.data.diff(resource.data).affectedKeys();
+      let changingNickname = keys.hasAny(['nickname']);
+      let changingFlag = keys.hasAny(['nicknameChanged']);
+      let changingFlagAt = keys.hasAny(['nicknameChangedAt']);
+      return ( !changingNickname
+               || (canChangeNickname() && isValidNickname(request.resource.data.nickname)) )
+          && !(changingFlag && !changingNickname)
+          && !(changingFlagAt && !changingNickname)
+          && keys.hasOnly([
+               'displayName', 'bio', 'socialLinks', 'visibility',
+               'photoURL', 'coverUrl', 'updatedAt',
+               'nickname', 'nicknameChanged', 'nicknameChangedAt',
+             ]);
     }
 
     match /users/{userId} {

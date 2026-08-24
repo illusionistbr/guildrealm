@@ -207,6 +207,7 @@ exports.createUserProfile = callable(async (data, context) => {
       displayName: displayName ?? '',
       nickname,
       photoURL: photoURL ?? null,
+      nicknameChanged: false,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       isActive: true,
       xp: 0,
@@ -216,7 +217,47 @@ exports.createUserProfile = callable(async (data, context) => {
     { merge: true }
   );
 
-  return { success: true };
+  return { success: true, nickname };
+});
+
+// Nickname pode ser alterado UMA única vez. Valida formato, unicidade
+// e janela de alteração (nicknameChanged == false/null).
+exports.updateProfileNickname = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+  const uid = context.auth.uid;
+  const raw = typeof data?.nickname === 'string' ? data.nickname.trim().toLowerCase() : '';
+  if (!/^[a-z0-9_-]{3,32}$/.test(raw)) {
+    throw new CallableError('invalid-argument', 'Nickname must be 3-32 chars: a-z, 0-9, _ or -');
+  }
+
+  const userRef = admin.firestore().collection('users').doc(uid);
+  const snap = await userRef.get();
+  if (!snap.exists) throw new CallableError('not-found', 'Profile not found');
+  const profile = snap.data() || {};
+  if (profile.nicknameChanged === true) {
+    throw new CallableError('failed-precondition', 'Nickname can only be changed once');
+  }
+  if (profile.nickname === raw) {
+    throw new CallableError('already-exists', 'This is already your nickname');
+  }
+
+  // Unicidade: verifica se outro usuário já usa o nickname
+  const clash = await admin.firestore().collection('users').where('nickname', '==', raw).limit(1).get();
+  if (!clash.empty && clash.docs[0].id !== uid) {
+    throw new CallableError('already-exists', 'Nickname already taken');
+  }
+
+  await userRef.set(
+    {
+      nickname: raw,
+      nicknameChanged: true,
+      nicknameChangedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+
+  return { success: true, nickname: raw };
 });
 
 // ============ PROTEÇÃO DE CADASTRO (Honeypot → Rate Limit → Turnstile) ============

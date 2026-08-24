@@ -8,14 +8,16 @@ import {
   doc,
   getDoc,
   serverTimestamp,
-  updateDoc,
+  setDoc,
 } from 'firebase/firestore';
 import {
   getDownloadURL,
   ref as storageRef,
   uploadBytes,
 } from 'firebase/storage';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
+  getFirebaseApp,
   getFirebaseAuth,
   getFirebaseDb,
   getFirebaseStorage,
@@ -85,6 +87,7 @@ function SocialIcon({ platform, size = 14 }: { platform: string; size?: number }
 type UserDocData = {
   displayName?: string;
   nickname?: string;
+  nicknameChanged?: boolean;
   bio?: string;
   socialLinks?: Record<string, string>;
   visibility?: Partial<ProfileVisibility>;
@@ -124,6 +127,8 @@ export default function ProfilePage() {
   // Campos do formulário
   const [displayName, setDisplayName] = useState('');
   const [nickname, setNickname] = useState('');
+  const [originalNickname, setOriginalNickname] = useState('');
+  const [nicknameChanged, setNicknameChanged] = useState(false);
   const [bio, setBio] = useState('');
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
   const [visibility, setVisibility] =
@@ -179,8 +184,11 @@ export default function ProfilePage() {
           user.displayName?.trim() ||
           user.email?.split('@')[0] ||
           '';
+        const currentNick = data.nickname?.trim() || slugify(name);
         setDisplayName(name);
-        setNickname(data.nickname?.trim() || slugify(name));
+        setNickname(currentNick);
+        setOriginalNickname(currentNick);
+        setNicknameChanged(data.nicknameChanged === true);
         setBio(data.bio ?? '');
         setSocialLinks(sanitizeSocialLinks(data.socialLinks));
         setVisibility({ ...DEFAULT_VISIBILITY, ...(data.visibility ?? {}) });
@@ -265,6 +273,20 @@ export default function ProfilePage() {
       return;
     }
 
+    // Validação de nickname se foi alterado
+    const trimmedNickname = nickname.trim().toLowerCase();
+    const nicknameDirty = trimmedNickname !== originalNickname;
+    if (nicknameDirty) {
+      if (nicknameChanged) {
+        setSaveError('A URL do perfil só pode ser alterada uma única vez.');
+        return;
+      }
+      if (!/^[a-z0-9_-]{3,32}$/.test(trimmedNickname)) {
+        setSaveError('Nickname deve ter 3-32 caracteres: letras minúsculas, números, _ ou -.');
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       let finalPhotoURL: string | null = avatarUrl;
@@ -289,15 +311,48 @@ export default function ProfilePage() {
         );
       }
 
-      await updateDoc(doc(getFirebaseDb(), COLLECTIONS.USERS, authUser.uid), {
-        displayName: name,
-        bio: bio.trim().slice(0, 300),
-        socialLinks: sanitizeSocialLinks(socialLinks),
-        visibility,
-        photoURL: finalPhotoURL,
-        coverUrl: finalCoverUrl,
-        updatedAt: serverTimestamp(),
-      });
+      // Se nickname mudou, chama Cloud Function primeiro (valida unicidade + single-change no servidor)
+      if (nicknameDirty) {
+        const fn = httpsCallable<{ nickname: string }, { success: boolean; nickname: string }>(
+          getFunctions(getFirebaseApp()),
+          'updateProfileNickname',
+        );
+        try {
+          await fn({ nickname: trimmedNickname });
+        } catch (nickErr: unknown) {
+          const errObj = nickErr as { code?: string; message?: string };
+          // Mapeia erros da Function para mensagem amigável
+          if (errObj.code === 'functions/already-exists' || /already/i.test(errObj.message ?? '')) {
+            if (/taken/i.test(errObj.message ?? '')) {
+              throw Object.assign(new Error('Este nickname já está em uso. Escolha outro.'), { code: 'nickname-taken' });
+            }
+            if (/already your nickname/i.test(errObj.message ?? '')) {
+              // não é erro real, segue
+            } else {
+              throw Object.assign(new Error('Este nickname já está em uso. Escolha outro.'), { code: 'nickname-taken' });
+            }
+          } else if (errObj.code === 'functions/failed-precondition' || /once/i.test(errObj.message ?? '')) {
+            throw Object.assign(new Error('A URL do perfil só pode ser alterada uma única vez.'), { code: 'nickname-once' });
+          } else if (errObj.code === 'functions/invalid-argument') {
+            throw Object.assign(new Error('Nickname inválido. Use 3-32 caracteres: a-z, 0-9, _ ou -.'), { code: 'nickname-invalid' });
+          }
+          throw nickErr;
+        }
+      }
+
+      await setDoc(
+        doc(getFirebaseDb(), COLLECTIONS.USERS, authUser.uid),
+        {
+          displayName: name,
+          bio: bio.trim().slice(0, 300),
+          socialLinks: sanitizeSocialLinks(socialLinks),
+          visibility,
+          photoURL: finalPhotoURL,
+          coverUrl: finalCoverUrl,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      );
 
       // Mantém o displayName do Auth sincronizado (usado como fallback no app)
       const authCurrentUser = getFirebaseAuth().currentUser;
@@ -313,17 +368,30 @@ export default function ProfilePage() {
       setPendingCoverFile(null);
       setAvatarUrl(finalPhotoURL);
       setCoverUrl(finalCoverUrl);
+      if (nicknameDirty) {
+        setNickname(trimmedNickname);
+        setOriginalNickname(trimmedNickname);
+        setNicknameChanged(true);
+      }
       setSavedFlash(true);
       if (savedFlashTimer.current) clearTimeout(savedFlashTimer.current);
       savedFlashTimer.current = setTimeout(() => setSavedFlash(false), 2500);
     } catch (err) {
+      console.error('[profile save] error:', err);
       const code = (err as { code?: string })?.code ?? '';
+      const msg = (err as { message?: string })?.message ?? '';
       if (code.startsWith('storage/')) {
         setSaveError(
           'Falha no envio da imagem. Verifique formato/tamanho e tente novamente.',
         );
+      } else if (code === 'nickname-taken' || code === 'nickname-once' || code === 'nickname-invalid') {
+        setSaveError(msg);
+      } else if (code === 'permission-denied' || /permission/i.test(msg)) {
+        setSaveError('Permissão negada ao salvar. Recarregue a página e tente novamente.');
+      } else if (code === 'not-found' || /not-found/i.test(code)) {
+        setSaveError('Perfil não encontrado. Recarregue a página.');
       } else {
-        setSaveError('Não foi possível salvar o perfil. Tente novamente.');
+        setSaveError(msg && msg.length < 120 ? msg : 'Não foi possível salvar o perfil. Tente novamente.');
       }
     } finally {
       setSaving(false);
@@ -532,11 +600,16 @@ export default function ProfilePage() {
               <label className="flex items-center gap-1.5 text-sm text-muted mb-1.5">
                 Nickname (URL do perfil)
                 <span className="group relative inline-flex">
-                  <Lock size={12} className="text-muted" />
-                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-[11px] text-yellow-300 whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-lg">
-                    Definido no cadastro. Não pode ser alterado.
+                  <Lock size={12} className={nicknameChanged ? 'text-red-400' : 'text-amber-300'} />
+                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-[11px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-lg max-w-[260px] leading-snug"
+                    style={{ color: nicknameChanged ? '#fca5a5' : '#fde68a' }}>
+                    {nicknameChanged
+                      ? 'Você já alterou sua URL uma vez. Não pode alterar novamente.'
+                      : 'Você pode alterar sua URL uma única vez. Use 3-32 caracteres: a-z, 0-9, _ ou -.'}
                   </span>
                 </span>
+                {nicknameChanged && <span className="text-[11px] text-red-400">· já alterado</span>}
+                {!nicknameChanged && nickname.trim().toLowerCase() !== originalNickname && <span className="text-[11px] text-amber-300">· será alterado ao salvar</span>}
               </label>
               <div className="flex items-center h-10">
                 <span className="text-muted text-sm bg-[#0a1122] border border-r-0 border-[rgba(38,51,86,0.5)] rounded-l-lg px-3 h-full flex items-center whitespace-nowrap">
@@ -545,10 +618,24 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   value={nickname}
-                  readOnly
-                  className="flex-1 h-10 px-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-r-lg text-sm text-muted cursor-not-allowed"
+                  readOnly={nicknameChanged}
+                  disabled={nicknameChanged}
+                  maxLength={32}
+                  placeholder="seu-nickname"
+                  onChange={(e) => setNickname(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+                  className={cn(
+                    'flex-1 h-10 px-3 border rounded-r-lg text-sm focus:outline-none transition-colors',
+                    nicknameChanged
+                      ? 'bg-[#0a1122] border-[rgba(38,51,86,0.5)] text-muted cursor-not-allowed'
+                      : 'bg-[#0a1122] border-[rgba(38,51,86,0.5)] text-white focus:border-accent/50 placeholder-muted',
+                  )}
                 />
               </div>
+              {!nicknameChanged && (
+                <p className="text-[11px] text-muted/70 mt-1.5">
+                  Pode alterar <b className="text-amber-300">uma única vez</b>. Após salvar, a alteração não poderá ser desfeita.
+                </p>
+              )}
             </div>
           </div>
 
