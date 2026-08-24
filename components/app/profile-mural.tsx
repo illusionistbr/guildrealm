@@ -246,7 +246,7 @@ function MuralPostItem({
   const [actionError, setActionError] = useState('');
 
   useEffect(() => {
-    const base = collection(
+    const postDocRef = doc(
       getFirebaseDb(),
       'users',
       targetUserId,
@@ -255,14 +255,14 @@ function MuralPostItem({
     );
 
     const unsubReactions = onSnapshot(
-      collection(base, 'reactions'),
+      collection(postDocRef, 'reactions'),
       (snap) =>
         setReactions(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as MuralReaction)),
       () => {},
     );
 
     const unsubComments = onSnapshot(
-      query(collection(base, 'comments'), orderBy('createdAt', 'asc')),
+      query(collection(postDocRef, 'comments'), orderBy('createdAt', 'asc')),
       (snap) =>
         setComments(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as MuralComment)),
       () => {},
