@@ -18,11 +18,25 @@ import {
   ShieldOff,
   Loader2,
   X,
+  Calendar,
+  Swords,
 } from 'lucide-react';
 
 type ActivityEntry = {
   id: string;
-  type: 'join' | 'leave' | 'kick' | 'ban' | 'rank_change' | 'status_change';
+  type:
+    | 'join'
+    | 'leave'
+    | 'kick'
+    | 'ban'
+    | 'rank_change'
+    | 'status_change'
+    | 'event_created'
+    | 'event_updated'
+    | 'event_deleted'
+    | 'group_created'
+    | 'group_updated'
+    | 'group_deleted';
   userId: string;
   characterId: string;
   characterName: string;
@@ -38,6 +52,12 @@ const typeLabels: Record<string, string> = {
   ban: 'Banimento',
   rank_change: 'Alteração de cargo',
   status_change: 'Ativar/Inativar',
+  event_created: 'Criou evento',
+  event_updated: 'Editou evento',
+  event_deleted: 'Excluiu evento',
+  group_created: 'Criou grupo',
+  group_updated: 'Editou grupo',
+  group_deleted: 'Excluiu grupo',
 };
 
 const typeOptions: { value: string; label: string }[] = [
@@ -48,6 +68,12 @@ const typeOptions: { value: string; label: string }[] = [
   { value: 'ban', label: 'Banimento' },
   { value: 'rank_change', label: 'Alteração de cargo' },
   { value: 'status_change', label: 'Ativar/Inativar' },
+  { value: 'event_created', label: 'Criou evento' },
+  { value: 'event_updated', label: 'Editou evento' },
+  { value: 'event_deleted', label: 'Excluiu evento' },
+  { value: 'group_created', label: 'Criou grupo' },
+  { value: 'group_updated', label: 'Editou grupo' },
+  { value: 'group_deleted', label: 'Excluiu grupo' },
 ];
 
 const iconForType: Record<string, React.ElementType> = {
@@ -57,6 +83,12 @@ const iconForType: Record<string, React.ElementType> = {
   ban: Ban,
   rank_change: ArrowUpDown,
   status_change: Shield,
+  event_created: Calendar,
+  event_updated: CalendarDays,
+  event_deleted: X,
+  group_created: Swords,
+  group_updated: Swords,
+  group_deleted: X,
 };
 
 const colorForType: Record<string, string> = {
@@ -66,6 +98,12 @@ const colorForType: Record<string, string> = {
   ban: 'text-red-400 bg-red-500/10 border-red-500/20',
   rank_change: 'text-accent bg-accent/10 border-accent/20',
   status_change: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+  event_created: 'text-violet-300 bg-violet-500/10 border-violet-500/20',
+  event_updated: 'text-violet-300 bg-violet-500/10 border-violet-500/20',
+  event_deleted: 'text-red-300 bg-red-500/10 border-red-500/20',
+  group_created: 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20',
+  group_updated: 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20',
+  group_deleted: 'text-red-300 bg-red-500/10 border-red-500/20',
 };
 
 function toDate(ts: ActivityEntry['createdAt']): Date | null {
@@ -261,6 +299,54 @@ export function GuildAuditView({
           </>
         );
       }
+      case 'event_created':
+        return (
+          <>
+            <span className="text-white font-medium">{actor}</span>
+            <span className="text-muted"> criou evento </span>
+            <span className="text-white font-medium">“{target}”</span>
+          </>
+        );
+      case 'event_updated':
+        return (
+          <>
+            <span className="text-white font-medium">{actor}</span>
+            <span className="text-muted"> editou evento </span>
+            <span className="text-white font-medium">“{target}”</span>
+          </>
+        );
+      case 'event_deleted':
+        return (
+          <>
+            <span className="text-white font-medium">{actor}</span>
+            <span className="text-muted"> excluiu evento </span>
+            <span className="text-white font-medium">“{target}”</span>
+          </>
+        );
+      case 'group_created':
+        return (
+          <>
+            <span className="text-white font-medium">{actor}</span>
+            <span className="text-muted"> criou grupo </span>
+            <span className="text-white font-medium">“{target}”</span>
+          </>
+        );
+      case 'group_updated':
+        return (
+          <>
+            <span className="text-white font-medium">{actor}</span>
+            <span className="text-muted"> editou grupo </span>
+            <span className="text-white font-medium">“{target}”</span>
+          </>
+        );
+      case 'group_deleted':
+        return (
+          <>
+            <span className="text-white font-medium">{actor}</span>
+            <span className="text-muted"> excluiu grupo </span>
+            <span className="text-white font-medium">“{target}”</span>
+          </>
+        );
       default:
         return (
           <>

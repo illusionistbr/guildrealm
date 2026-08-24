@@ -16,7 +16,7 @@ import {
   serverTimestamp,
   Timestamp,
 } from 'firebase/firestore';
-import { getFirebaseDb } from '@/lib/admin/firebase/client';
+import { getFirebaseDb, getFirebaseAuth } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import {
   GuildCalendarEvent,
@@ -130,7 +130,8 @@ export function useGuildEvents(guildId: string | null) {
 
   const updateEvent = useCallback(
     async (eventId: string, data: Partial<GuildCalendarEvent>) => {
-      const updateData: Record<string, unknown> = { updatedAt: serverTimestamp() };
+      const uid = getFirebaseAuth().currentUser?.uid ?? 'sistema';
+      const updateData: Record<string, unknown> = { updatedAt: serverTimestamp(), updatedBy: uid };
       if (data.title !== undefined) updateData.title = data.title;
       if (data.description !== undefined) updateData.description = data.description;
       if (data.type !== undefined) updateData.type = data.type;

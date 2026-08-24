@@ -15,7 +15,7 @@ import {
   serverTimestamp,
   writeBatch,
 } from 'firebase/firestore';
-import { getFirebaseApp, getFirebaseDb } from '@/lib/admin/firebase/client';
+import { getFirebaseApp, getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { GuildGroup, GroupMemberEntry, GuildRole, GuildPreset, GuildRank, DEFAULT_ROLES, DEFAULT_RANKS, type RecruitmentSettings, type ApplicationAnswer } from './types';
 
@@ -442,12 +442,14 @@ export function useGuildGroups(guildId: string | null) {
       const gid = guildIdRef.current;
       if (!gid) throw new Error('no-guild');
       const existing = await getDocs(query(groupsCol(gid)));
+      const uid = getFirebaseAuth().currentUser?.uid ?? 'sistema';
       const ref = await addDoc(groupsCol(gid), {
         ...data,
         guildId: gid,
         position: existing.size,
         memberCount: 0,
-        createdBy: 'user',
+        createdBy: uid,
+        updatedBy: uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -463,8 +465,10 @@ export function useGuildGroups(guildId: string | null) {
     ) => {
       const gid = guildIdRef.current;
       if (!gid) return;
+      const uid = getFirebaseAuth().currentUser?.uid ?? 'sistema';
       await updateDoc(groupDoc(gid, groupId), {
         ...data,
+        updatedBy: uid,
         updatedAt: serverTimestamp(),
       });
     },

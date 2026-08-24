@@ -1,5 +1,5 @@
 const { onRequest } = require('firebase-functions/v2/https');
-const { onDocumentCreated, onDocumentWritten, onDocumentDeleted } = require('firebase-functions/v2/firestore');
+const { onDocumentCreated, onDocumentWritten, onDocumentDeleted, onDocumentUpdated } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { onInit } = require('firebase-functions/v2/core');
 const admin = require('firebase-admin');
@@ -1960,6 +1960,106 @@ exports.recordLivestream = callable(async (data, context) => {
   await ach.incrementStatAndCheck(uid, 'livestream');
   return { success: true, platform: platform ?? null };
 });
+// ============ AUDITORIA: eventos e grupos (criar/editar/excluir) ============
+// Evento criado
+exports.auditEventCreated = onDocumentCreated('guild_events/{eventId}', async (event) => {
+  const data = event.data?.data();
+  if (!data) return;
+  const guildId = data.guildId;
+  if (!guildId) return;
+  const actorId = data.createdBy || data.updatedBy || 'sistema';
+  const title = data.title || data.type || 'evento';
+  await logGuildActivity(guildId, {
+    type: 'event_created',
+    userId: actorId,
+    characterId: event.params.eventId,
+    characterName: String(title).slice(0, 80),
+    details: { eventId: event.params.eventId, title },
+  });
+});
+// Evento editado (detecta título/tipo/status alterado)
+exports.auditEventUpdated = onDocumentUpdated('guild_events/{eventId}', async (event) => {
+  const before = event.data?.before?.data();
+  const after = event.data?.after?.data();
+  if (!before || !after) return;
+  const guildId = after.guildId || before.guildId;
+  if (!guildId) return;
+  // só loga se campos relevantes mudaram
+  const changed = ['title', 'type', 'status', 'start', 'end', 'location', 'maxParticipants'].some(
+    (k) => JSON.stringify(before[k] ?? null) !== JSON.stringify(after[k] ?? null),
+  );
+  if (!changed) return;
+  const actorId = after.updatedBy || after.createdBy || before.createdBy || 'sistema';
+  const title = after.title || after.type || 'evento';
+  await logGuildActivity(guildId, {
+    type: 'event_updated',
+    userId: actorId,
+    characterId: event.params.eventId,
+    characterName: String(title).slice(0, 80),
+    details: { eventId: event.params.eventId, title },
+  });
+});
+exports.auditEventDeleted = onDocumentDeleted('guild_events/{eventId}', async (event) => {
+  const data = event.data?.data();
+  if (!data) return;
+  const guildId = data.guildId;
+  if (!guildId) return;
+  const title = data.title || data.type || 'evento';
+  await logGuildActivity(guildId, {
+    type: 'event_deleted',
+    userId: data.createdBy || 'sistema',
+    characterId: event.params.eventId,
+    characterName: String(title).slice(0, 80),
+    details: { eventId: event.params.eventId, title },
+  });
+});
+
+// Grupo criado
+exports.auditGroupCreated = onDocumentCreated('guilds/{guildId}/groups/{groupId}', async (event) => {
+  const data = event.data?.data();
+  const guildId = event.params.guildId;
+  const name = data?.name || data?.title || 'grupo';
+  const actorId = data?.createdBy || data?.updatedBy || data?.ownerId || 'sistema';
+  await logGuildActivity(guildId, {
+    type: 'group_created',
+    userId: actorId,
+    characterId: event.params.groupId,
+    characterName: String(name).slice(0, 80),
+    details: { groupId: event.params.groupId, name },
+  });
+});
+exports.auditGroupUpdated = onDocumentUpdated('guilds/{guildId}/groups/{groupId}', async (event) => {
+  const before = event.data?.before?.data();
+  const after = event.data?.after?.data();
+  if (!before || !after) return;
+  const changed = ['name', 'title', 'maxPlayers', 'maxMembers', 'description', 'position'].some(
+    (k) => JSON.stringify(before[k] ?? null) !== JSON.stringify(after[k] ?? null),
+  );
+  if (!changed) return;
+  const guildId = event.params.guildId;
+  const name = after.name || after.title || 'grupo';
+  const actorId = after.updatedBy || after.createdBy || before.createdBy || 'sistema';
+  await logGuildActivity(guildId, {
+    type: 'group_updated',
+    userId: actorId,
+    characterId: event.params.groupId,
+    characterName: String(name).slice(0, 80),
+    details: { groupId: event.params.groupId, name },
+  });
+});
+exports.auditGroupDeleted = onDocumentDeleted('guilds/{guildId}/groups/{groupId}', async (event) => {
+  const data = event.data?.data();
+  const guildId = event.params.guildId;
+  const name = data?.name || data?.title || 'grupo';
+  await logGuildActivity(guildId, {
+    type: 'group_deleted',
+    userId: data?.updatedBy || data?.createdBy || 'sistema',
+    characterId: event.params.groupId,
+    characterName: String(name).slice(0, 80),
+    details: { groupId: event.params.groupId, name },
+  });
+});
+
 // Endpoint para consultar progresso (útil para debug e UI)
 exports.getMyAchievements = callable(async (data, context) => {
   if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
