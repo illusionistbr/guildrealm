@@ -20,7 +20,6 @@ import {
   LogOut,
   Menu,
   Bell,
-  Search,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -29,7 +28,6 @@ import {
 
 const navItems: { label: string; href: string; icon: LucideIcon }[] = [
   { label: 'Visão Geral', href: '/app/dashboard', icon: LayoutDashboard },
-  { label: 'Guildas', href: '/app/guilds', icon: Shield },
   { label: 'Conquistas', href: '/app/achievements', icon: Trophy },
   { label: 'Eventos', href: '/app/events', icon: Calendar },
   { label: 'Perfil', href: '/app/profile', icon: User },
@@ -181,9 +179,11 @@ function SidebarItem({
 
 function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [signingOut, setSigningOut] = useState(false);
   const { fbUser, profile, loading } = useCurrentUserProfile();
   const nickname = profileNickname(profile);
+  const isGuildsActive = pathname === '/app/guilds' || pathname.startsWith('/app/guilds/');
 
   const handleSignOut = async () => {
     if (signingOut) return;
@@ -212,14 +212,17 @@ function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }) {
           <Menu size={20} />
         </button>
 
-        <div className="relative hidden md:block">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input
-            type="text"
-            placeholder="Buscar guildas, jogadores..."
-            className="w-72 h-9 pl-9 pr-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
-          />
-        </div>
+        <Link
+          href="/app/guilds"
+          className={cn(
+            'hidden md:flex items-center gap-2 h-9 px-4 rounded-lg border text-sm font-medium transition-all',
+            isGuildsActive
+              ? 'bg-accent/15 text-white border-accent/30'
+              : 'text-muted hover:text-white hover:bg-[rgba(109,40,217,0.08)] border-transparent hover:border-[rgba(38,51,86,0.5)]',
+          )}
+        >
+          <Shield size={16} className={isGuildsActive ? 'text-accent' : ''} /> Guildas
+        </Link>
       </div>
 
       <div className="flex items-center gap-3">
