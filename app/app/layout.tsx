@@ -14,7 +14,6 @@ import {
   LayoutDashboard,
   Shield,
   Trophy,
-  Calendar,
   User,
   Settings,
   LogOut,
@@ -29,7 +28,6 @@ import {
 const navItems: { label: string; href: string; icon: LucideIcon }[] = [
   { label: 'Visão Geral', href: '/app/dashboard', icon: LayoutDashboard },
   { label: 'Conquistas', href: '/app/achievements', icon: Trophy },
-  { label: 'Eventos', href: '/app/events', icon: Calendar },
   { label: 'Perfil', href: '/app/profile', icon: User },
   { label: 'Configurações', href: '/app/settings', icon: Settings },
 ];
