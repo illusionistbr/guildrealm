@@ -12,6 +12,7 @@ const fadeUp = {
 type Promotion = {
   id: string;
   partner: string;
+  category: string;
   title: string;
   description: string;
   discount: string;
@@ -27,6 +28,7 @@ const promotions: Promotion[] = [
   {
     id: '1',
     partner: 'ExitLag',
+    category: 'Otimizador de conexão',
     title: 'Ping baixo, vitória garantida',
     description: 'Melhore o ping no seu MMORPG favorito. Domine o PvP.',
     discount: '54% OFF anual • 34% OFF trimestral',
@@ -40,6 +42,7 @@ const promotions: Promotion[] = [
   {
     id: '2',
     partner: 'Nuuvem',
+    category: 'Loja de jogos',
     title: 'Aion 2 — Pacote Fundador com desconto',
     description: 'Garanta itens exclusivos de pré-venda com preço especial para membros ClanForge.',
     discount: '20% OFF',
@@ -52,6 +55,7 @@ const promotions: Promotion[] = [
   {
     id: '3',
     partner: 'HyperX',
+    category: 'Periféricos',
     title: 'Setup lendário com preço épico',
     description: 'Headsets, teclados e mouses gamer com frete grátis e parcelamento em 12x.',
     discount: 'Até 25% OFF',
@@ -63,6 +67,7 @@ const promotions: Promotion[] = [
   {
     id: '4',
     partner: 'Discord Nitro',
+    category: 'Comunicação',
     title: 'Turbo para sua guilda',
     description: '3 meses de Nitro grátis para impulsionar o servidor da sua guilda.',
     discount: '3 meses grátis',
@@ -74,6 +79,7 @@ const promotions: Promotion[] = [
   {
     id: '5',
     partner: 'Logitech G',
+    category: 'Periféricos',
     title: 'Precisão de campeão',
     description: 'Combo G502 + G915 com desconto progressivo para guildas ClanForge.',
     discount: 'R$ 400 OFF',
@@ -86,6 +92,7 @@ const promotions: Promotion[] = [
   {
     id: '6',
     partner: 'Opera GX',
+    category: 'Navegador gamer',
     title: 'Navegador feito para gamers',
     description: 'Controle RAM, CPU e integre Twitch/Discord direto no navegador.',
     discount: 'Recompensa exclusiva',
@@ -96,8 +103,11 @@ const promotions: Promotion[] = [
   },
 ];
 
+const categories = ['Todas', ...Array.from(new Set(promotions.map((p) => p.category)))] as const;
+
 export default function PromotionsPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>('Todas');
 
   const handleCopy = async (e: React.MouseEvent, promo: Promotion) => {
     e.preventDefault();
@@ -162,8 +172,27 @@ export default function PromotionsPage() {
         </span>
       </motion.div>
 
+      {/* Categories */}
+      <motion.div variants={fadeUp} className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`shrink-0 px-4 py-2 rounded-full text-xs font-medium border transition-all ${
+              activeCategory === cat
+                ? 'bg-accent border-accent text-white shadow-[0_0_15px_rgba(139,92,246,0.3)]'
+                : 'bg-[rgba(19,29,48,0.6)] border-[rgba(38,51,86,0.5)] text-muted hover:text-white hover:border-accent/30'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </motion.div>
+
       {/* Featured */}
-      {promotions.filter((p) => p.featured).map((promo) => (
+      {promotions
+        .filter((p) => p.featured && (activeCategory === 'Todas' || p.category === activeCategory))
+        .map((promo) => (
         <motion.a
           key={promo.id}
           variants={fadeUp}
@@ -176,8 +205,11 @@ export default function PromotionsPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#050912] via-[#050912]/85 to-transparent" />
           <div className="relative flex flex-col md:flex-row md:items-center gap-6 p-6 md:p-8">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs px-2 py-1 rounded-full bg-white/10 border border-white/10 text-white/80">{promo.partner}</span>
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-white/80">{promo.partner}</span>
+                <span className="text-[11px] px-2.5 py-1 rounded-full bg-accent/15 border border-accent/30 text-accent font-medium">
+                  {promo.category}
+                </span>
                 {promo.expiresAt && (
                   <span className="text-xs text-muted flex items-center gap-1"><Clock3 size={11} />{promo.expiresAt}</span>
                 )}
@@ -214,7 +246,9 @@ export default function PromotionsPage() {
 
       {/* Grid */}
       <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {promotions.filter((p) => !p.featured).map((promo, i) => (
+        {promotions
+          .filter((p) => !p.featured && (activeCategory === 'Todas' || p.category === activeCategory))
+          .map((promo, i) => (
           <motion.a
             key={promo.id}
             href={promo.href}
@@ -239,13 +273,20 @@ export default function PromotionsPage() {
                   {promo.discount}
                 </span>
               </div>
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                <span className="text-xs font-medium text-white/90 bg-black/30 backdrop-blur px-2 py-1 rounded-full border border-white/10">
-                  {promo.partner}
-                </span>
-                <span className="text-[11px] text-white/70 flex items-center gap-1">
-                  <Clock3 size={11} /> {promo.expiresAt}
-                </span>
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-medium text-white/90 bg-black/30 backdrop-blur px-2 py-1 rounded-full border border-white/10">
+                    {promo.partner}
+                  </span>
+                  <span className="hidden sm:inline text-[10px] font-medium text-accent bg-accent/20 backdrop-blur px-2 py-1 rounded-full border border-accent/30">
+                    {promo.category}
+                  </span>
+                </div>
+                {promo.expiresAt && (
+                  <span className="text-[11px] text-white/70 flex items-center gap-1 shrink-0">
+                    <Clock3 size={11} /> {promo.expiresAt}
+                  </span>
+                )}
               </div>
             </div>
 
