@@ -1,4 +1,4 @@
-﻿{
+{
   "Header": {
     "resources": "Recursos",
     "games": "Juegos",
@@ -1385,6 +1385,34 @@
       {
         "value": "manageRecruitment",
         "label": "Gestionar reclutamiento"
+      },
+      {
+        "value": "viewLoot",
+        "label": "Ver Loot y DKP"
+      },
+      {
+        "value": "participateLoot",
+        "label": "Participar en subastas/sorteos"
+      },
+      {
+        "value": "createLoot",
+        "label": "Crear subastas/sorteos"
+      },
+      {
+        "value": "editLoot",
+        "label": "Editar loot"
+      },
+      {
+        "value": "cancelLoot",
+        "label": "Cancelar loot"
+      },
+      {
+        "value": "manageDkp",
+        "label": "Gestionar DKP"
+      },
+      {
+        "value": "manageLootSettings",
+        "label": "Gestionar configuración de Loot y DKP"
       }
     ],
     "assignRank": "Asignar cargo",
@@ -1509,7 +1537,9 @@
     "noUpcomingEvents": "Sin eventos programados.",
     "eventToday": "Hoy",
     "eventTomorrow": "Mañana",
-    "viewAll": "Ver todos"
+    "viewAll": "Ver todos",
+    "menuLoot": "Loot y DKP",
+    "lootSettingsTab": "Loot & DKP"
   },
   "GuildCalendar": {
     "today": "Hoy",
@@ -1577,7 +1607,10 @@
     "TOURNAMENT": "Torneo",
     "MEETING": "Reunión",
     "TRAINING": "Entrenamiento",
-    "OTHER": "Otro"
+    "OTHER": "Otro",
+    "dkpReward": "Recompensa DKP",
+    "dkpRewardHint": "DKP por participación. Deja 0 para sin recompensa. Pago automático al confirmar asistencia.",
+    "dkpRewardBadge": "DKP por asistencia"
   },
   "GuildGroups": {
     "tabGroups": "Grupos",
@@ -1835,5 +1868,106 @@
     "analysisRecommendationPlaceholder": "Da una recomendación final al jugador...",
     "analysisSaveReview": "Guardar análisis",
     "analysisSaved": "Análisis guardado"
+  },
+  "Promotions": {
+    "eyebrow": "Beneficios Exclusivos",
+    "title": "Promociones",
+    "subtitle": "Ofertas seleccionadas de nuestros socios para tu aventura. Cada banner lleva directo al descuento — usa el cupón cuando esté disponible y ahorra.",
+    "verified": "Socios verificados por ClanForge",
+    "exclusiveCoupons": "Cupones exclusivos",
+    "realDiscounts": "Descuentos reales",
+    "newPartners": "Nuevos socios cada semana",
+    "featured": "DESTACADO",
+    "coupon": "Cupón:",
+    "discount": "OFF",
+    "redeem": "Canjear oferta",
+    "openNewTab": "Abre en nueva pestaña",
+    "viewOffer": "Ver oferta",
+    "access": "Acceder",
+    "partnerTitle": "¿Quieres tu marca aquí?",
+    "partnerText": "Estamos abiertos a alianzas con marcas que mejoren la experiencia de los jugadores. Contáctanos y llega a miles de hermandades.",
+    "partnerCta": "Hablar con alianzas"
+  },
+  "Loot": {
+    "title": "Loot & DKP",
+    "subtitle": "Gestiona tu DKP, participa en subastas y compite por objetos de la hermandad.",
+    "myBalance": "Mi saldo",
+    "activeAuctions": "Subastas activas",
+    "activeRaffles": "Sorteos activos",
+    "totalDkp": "DKP total de la hermandad",
+    "tabsActive": "Activos",
+    "tabsUpcoming": "Próximos",
+    "tabsFinished": "Finalizados",
+    "tabsMyDkp": "Mi DKP",
+    "tabsManageLoot": "Gestionar Loot",
+    "tabsManageDkp": "Gestionar DKP",
+    "filterAll": "Todos",
+    "filterAuctions": "Subastas",
+    "filterRaffles": "Sorteos",
+    "empty": "No hay loot disponible por ahora. Cuando se creen nuevas subastas o sorteos, aparecerán aquí.",
+    "createLoot": "Crear Loot",
+    "chooseType": "Crear Loot — Elige tipo",
+    "auction": "Subasta",
+    "auctionHint": "La puja más alta gana",
+    "raffle": "Sorteo",
+    "raffleHint": "Tickets con DKP",
+    "createAuction": "Crear Subasta",
+    "createRaffle": "Crear Sorteo",
+    "switchType": "Cambiar tipo",
+    "itemName": "Nombre del objeto",
+    "itemImage": "URL de imagen (opcional)",
+    "itemDesc": "Descripción opcional",
+    "startsAt": "Inicio",
+    "endsAt": "Fin",
+    "startingBid": "Puja inicial",
+    "minIncrement": "Incremento mínimo",
+    "entryCost": "Coste por ticket DKP",
+    "allowMultiple": "Permitir múltiples tickets",
+    "maxPerUser": "Máx por personaje",
+    "eligibility": "Elegibilidad",
+    "allMembers": "Todos los miembros",
+    "specificClasses": "Clases específicas",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "requiredFields": "Rellena nombre y fechas",
+    "viewAuction": "VER SUBASTA",
+    "viewRaffle": "VER SORTEO",
+    "highestBid": "Puja más alta",
+    "bids": "pujas",
+    "endsIn": "Termina en",
+    "scheduled": "Programado",
+    "finished": "Finalizado",
+    "costPerTicket": "Coste/ticket",
+    "totalTickets": "Total tickets",
+    "winner": "Ganador",
+    "youHave": "Tienes",
+    "tickets": "tickets",
+    "buyTickets": "COMPRAR TICKETS",
+    "total": "Total",
+    "placeBid": "PUJAR",
+    "nextMin": "Próximo mínimo",
+    "currentBid": "Puja actual",
+    "highestBidder": "Mejor postor",
+    "bidHistory": "Historial",
+    "noBids": "Aún no hay pujas.",
+    "dkpBalance": "Tu DKP",
+    "timeLeft": "Tiempo restante",
+    "dkpReward": "Recompensa DKP",
+    "dkpRewardHint": "DKP por participación. Deja 0 para sin recompensa. Pago automático al confirmar asistencia.",
+    "dkpRewardBadge": "DKP por asistencia",
+    "manageLootSearch": "Buscar objeto...",
+    "noLoot": "No se encontró loot.",
+    "cancelLoot": "Cancelar",
+    "manageDkpTitle": "Gestionar DKP por personaje",
+    "add": "Añadir",
+    "remove": "Quitar",
+    "confirm": "Confirmar",
+    "reason": "Motivo",
+    "quantity": "Cantidad",
+    "historyTitle": "Últimos movimientos",
+    "noHistory": "Aún no hay movimientos.",
+    "balance": "Saldo",
+    "of": "de",
+    "dkp": "DKP"
   }
 }

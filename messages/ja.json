@@ -1,4 +1,4 @@
-﻿{
+{
   "Header": {
     "resources": "機能",
     "games": "ゲーム",
@@ -1385,6 +1385,34 @@
       {
         "value": "manageRecruitment",
         "label": "募集管理"
+      },
+      {
+        "value": "viewLoot",
+        "label": "Loot & DKPを表示"
+      },
+      {
+        "value": "participateLoot",
+        "label": "オークション/抽選に参加"
+      },
+      {
+        "value": "createLoot",
+        "label": "オークション/抽選を作成"
+      },
+      {
+        "value": "editLoot",
+        "label": "Lootを編集"
+      },
+      {
+        "value": "cancelLoot",
+        "label": "Lootをキャンセル"
+      },
+      {
+        "value": "manageDkp",
+        "label": "DKPを管理"
+      },
+      {
+        "value": "manageLootSettings",
+        "label": "Loot & DKP設定を管理"
       }
     ],
     "assignRank": "階級を割り当て",
@@ -1509,7 +1537,9 @@
     "noUpcomingEvents": "スケジュールされたイベントはありません。",
     "eventToday": "今日",
     "eventTomorrow": "明日",
-    "viewAll": "すべて見る"
+    "viewAll": "すべて見る",
+    "menuLoot": "Loot & DKP",
+    "lootSettingsTab": "Loot & DKP"
   },
   "GuildCalendar": {
     "today": "今日",
@@ -1577,7 +1607,10 @@
     "TOURNAMENT": "トーナメント",
     "MEETING": "会議",
     "TRAINING": "トレーニング",
-    "OTHER": "その他"
+    "OTHER": "その他",
+    "dkpReward": "DKP報酬",
+    "dkpRewardHint": "参加時のDKP。0は報酬なし。出欠確認時に自動付与。",
+    "dkpRewardBadge": "出欠DKP"
   },
   "GuildGroups": {
     "tabGroups": "グループ",
@@ -1835,5 +1868,106 @@
     "analysisRecommendationPlaceholder": "プレイヤーへの最終的な推奨事項を書いてください...",
     "analysisSaveReview": "レビューを保存",
     "analysisSaved": "レビューが保存されました"
+  },
+  "Promotions": {
+    "eyebrow": "限定特典",
+    "title": "プロモーション",
+    "subtitle": "あなたの冒険のためのパートナー厳選オファー。各バナーは割引へ直接つながります — クーポンを使って節約しましょう。",
+    "verified": "ClanForge認証パートナー",
+    "exclusiveCoupons": "限定クーポン",
+    "realDiscounts": "本物の割引",
+    "newPartners": "毎週新しいパートナー",
+    "featured": "注目",
+    "coupon": "クーポン:",
+    "discount": "OFF",
+    "redeem": "特典を利用",
+    "openNewTab": "新しいタブで開く",
+    "viewOffer": "オファーを見る",
+    "access": "アクセス",
+    "partnerTitle": "ブランドをここに掲載しませんか？",
+    "partnerText": "ゲーマー体験を高めるブランドとの提携を歓迎します。お問い合わせいただき、数千のギルドにリーチしましょう。",
+    "partnerCta": "提携に問い合わせる"
+  },
+  "Loot": {
+    "title": "Loot & DKP",
+    "subtitle": "DKPを管理し、オークションや抽選に参加しましょう。",
+    "myBalance": "残高",
+    "activeAuctions": "開催中のオークション",
+    "activeRaffles": "開催中の抽選",
+    "totalDkp": "ギルド合計DKP",
+    "tabsActive": "開催中",
+    "tabsUpcoming": " upcoming",
+    "tabsFinished": "終了",
+    "tabsMyDkp": "自分のDKP",
+    "tabsManageLoot": "Loot管理",
+    "tabsManageDkp": "DKP管理",
+    "filterAll": "すべて",
+    "filterAuctions": "オークション",
+    "filterRaffles": "抽選",
+    "empty": "現在利用可能なLootはありません。新しいオークションや抽選が作成されるとここに表示されます。",
+    "createLoot": "Lootを作成",
+    "chooseType": "Loot作成 — 種類を選択",
+    "auction": "オークション",
+    "auctionHint": "最高入札が勝利",
+    "raffle": "抽選",
+    "raffleHint": "DKPでチケット購入",
+    "createAuction": "オークション作成",
+    "createRaffle": "抽選作成",
+    "switchType": "種類を切替",
+    "itemName": "アイテム名",
+    "itemImage": "画像URL（任意）",
+    "itemDesc": "説明（任意）",
+    "startsAt": "開始",
+    "endsAt": "終了",
+    "startingBid": "開始入札額",
+    "minIncrement": "最小増分",
+    "entryCost": "チケット単価 DKP",
+    "allowMultiple": "複数チケット許可",
+    "maxPerUser": "キャラ毎最大",
+    "eligibility": "参加資格",
+    "allMembers": "全メンバー",
+    "specificClasses": "特定クラス",
+    "cancel": "キャンセル",
+    "create": "作成",
+    "requiredFields": "名前と日付を入力してください",
+    "viewAuction": "オークションを見る",
+    "viewRaffle": "抽選を見る",
+    "highestBid": "最高入札",
+    "bids": "入札",
+    "endsIn": "終了まで",
+    "scheduled": "予定",
+    "finished": "終了",
+    "costPerTicket": "チケット単価",
+    "totalTickets": "総チケット",
+    "winner": "勝者",
+    "youHave": "保有",
+    "tickets": "チケット",
+    "buyTickets": "チケット購入",
+    "total": "合計",
+    "placeBid": "入札",
+    "nextMin": "次回最小",
+    "currentBid": "現在の入札",
+    "highestBidder": "最高入札者",
+    "bidHistory": "履歴",
+    "noBids": "まだ入札がありません。",
+    "dkpBalance": "自分のDKP",
+    "timeLeft": "残り時間",
+    "dkpReward": "DKP報酬",
+    "dkpRewardHint": "参加時のDKP。0は報酬なし。出欠確認時に自動付与。",
+    "dkpRewardBadge": "出欠DKP",
+    "manageLootSearch": "アイテム検索...",
+    "noLoot": "Lootが見つかりません。",
+    "cancelLoot": "キャンセル",
+    "manageDkpTitle": "キャラ別DKP管理",
+    "add": "追加",
+    "remove": "削除",
+    "confirm": "確認",
+    "reason": "理由",
+    "quantity": "数量",
+    "historyTitle": "最近の取引",
+    "noHistory": "まだ取引がありません。",
+    "balance": "残高",
+    "of": "/",
+    "dkp": "DKP"
   }
 }

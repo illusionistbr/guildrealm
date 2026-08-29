@@ -1,4 +1,4 @@
-﻿{
+{
   "Header": {
     "resources": "功能",
     "games": "游戏",
@@ -1385,6 +1385,34 @@
       {
         "value": "manageRecruitment",
         "label": "管理招募"
+      },
+      {
+        "value": "viewLoot",
+        "label": "查看 Loot 与 DKP"
+      },
+      {
+        "value": "participateLoot",
+        "label": "参与拍卖/抽奖"
+      },
+      {
+        "value": "createLoot",
+        "label": "创建拍卖/抽奖"
+      },
+      {
+        "value": "editLoot",
+        "label": "编辑 Loot"
+      },
+      {
+        "value": "cancelLoot",
+        "label": "取消 Loot"
+      },
+      {
+        "value": "manageDkp",
+        "label": "管理 DKP"
+      },
+      {
+        "value": "manageLootSettings",
+        "label": "管理 Loot 与 DKP 设置"
       }
     ],
     "assignRank": "分配职位",
@@ -1509,7 +1537,9 @@
     "noUpcomingEvents": "暂无计划活动。",
     "eventToday": "今天",
     "eventTomorrow": "明天",
-    "viewAll": "查看全部"
+    "viewAll": "查看全部",
+    "menuLoot": "Loot 与 DKP",
+    "lootSettingsTab": "Loot & DKP"
   },
   "GuildCalendar": {
     "today": "今天",
@@ -1577,7 +1607,10 @@
     "TOURNAMENT": "锦标赛",
     "MEETING": "会议",
     "TRAINING": "训练",
-    "OTHER": "其他"
+    "OTHER": "其他",
+    "dkpReward": "DKP奖励",
+    "dkpRewardHint": "参与奖励DKP。0为无奖励。确认出席时自动发放。",
+    "dkpRewardBadge": "出席DKP"
   },
   "GuildGroups": {
     "tabGroups": "队伍",
@@ -1835,5 +1868,106 @@
     "analysisRecommendationPlaceholder": "给玩家一个最终建议...",
     "analysisSaveReview": "保存审核",
     "analysisSaved": "审核已保存"
+  },
+  "Promotions": {
+    "eyebrow": "专属福利",
+    "title": "促销",
+    "subtitle": "为你的旅程精选的合作伙伴优惠。每个横幅直达折扣 — 有优惠券时使用并节省。",
+    "verified": "经ClanForge验证的合作伙伴",
+    "exclusiveCoupons": "专属优惠券",
+    "realDiscounts": "真实折扣",
+    "newPartners": "每周新增合作伙伴",
+    "featured": "推荐",
+    "coupon": "优惠券:",
+    "discount": "OFF",
+    "redeem": "领取优惠",
+    "openNewTab": "在新标签页打开",
+    "viewOffer": "查看优惠",
+    "access": "访问",
+    "partnerTitle": "想让你的品牌出现在这里？",
+    "partnerText": "我们欢迎与提升玩家体验的品牌合作。联系我们，触达数千公会。",
+    "partnerCta": "联系合作"
+  },
+  "Loot": {
+    "title": "Loot 与 DKP",
+    "subtitle": "管理你的DKP，参与拍卖和抽奖，争夺公会物品。",
+    "myBalance": "我的余额",
+    "activeAuctions": "进行中的拍卖",
+    "activeRaffles": "进行中的抽奖",
+    "totalDkp": "公会总DKP",
+    "tabsActive": "进行中",
+    "tabsUpcoming": "即将开始",
+    "tabsFinished": "已结束",
+    "tabsMyDkp": "我的DKP",
+    "tabsManageLoot": "管理Loot",
+    "tabsManageDkp": "管理DKP",
+    "filterAll": "全部",
+    "filterAuctions": "拍卖",
+    "filterRaffles": "抽奖",
+    "empty": "目前没有可用的Loot。當新的拍卖或抽奖创建后，会显示在这里。",
+    "createLoot": "创建Loot",
+    "chooseType": "创建Loot — 选择类型",
+    "auction": "拍卖",
+    "auctionHint": "最高出价获胜",
+    "raffle": "抽奖",
+    "raffleHint": "用DKP购买门票",
+    "createAuction": "创建拍卖",
+    "createRaffle": "创建抽奖",
+    "switchType": "切换类型",
+    "itemName": "物品名称",
+    "itemImage": "图片URL（可选）",
+    "itemDesc": "描述（可选）",
+    "startsAt": "开始",
+    "endsAt": "结束",
+    "startingBid": "起拍价",
+    "minIncrement": "最小加价",
+    "entryCost": "每张票价 DKP",
+    "allowMultiple": "允许多张票",
+    "maxPerUser": "每角色上限",
+    "eligibility": "参与资格",
+    "allMembers": "所有成员",
+    "specificClasses": "指定职业",
+    "cancel": "取消",
+    "create": "创建",
+    "requiredFields": "请填写名称和日期",
+    "viewAuction": "查看拍卖",
+    "viewRaffle": "查看抽奖",
+    "highestBid": "最高出价",
+    "bids": "次出价",
+    "endsIn": "剩余",
+    "scheduled": "已安排",
+    "finished": "已结束",
+    "costPerTicket": "单票价",
+    "totalTickets": "总票数",
+    "winner": "胜者",
+    "youHave": "你有",
+    "tickets": "张票",
+    "buyTickets": "购买门票",
+    "total": "合计",
+    "placeBid": "出价",
+    "nextMin": "下一最低价",
+    "currentBid": "当前出价",
+    "highestBidder": "最高出价者",
+    "bidHistory": "记录",
+    "noBids": "暂无出价。",
+    "dkpBalance": "你的DKP",
+    "timeLeft": "剩余时间",
+    "dkpReward": "DKP奖励",
+    "dkpRewardHint": "参与奖励DKP。0为无奖励。确认出席时自动发放。",
+    "dkpRewardBadge": "出席DKP",
+    "manageLootSearch": "搜索物品...",
+    "noLoot": "未找到Loot。",
+    "cancelLoot": "取消",
+    "manageDkpTitle": "按角色管理DKP",
+    "add": "增加",
+    "remove": "移除",
+    "confirm": "确认",
+    "reason": "原因",
+    "quantity": "数量",
+    "historyTitle": "最近交易",
+    "noHistory": "暂无交易。",
+    "balance": "余额",
+    "of": "/",
+    "dkp": "DKP"
   }
 }

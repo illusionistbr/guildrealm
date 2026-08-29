@@ -1,4 +1,4 @@
-﻿{
+{
   "Header": {
     "resources": "기능",
     "games": "게임",
@@ -1385,6 +1385,34 @@
       {
         "value": "manageRecruitment",
         "label": "모집 관리"
+      },
+      {
+        "value": "viewLoot",
+        "label": "Loot & DKP 보기"
+      },
+      {
+        "value": "participateLoot",
+        "label": "경매/추첨 참여"
+      },
+      {
+        "value": "createLoot",
+        "label": "경매/추첨 생성"
+      },
+      {
+        "value": "editLoot",
+        "label": "Loot 편집"
+      },
+      {
+        "value": "cancelLoot",
+        "label": "Loot 취소"
+      },
+      {
+        "value": "manageDkp",
+        "label": "DKP 관리"
+      },
+      {
+        "value": "manageLootSettings",
+        "label": "Loot & DKP 설정 관리"
       }
     ],
     "assignRank": "직위 지정",
@@ -1509,7 +1537,9 @@
     "noUpcomingEvents": "예정된 이벤트가 없습니다.",
     "eventToday": "오늘",
     "eventTomorrow": "내일",
-    "viewAll": "모두 보기"
+    "viewAll": "모두 보기",
+    "menuLoot": "Loot & DKP",
+    "lootSettingsTab": "Loot & DKP"
   },
   "GuildCalendar": {
     "today": "오늘",
@@ -1577,7 +1607,10 @@
     "TOURNAMENT": "파움",
     "MEETING": "회의",
     "TRAINING": "초력",
-    "OTHER": "기타"
+    "OTHER": "기타",
+    "dkpReward": "DKP 보상",
+    "dkpRewardHint": "참여 시 DKP. 0은 보상 없음. 출석 확인 시 자동 지급.",
+    "dkpRewardBadge": "출석 DKP"
   },
   "GuildGroups": {
     "tabGroups": "그룹",
@@ -1835,5 +1868,106 @@
     "analysisRecommendationPlaceholder": "플레이어에게 최종 권고사항을 작성하세요...",
     "analysisSaveReview": "검토 저장",
     "analysisSaved": "검토가 저장되었습니다"
+  },
+  "Promotions": {
+    "eyebrow": "독점 혜택",
+    "title": "프로모션",
+    "subtitle": "당신의 여정을 위한 파트너의 엄선된 오퍼. 각 배너는 할인으로 바로 연결됩니다 — 쿠폰을 사용하고 절약하세요.",
+    "verified": "ClanForge 검증 파트너",
+    "exclusiveCoupons": "독점 쿠폰",
+    "realDiscounts": "실제 할인",
+    "newPartners": "매주 새로운 파트너",
+    "featured": "추천",
+    "coupon": "쿠폰:",
+    "discount": "OFF",
+    "redeem": "혜택 받기",
+    "openNewTab": "새 탭에서 열기",
+    "viewOffer": "오퍼 보기",
+    "access": "접속",
+    "partnerTitle": "브랜드를 여기에 표시하고 싶나요?",
+    "partnerText": "게이머 경험을 높이는 브랜드와의 파트너십을 환영합니다. 연락하여 수천 개의 길드에 도달하세요.",
+    "partnerCta": "파트너십 문의"
+  },
+  "Loot": {
+    "title": "Loot & DKP",
+    "subtitle": "DKP를 관리하고 경매와 추첨에 참여하세요.",
+    "myBalance": "내 잔액",
+    "activeAuctions": "진행 중인 경매",
+    "activeRaffles": "진행 중인 추첨",
+    "totalDkp": "길드 총 DKP",
+    "tabsActive": "진행 중",
+    "tabsUpcoming": "예정",
+    "tabsFinished": "종료됨",
+    "tabsMyDkp": "내 DKP",
+    "tabsManageLoot": "Loot 관리",
+    "tabsManageDkp": "DKP 관리",
+    "filterAll": "전체",
+    "filterAuctions": "경매",
+    "filterRaffles": "추첨",
+    "empty": "현재 이용 가능한 Loot이 없습니다. 새로운 경매나 추첨이 생성되면 여기에 표시됩니다.",
+    "createLoot": "Loot 생성",
+    "chooseType": "Loot 생성 — 유형 선택",
+    "auction": "경매",
+    "auctionHint": "최고 입찰자가 승리",
+    "raffle": "추첨",
+    "raffleHint": "DKP로 티켓 구매",
+    "createAuction": "경매 생성",
+    "createRaffle": "추첨 생성",
+    "switchType": "유형 변경",
+    "itemName": "아이템 이름",
+    "itemImage": "이미지 URL (선택)",
+    "itemDesc": "설명 (선택)",
+    "startsAt": "시작",
+    "endsAt": "종료",
+    "startingBid": "시작 입찰가",
+    "minIncrement": "최소 증가폭",
+    "entryCost": "티켓당 비용 DKP",
+    "allowMultiple": "다중 티켓 허용",
+    "maxPerUser": "캐릭터당 최대",
+    "eligibility": "참가 자격",
+    "allMembers": "모든 멤버",
+    "specificClasses": "특정 클래스",
+    "cancel": "취소",
+    "create": "생성",
+    "requiredFields": "이름과 날짜를 입력하세요",
+    "viewAuction": "경매 보기",
+    "viewRaffle": "추첨 보기",
+    "highestBid": "최고 입찰",
+    "bids": "입찰",
+    "endsIn": "종료까지",
+    "scheduled": "예정됨",
+    "finished": "종료됨",
+    "costPerTicket": "티켓당 비용",
+    "totalTickets": "총 티켓",
+    "winner": "승자",
+    "youHave": "보유",
+    "tickets": "티켓",
+    "buyTickets": "티켓 구매",
+    "total": "합계",
+    "placeBid": "입찰하기",
+    "nextMin": "다음 최소가",
+    "currentBid": "현재 입찰",
+    "highestBidder": "최고 입찰자",
+    "bidHistory": "기록",
+    "noBids": "아직 입찰이 없습니다.",
+    "dkpBalance": "내 DKP",
+    "timeLeft": "남은 시간",
+    "dkpReward": "DKP 보상",
+    "dkpRewardHint": "참여 시 DKP. 0은 보상 없음. 출석 확인 시 자동 지급.",
+    "dkpRewardBadge": "출석 DKP",
+    "manageLootSearch": "아이템 검색...",
+    "noLoot": "Loot을 찾을 수 없습니다.",
+    "cancelLoot": "취소",
+    "manageDkpTitle": "캐릭터별 DKP 관리",
+    "add": "추가",
+    "remove": "제거",
+    "confirm": "확인",
+    "reason": "사유",
+    "quantity": "수량",
+    "historyTitle": "최근 내역",
+    "noHistory": "아직 내역이 없습니다.",
+    "balance": "잔액",
+    "of": "/",
+    "dkp": "DKP"
   }
 }

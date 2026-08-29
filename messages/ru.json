@@ -1,4 +1,4 @@
-﻿{
+{
   "Header": {
     "resources": "Возможности",
     "games": "Игры",
@@ -1385,6 +1385,34 @@
       {
         "value": "manageRecruitment",
         "label": "Управление набором"
+      },
+      {
+        "value": "viewLoot",
+        "label": "Просмотр Loot и DKP"
+      },
+      {
+        "value": "participateLoot",
+        "label": "Участие в аукционах/розыгрышах"
+      },
+      {
+        "value": "createLoot",
+        "label": "Создать аукцион/розыгрыш"
+      },
+      {
+        "value": "editLoot",
+        "label": "Редактировать лут"
+      },
+      {
+        "value": "cancelLoot",
+        "label": "Отменить лут"
+      },
+      {
+        "value": "manageDkp",
+        "label": "Управление DKP"
+      },
+      {
+        "value": "manageLootSettings",
+        "label": "Настройки Loot и DKP"
       }
     ],
     "assignRank": "Назначить ранг",
@@ -1509,7 +1537,9 @@
     "noUpcomingEvents": "Нет запланированных событий.",
     "eventToday": "Сегодня",
     "eventTomorrow": "Завтра",
-    "viewAll": "Посмотреть все"
+    "viewAll": "Посмотреть все",
+    "menuLoot": "Loot и DKP",
+    "lootSettingsTab": "Loot & DKP"
   },
   "GuildCalendar": {
     "today": "Сегодня",
@@ -1577,7 +1607,10 @@
     "TOURNAMENT": "Турнир",
     "MEETING": "Совещание",
     "TRAINING": "Тренировка",
-    "OTHER": "Другое"
+    "OTHER": "Другое",
+    "dkpReward": "Награда DKP",
+    "dkpRewardHint": "DKP за участие. 0 — без награды. Начисляется автоматически при подтверждении.",
+    "dkpRewardBadge": "DKP за явку"
   },
   "GuildGroups": {
     "tabGroups": "Группы",
@@ -1835,5 +1868,106 @@
     "analysisRecommendationPlaceholder": "Дайте окончательную рекомендацию игроку...",
     "analysisSaveReview": "Сохранить обзор",
     "analysisSaved": "Обзор сохранён"
+  },
+  "Promotions": {
+    "eyebrow": "Эксклюзивные преимущества",
+    "title": "Акции",
+    "subtitle": "Отобранные предложения от наших партнеров для вашего путешествия. Каждый баннер ведёт прямо к скидке — используйте купон и экономьте.",
+    "verified": "Партнёры проверены ClanForge",
+    "exclusiveCoupons": "Эксклюзивные купоны",
+    "realDiscounts": "Реальные скидки",
+    "newPartners": "Новые партнёры каждую неделю",
+    "featured": "РЕКОМЕНДУЕМ",
+    "coupon": "Купон:",
+    "discount": "OFF",
+    "redeem": "Получить предложение",
+    "openNewTab": "Открыть в новой вкладке",
+    "viewOffer": "Посмотреть предложение",
+    "access": "Перейти",
+    "partnerTitle": "Хотите разместить свой бренд здесь?",
+    "partnerText": "Мы открыты к партнёрству с брендами, которые улучшают опыт игроков. Свяжитесь и охватите тысячи гильдий.",
+    "partnerCta": "Связаться"
+  },
+  "Loot": {
+    "title": "Loot и DKP",
+    "subtitle": "Управляйте DKP, участвуйте в аукционах и розыгрышах гильдии.",
+    "myBalance": "Мой баланс",
+    "activeAuctions": "Активные аукционы",
+    "activeRaffles": "Активные розыгрыши",
+    "totalDkp": "Всего DKP гильдии",
+    "tabsActive": "Активные",
+    "tabsUpcoming": "Предстоящие",
+    "tabsFinished": "Завершённые",
+    "tabsMyDkp": "Мой DKP",
+    "tabsManageLoot": "Управление Loot",
+    "tabsManageDkp": "Управление DKP",
+    "filterAll": "Все",
+    "filterAuctions": "Аукционы",
+    "filterRaffles": "Розыгрыши",
+    "empty": "Сейчас нет доступного лута. Когда создадут новые аукционы или розыгрыши, они появятся здесь.",
+    "createLoot": "Создать Loot",
+    "chooseType": "Создать Loot — Выберите тип",
+    "auction": "Аукцион",
+    "auctionHint": "Побеждает highest ставка",
+    "raffle": "Розыгрыш",
+    "raffleHint": "Тикеты за DKP",
+    "createAuction": "Создать аукцион",
+    "createRaffle": "Создать розыгрыш",
+    "switchType": "Сменить тип",
+    "itemName": "Название предмета",
+    "itemImage": "URL изображения (опционально)",
+    "itemDesc": "Описание (опционально)",
+    "startsAt": "Начало",
+    "endsAt": "Конец",
+    "startingBid": "Стартовая ставка",
+    "minIncrement": "Мин. шаг",
+    "entryCost": "Цена за тикет DKP",
+    "allowMultiple": "Разрешить несколько тикетов",
+    "maxPerUser": "Макс. на персонажа",
+    "eligibility": "Допуск",
+    "allMembers": "Все участники",
+    "specificClasses": "Конкретные классы",
+    "cancel": "Отмена",
+    "create": "Создать",
+    "requiredFields": "Заполните имя и даты",
+    "viewAuction": "СМОТРЕТЬ АУКЦИОН",
+    "viewRaffle": "СМОТРЕТЬ РОЗЫГРЫШ",
+    "highestBid": "Высшая ставка",
+    "bids": "ставок",
+    "endsIn": "До конца",
+    "scheduled": "Запланирован",
+    "finished": "Завершён",
+    "costPerTicket": "Цена/тикет",
+    "totalTickets": "Всего тикетов",
+    "winner": "Победитель",
+    "youHave": "У вас",
+    "tickets": "тикетов",
+    "buyTickets": "КУПИТЬ ТИКЕТЫ",
+    "total": "Итого",
+    "placeBid": "СДЕЛАТЬ СТАВКУ",
+    "nextMin": "След. минимум",
+    "currentBid": "Текущая ставка",
+    "highestBidder": "Лидер",
+    "bidHistory": "История",
+    "noBids": "Ставок пока нет.",
+    "dkpBalance": "Ваш DKP",
+    "timeLeft": "Осталось",
+    "dkpReward": "Награда DKP",
+    "dkpRewardHint": "DKP за участие. 0 — без награды. Начисляется автоматически при подтверждении.",
+    "dkpRewardBadge": "DKP за явку",
+    "manageLootSearch": "Поиск предмета...",
+    "noLoot": "Лут не найден.",
+    "cancelLoot": "Отменить",
+    "manageDkpTitle": "Управление DKP по персонажам",
+    "add": "Добавить",
+    "remove": "Удалить",
+    "confirm": "Подтвердить",
+    "reason": "Причина",
+    "quantity": "Количество",
+    "historyTitle": "Последние операции",
+    "noHistory": "Пока нет операций.",
+    "balance": "Баланс",
+    "of": "из",
+    "dkp": "DKP"
   }
 }

@@ -38,6 +38,11 @@ export default getRequestConfig(async () => {
         ...localeMessages.GuildCreate,
       },
       Promotions: { ...englishMessages.Promotions, ...localeMessages.Promotions },
+      Loot: { ...englishMessages.Loot, ...localeMessages.Loot },
+      GuildPanel: { ...englishMessages.GuildPanel, ...localeMessages.GuildPanel },
+      GuildCalendar: { ...englishMessages.GuildCalendar, ...localeMessages.GuildCalendar },
+      GuildGroups: { ...englishMessages.GuildGroups, ...localeMessages.GuildGroups },
+      Recruitment: { ...englishMessages.Recruitment, ...localeMessages.Recruitment },
     },
   };
 });
