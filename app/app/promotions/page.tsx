@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Tag, ExternalLink, Sparkles, Clock3, Gift, Percent, Star, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Tag, ExternalLink, Sparkles, Clock3, Gift, Percent, Star, ArrowRight, ShieldCheck, Copy, Check } from 'lucide-react';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -96,6 +97,29 @@ const promotions: Promotion[] = [
 ];
 
 export default function PromotionsPage() {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = async (e: React.MouseEvent, promo: Promotion) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!promo.coupon) return;
+    try {
+      await navigator.clipboard.writeText(promo.coupon);
+      setCopiedId(promo.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      // fallback: cria input temporário
+      const el = document.createElement('input');
+      el.value = promo.coupon;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopiedId(promo.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
+
   return (
     <motion.div
       initial="initial"
@@ -165,6 +189,13 @@ export default function PromotionsPage() {
                   <Gift size={14} className="text-accent" />
                   <span className="text-xs text-muted">Cupom:</span>
                   <span className="text-sm font-bold tracking-wider text-white">{promo.coupon}</span>
+                  <button
+                    onClick={(e) => handleCopy(e, promo)}
+                    title={copiedId === promo.id ? 'Copiado!' : 'Copiar cupom'}
+                    className="ml-1 p-1 rounded-md bg-[#050912]/40 hover:bg-accent/20 border border-white/10 hover:border-accent/30 text-white/70 hover:text-accent transition-all"
+                  >
+                    {copiedId === promo.id ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                  </button>
                 </div>
               )}
             </div>
@@ -228,6 +259,13 @@ export default function PromotionsPage() {
                 <div className="mt-3 inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-lg border border-dashed border-accent/30 bg-accent/10">
                   <Tag size={12} className="text-accent" />
                   <span className="text-[11px] font-bold tracking-wider text-white">{promo.coupon}</span>
+                  <button
+                    onClick={(e) => handleCopy(e, promo)}
+                    title={copiedId === promo.id ? 'Copiado!' : 'Copiar cupom'}
+                    className="ml-1 p-1 rounded bg-[#050912]/40 hover:bg-accent/20 text-white/70 hover:text-accent transition-colors"
+                  >
+                    {copiedId === promo.id ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                  </button>
                 </div>
               )}
 
