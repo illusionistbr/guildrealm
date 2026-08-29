@@ -99,6 +99,13 @@ export const RANK_PERMISSIONS = [
   'manageSettings',
   'manageRanks',
   'manageRecruitment',
+  'viewLoot',
+  'participateLoot',
+  'createLoot',
+  'editLoot',
+  'cancelLoot',
+  'manageDkp',
+  'manageLootSettings',
 ] as const;
 
 export type RankPermission = (typeof RANK_PERMISSIONS)[number];
@@ -131,6 +138,13 @@ export const DEFAULT_RANKS: Omit<
       manageSettings: true,
       manageRanks: true,
       manageRecruitment: true,
+      viewLoot: true,
+      participateLoot: true,
+      createLoot: true,
+      editLoot: true,
+      cancelLoot: true,
+      manageDkp: true,
+      manageLootSettings: true,
     },
   },
   {
@@ -143,6 +157,11 @@ export const DEFAULT_RANKS: Omit<
       manageGroups: true,
       manageEvents: true,
       manageRecruitment: true,
+      viewLoot: true,
+      participateLoot: true,
+      createLoot: true,
+      editLoot: true,
+      manageDkp: true,
     },
   },
   {
@@ -150,7 +169,10 @@ export const DEFAULT_RANKS: Omit<
     color: '#64748b',
     position: 2,
     isDefault: true,
-    permissions: {},
+    permissions: {
+      viewLoot: true,
+      participateLoot: true,
+    },
   },
 ];
 

@@ -1385,6 +1385,34 @@
       {
         "value": "manageRecruitment",
         "label": "Gerenciar recrutamento"
+      },
+      {
+        "value": "viewLoot",
+        "label": "Ver Loot & DKP"
+      },
+      {
+        "value": "participateLoot",
+        "label": "Participar de leilões/sorteios"
+      },
+      {
+        "value": "createLoot",
+        "label": "Criar leilões/sorteios"
+      },
+      {
+        "value": "editLoot",
+        "label": "Editar loot"
+      },
+      {
+        "value": "cancelLoot",
+        "label": "Cancelar loot"
+      },
+      {
+        "value": "manageDkp",
+        "label": "Gerenciar DKP"
+      },
+      {
+        "value": "manageLootSettings",
+        "label": "Gerenciar configurações de Loot & DKP"
       }
     ],
     "assignRank": "Atribuir cargo",

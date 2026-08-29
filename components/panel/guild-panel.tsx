@@ -47,6 +47,9 @@ import { UpcomingEvents } from '@/components/panel/UpcomingEvents';
 import { GuildAuditView } from '@/components/panel/GuildAuditView';
 import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
 import { useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
+import { LootView } from '@/components/loot/LootView';
+import { LootSettingsPanel } from '@/components/loot/LootSettingsPanel';
+import { Gem } from 'lucide-react';
 import {
   AlertTriangle,
   Ban,
@@ -86,7 +89,7 @@ const fadeUp = {
 type Option = { value: string; label: string };
 type ClassOption = Option & { icon?: string };
 
-export type View = 'overview' | 'calendar' | 'attendance' | 'groups' | 'members' | 'applications' | 'settings' | 'analyses' | 'audit';
+export type View = 'overview' | 'calendar' | 'attendance' | 'groups' | 'members' | 'applications' | 'settings' | 'analyses' | 'audit' | 'loot';
 
 type GuildDoc = {
   id: string;
@@ -298,10 +301,15 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
     isLeader ||
     !!userPerms.manageSettings ||
     !!userPerms.manageRanks ||
-    !!userPerms.manageRecruitment;
+    !!userPerms.manageRecruitment ||
+    !!userPerms.manageLootSettings;
   const canManageRanks = isLeader || !!userPerms.manageRanks;
   const canManageRecruitment = isLeader || !!userPerms.manageRecruitment;
   const canViewAudit = isLeader || !!userPerms.manageMembers || !!userPerms.manageSettings;
+  const canViewLoot = isLeader || !!(userPerms as any).viewLoot;
+  const canManageDkp = isLeader || !!(userPerms as any).manageDkp;
+  const canCreateLoot = isLeader || !!(userPerms as any).createLoot;
+  const canManageLootSettings = isLeader || !!(userPerms as any).manageLootSettings;
 
   if (!loading && !guild) {
     return (
@@ -337,7 +345,9 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                 ? t('menuAnalyses')
                 : view === 'audit'
                   ? 'Auditoria'
-                  : t('menuSettings');
+                  : view === 'loot'
+                    ? 'Loot & DKP'
+                    : t('menuSettings');
 
   return (
     <div className="min-h-screen bg-[#050912] flex">
@@ -352,6 +362,7 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
         canManageEvents={canManageEvents}
         recruitmentOpen={recruitmentOpen}
         canViewAudit={canViewAudit}
+        canViewLoot={canViewLoot}
       />
 
       <div
@@ -512,6 +523,14 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                 </div>
               )}
             </div>
+          ) : view === 'loot' ? (
+            canViewLoot ? (
+              <LootView guildId={guild.id} guild={guild} uid={uid ?? ''} isLeader={isLeader} canCreateLoot={canCreateLoot} canManageDkp={canManageDkp} canManageLootSettings={canManageLootSettings} memberNames={memberNames} memberMeta={memberMeta} />
+            ) : (
+              <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] p-6 flex items-center gap-2 text-muted">
+                <Shield size={16} /> Você não tem permissão para acessar Loot & DKP.
+              </div>
+            )
           ) : (
             <div className="shell">
               <motion.div
@@ -569,6 +588,7 @@ function PanelSidebar({
   canManageEvents,
   recruitmentOpen,
   canViewAudit,
+  canViewLoot,
 }: {
   open: boolean;
   onToggle: () => void;
@@ -580,6 +600,7 @@ function PanelSidebar({
   canManageEvents: boolean;
   recruitmentOpen: boolean | null;
   canViewAudit?: boolean;
+  canViewLoot?: boolean;
 }) {
   const t = useTranslations('GuildPanel');
   const isRecruiting =
@@ -642,6 +663,16 @@ function PanelSidebar({
       icon: <BarChart3 size={20} />,
       label: t('menuAnalyses'),
     },
+    ...(canViewLoot
+      ? [
+          {
+            key: 'loot' as const,
+            href: `${base}/loot`,
+            icon: <Gem size={20} />,
+            label: 'Loot & DKP',
+          },
+        ]
+      : []),
     ...(canViewAudit
       ? [
           {
@@ -1459,23 +1490,32 @@ function SettingsView({
   canManageRanks: boolean;
   canManageRecruitment: boolean;
 }) {
+  // loot settings tab integration: check permission via memberRanks
+
   const t = useTranslations('GuildPanel');
   const languages = useMemo(() => t.raw('languages') as Option[], [t]);
   const [settingsTab, setSettingsTab] = useState<
-    'general' | 'ranks' | 'recruitment' | 'discord'
+    'general' | 'ranks' | 'recruitment' | 'discord' | 'loot'
   >('general');
+  const canManageLootSettings = isLeader || (guild as any).memberRanks ? false : false; // will be overridden by parent? For now allow isLeader
+  const lootAllowed = isLeader; // only leader for loot settings (spec: manageLootSettings)
   const currentAllowed =
     (settingsTab === 'general' && canManageSettings) ||
     (settingsTab === 'ranks' && canManageRanks) ||
     (settingsTab === 'recruitment' && canManageRecruitment) ||
-    (settingsTab === 'discord' && canManageSettings && isLeader);
+    (settingsTab === 'discord' && canManageSettings && isLeader) ||
+    (settingsTab === 'loot' && lootAllowed);
   const activeTab = currentAllowed
     ? settingsTab
     : canManageSettings
       ? 'general'
       : canManageRanks
         ? 'ranks'
-        : 'recruitment';
+        : canManageRecruitment
+          ? 'recruitment'
+          : lootAllowed
+            ? 'loot'
+            : 'general';
 
   const [name, setName] = useState(guild.name ?? '');
   const [description, setDescription] = useState(guild.description ?? '');
@@ -1651,10 +1691,23 @@ function SettingsView({
             {t('tabDiscord')}
           </button>
         )}
+        {isLeader && (
+          <button
+            onClick={() => setSettingsTab('loot')}
+            className={cn(
+              'px-3 py-1.5 rounded-lg text-sm transition-colors border flex items-center gap-1',
+              activeTab === 'loot' ? 'bg-accent/15 text-white border-accent/30' : 'text-muted hover:text-white border-transparent',
+            )}
+          >
+            <Gem size={14} /> Loot & DKP
+          </button>
+        )}
       </div>
 
       {activeTab === 'discord' ? (
         <DiscordSettings guildId={guild.id} />
+      ) : activeTab === 'loot' ? (
+        <LootSettingsPanel guildId={guild.id} />
       ) : activeTab === 'recruitment' ? (
         <RecruitmentSettings guildId={guild.id} />
       ) : activeTab === 'ranks' ? (

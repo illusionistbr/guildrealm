@@ -227,6 +227,11 @@ export function EventDetails({
             <Users size={14} className="text-accent" />
             {confirmations.length} {t('attendanceConfirmedCount')}
           </div>
+          {(event as any).dkpReward > 0 && (
+            <div className="flex items-center gap-2 text-sm font-bold text-accent bg-accent/10 border border-accent/20 rounded-lg px-3 py-1.5">
+              💎 {(event as any).dkpReward} DKP por presença
+            </div>
+          )}
         </div>
 
         {event.attendanceEnabled && phase !== 'invalid' && (

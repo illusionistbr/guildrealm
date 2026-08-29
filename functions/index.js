@@ -2073,5 +2073,8 @@ exports.getMyAchievements = callable(async (data, context) => {
   return { unlocked, counters };
 });
 
+// ============ LOOT & DKP ============
+Object.assign(exports, require('./loot'));
+
 // ============ ANÁLISES ============
 Object.assign(exports, require('./analyses'));

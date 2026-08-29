@@ -54,6 +54,7 @@ export function EventModal({
   const [maxParticipants, setMaxParticipants] = useState('');
   const [allowRegistration, setAllowRegistration] = useState(true);
   const [attendanceEnabled, setAttendanceEnabled] = useState(false);
+  const [dkpReward, setDkpReward] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -95,7 +96,8 @@ export function EventModal({
         createdBy: uid,
         createdByName: displayName,
         attendanceEnabled,
-      });
+        dkpReward: dkpReward ? Number(dkpReward) : 0,
+      } as any);
     } catch {
       setError(t('createError'));
       setSaving(false);
@@ -277,6 +279,26 @@ export function EventModal({
                 {t('attendanceEnabledHint')}
               </p>
             )}
+          </div>
+
+          <div className="rounded-lg border border-accent/20 bg-accent/5 p-3 space-y-2">
+            <label className="block text-sm font-medium text-white flex items-center gap-2">
+              <span className="w-6 h-6 rounded bg-accent/20 flex items-center justify-center text-accent text-xs">💎</span>
+              Recompensa DKP
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={dkpReward}
+                onChange={(e) => setDkpReward(e.target.value)}
+                placeholder="0"
+                min="0"
+                max="10000"
+                className="flex-1 h-10 px-3 bg-[#070f1d] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
+              />
+              <span className="text-sm text-accent font-bold">DKP</span>
+            </div>
+            <p className="text-[11px] text-muted">DKP por participação. Deixe 0 para sem recompensa. Pago automaticamente ao confirmar presença.</p>
           </div>
 
           {error && (

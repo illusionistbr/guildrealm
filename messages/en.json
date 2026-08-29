@@ -1385,6 +1385,34 @@
       {
         "value": "manageRecruitment",
         "label": "Manage recruitment"
+      },
+      {
+        "value": "viewLoot",
+        "label": "View Loot & DKP"
+      },
+      {
+        "value": "participateLoot",
+        "label": "Participate in auctions/raffles"
+      },
+      {
+        "value": "createLoot",
+        "label": "Create auctions/raffles"
+      },
+      {
+        "value": "editLoot",
+        "label": "Edit loot"
+      },
+      {
+        "value": "cancelLoot",
+        "label": "Cancel loot"
+      },
+      {
+        "value": "manageDkp",
+        "label": "Manage DKP"
+      },
+      {
+        "value": "manageLootSettings",
+        "label": "Manage Loot & DKP settings"
       }
     ],
     "assignRank": "Assign rank",

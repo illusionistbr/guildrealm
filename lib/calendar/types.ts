@@ -98,6 +98,7 @@ export interface GuildCalendarEvent {
   createdAt: Date;
   updatedAt: Date;
   attendanceEnabled: boolean;
+  dkpReward?: number;
 }
 
 export interface EventConfirmation {

@@ -85,6 +85,7 @@ export function useGuildEvents(guildId: string | null) {
             createdAt: tsToDate(data.createdAt),
             updatedAt: tsToDate(data.updatedAt),
             attendanceEnabled: data.attendanceEnabled ?? false,
+            dkpReward: data.dkpReward ?? 0,
           });
         });
         setEvents(list);
@@ -120,6 +121,7 @@ export function useGuildEvents(guildId: string | null) {
         createdBy: uid,
         createdByName: displayName,
         attendanceEnabled: data.attendanceEnabled ?? false,
+        dkpReward: (data as any).dkpReward ?? 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -142,6 +144,7 @@ export function useGuildEvents(guildId: string | null) {
       if (data.allowRegistration !== undefined) updateData.allowRegistration = data.allowRegistration;
       if (data.status !== undefined) updateData.status = data.status;
       if (data.attendanceEnabled !== undefined) updateData.attendanceEnabled = data.attendanceEnabled;
+      if ((data as any).dkpReward !== undefined) updateData.dkpReward = (data as any).dkpReward;
       await updateDoc(doc(getFirebaseDb(), EVENTS_COL, eventId), updateData);
     },
     [],

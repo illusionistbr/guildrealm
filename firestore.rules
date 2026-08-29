@@ -395,6 +395,39 @@ match /members/{userId} {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // ============ LOOT & DKP ============
+    match /guilds/{guildId}/settings/loot {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow write: if false;
+    }
+    match /guilds/{guildId}/dkp_balances/{characterId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow write: if false;
+    }
+    match /guilds/{guildId}/dkp_transactions/{transactionId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow write: if false;
+    }
+    match /guilds/{guildId}/loot/{lootId} {
+      allow read: if isSignedIn() && isGuildMember(guildId);
+      allow write: if false;
+      match /bids/{bidId} {
+        allow read: if isSignedIn() && isGuildMember(guildId);
+        allow write: if false;
+      }
+      match /tickets/{ticketId} {
+        allow read: if isSignedIn() && isGuildMember(guildId);
+        allow write: if false;
+      }
+      match /participants/{characterId} {
+        allow read: if isSignedIn() && isGuildMember(guildId);
+        allow write: if false;
+      }
+      match /counter/{docId} {
+        allow read, write: if false;
+      }
+    }
+
     // ============ ANALISES (video analysis) ============
     match /guilds/{guildId}/analysisRequests/{requestId} {
       allow read: if isSignedIn() && isGuildMember(guildId);
