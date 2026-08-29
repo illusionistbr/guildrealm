@@ -9,6 +9,7 @@ import { toast, Toaster } from 'sonner';
 import { cn } from '@/lib/admin/utils/cn';
 import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { Bell, Shield, Eye, Lock, Save, Loader2, AlertTriangle, X } from 'lucide-react';
+import { TwoFactorSection } from '@/components/twoFactor/TwoFactorSection';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -303,7 +304,7 @@ export default function SettingsPage() {
         </div>
       </motion.div>
 
-      {/* Segurança */}
+      {/* Segurança - 2FA */}
       <motion.div
         variants={fadeUp}
         className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6"
@@ -311,13 +312,14 @@ export default function SettingsPage() {
         <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2 mb-4">
           <Lock size={20} className="text-accent" /> Segurança
         </h2>
-        <div className="space-y-4">
-          <Row
-            label="Autenticação em 2 fatores"
-            desc="Camada extra de segurança"
-            enabled={settings.security.twoFactor}
-            onToggle={(v) => handleToggle('security', 'twoFactor', v)}
-          />
+        <div className="space-y-6">
+          <div className="rounded-xl border border-accent/20 bg-accent/5 p-4">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">🔐 Autenticação em Dois Fatores</h3>
+            <p className="text-xs text-muted mt-1">Compatível com Google Authenticator, Microsoft Authenticator, Authy, 1Password.</p>
+            <div className="mt-3">
+              <TwoFactorSection />
+            </div>
+          </div>
           <Row
             label="Sessões ativas"
             desc="Gerenciar dispositivos conectados"

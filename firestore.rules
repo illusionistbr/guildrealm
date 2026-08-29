@@ -395,6 +395,27 @@ match /members/{userId} {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // ============ 2FA TOTP (privado, só via Functions) ============
+    match /users/{userId}/security/totp {
+      allow read, write: if false;
+    }
+    match /users/{userId}/recoveryCodes/{codeId} {
+      allow read, write: if false;
+    }
+    match /users/{userId}/security/twoFactorSession {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+    match /totpEnrollments/{enrollmentId} {
+      allow read, write: if false;
+    }
+    match /authChallenges/{challengeId} {
+      allow read, write: if false;
+    }
+    match /totp_attempts/{docId} {
+      allow read, write: if false;
+    }
+
     // ============ LOOT & DKP ============
     match /guilds/{guildId}/settings/loot {
       allow read: if isSignedIn() && isGuildMember(guildId);

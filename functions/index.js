@@ -2073,6 +2073,9 @@ exports.getMyAchievements = callable(async (data, context) => {
   return { unlocked, counters };
 });
 
+// ============ 2FA TOTP ============
+Object.assign(exports, require('./twoFactor'));
+
 // ============ LOOT & DKP ============
 Object.assign(exports, require('./loot'));
 

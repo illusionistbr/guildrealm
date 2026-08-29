@@ -81,6 +81,19 @@ export default function LoginPage() {
         return;
       }
 
+      // 2FA check: if enabled, require challenge
+      try{
+        const fn = httpsCallable(getFunctions(getFirebaseApp()), 'getTwoFactorStatus');
+        const res: any = await fn({});
+        if(res.data?.enabled){
+          const chFn = httpsCallable(getFunctions(getFirebaseApp()), 'createTotpChallenge');
+          const ch: any = await chFn({});
+          sessionStorage.setItem('totp_challenge', ch.data.challengeId);
+          window.location.href = '/2fa';
+          return;
+        }
+      }catch{ /* if status fails, proceed normal */ }
+
       setTimeout(() => {
         const next = new URLSearchParams(window.location.search).get('next');
         const isSafePath = next
