@@ -390,6 +390,11 @@ match /members/{userId} {
       allow update, delete: if false;
     }
 
+    // ============ CONFIGURACOES DO USUARIO (app/settings) ============
+    match /user_settings/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
     // ============ ANALISES (video analysis) ============
     match /guilds/{guildId}/analysisRequests/{requestId} {
       allow read: if isSignedIn() && isGuildMember(guildId);
