@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { getFirebaseAuth } from '@/lib/admin/firebase/client';
-import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { EmailAuthProvider, GoogleAuthProvider, OAuthProvider, reauthenticateWithCredential, reauthenticateWithPopup } from 'firebase/auth';
 import { toast } from 'sonner';
 import { getTwoFactorStatus, startTotpEnrollment, verifyTotpEnrollment, disableTotp, regenerateRecoveryCodes } from '@/lib/twoFactor/hooks';
 import { Loader2, ShieldCheck, ShieldOff, Copy, Check, Eye, EyeOff, AlertTriangle } from 'lucide-react';
@@ -34,16 +34,55 @@ export function TwoFactorSection() {
   };
   useEffect(()=>{ loadStatus(); }, []);
 
+  const getProviderInfo = () => {
+    const user = getFirebaseAuth().currentUser;
+    const providers = user?.providerData?.map(p=>p.providerId) ?? [];
+    const hasPassword = providers.includes('password');
+    const hasGoogle = providers.includes('google.com');
+    // detect social provider for display
+    const social = providers.find(p=> p !== 'password') || null;
+    return { hasPassword, hasGoogle, social, providers };
+  };
+
   const handleReauth = async (cb: ()=>Promise<void>) => {
     const user = getFirebaseAuth().currentUser;
-    if(!user || !user.email) { toast.error('Reautenticação necessária'); return; }
-    if(!password) { toast.error('Digite sua senha'); return; }
+    if(!user) { toast.error('Reautenticação necessária'); return; }
+    const { hasPassword, hasGoogle } = getProviderInfo();
     try{
-      const cred = EmailAuthProvider.credential(user.email, password);
-      await reauthenticateWithCredential(user, cred);
+      if(hasPassword){
+        if(!user.email) throw new Error('no-email');
+        if(!password) { toast.error('Digite sua senha'); return; }
+        const cred = EmailAuthProvider.credential(user.email, password);
+        await reauthenticateWithCredential(user, cred);
+      } else if(hasGoogle){
+        const provider = new GoogleAuthProvider();
+        await reauthenticateWithPopup(user, provider);
+      } else {
+        // generic OAuth: try popup with Google as fallback, or ask to re-login
+        // For Discord/Twitch/GitHub etc via OAuthProvider
+        const social = getProviderInfo().social;
+        if(social && social !== 'password'){
+          try{
+            const provider = new OAuthProvider(social);
+            await reauthenticateWithPopup(user, provider);
+          } catch{
+            // fallback: precisa fazer login novamente
+            toast.error('Reautentique-se: faça logout e entre novamente com seu provedor social');
+            return;
+          }
+        } else {
+          toast.error('Reautentique-se fazendo logout e login novamente');
+          return;
+        }
+      }
       await cb();
       setShowReauth(false); setPassword('');
-    } catch{ toast.error('Senha incorreta ou sessão expirada'); }
+    } catch(e:any){
+      // Firebase error codes: auth/wrong-password, auth/popup-closed-by-user
+      if(e?.code === 'auth/wrong-password') toast.error('Senha incorreta');
+      else if(e?.code === 'auth/popup-closed-by-user') toast.error('Popup fechado');
+      else toast.error(e?.message || 'Falha na reautenticação');
+    }
   };
 
   const startEnroll = async () => {
@@ -87,11 +126,20 @@ export function TwoFactorSection() {
     if(!code || !/^\d{6}$/.test(code)) return toast.error('Digite código de 6 dígitos');
     setDisabling(true);
     try{
-      // need reauth
       const user=getFirebaseAuth().currentUser;
-      if(user && user.email && password){
-        const cred=EmailAuthProvider.credential(user.email, password);
-        await reauthenticateWithCredential(user, cred);
+      if(user){
+        const { hasPassword, hasGoogle } = getProviderInfo();
+        if(hasPassword){
+          if(!password) throw new Error('Digite sua senha para confirmar');
+          const cred=EmailAuthProvider.credential(user.email!, password);
+          await reauthenticateWithCredential(user, cred);
+        } else if(hasGoogle){
+          const provider=new GoogleAuthProvider();
+          await reauthenticateWithPopup(user, provider);
+        } else if(getProviderInfo().social){
+          const provider=new OAuthProvider(getProviderInfo().social!);
+          await reauthenticateWithPopup(user, provider);
+        }
       }
       await disableTotp(code);
       toast.success('2FA desativado');
@@ -104,11 +152,20 @@ export function TwoFactorSection() {
   const handleRegen = async () => {
     if(!/^\d{6}$/.test(regenCode)) return toast.error('Código 6 dígitos necessário');
     try{
-      // need reauth handled inside? regenerateRecoveryCodes requires recent auth, we do reauth if password provided
       const user=getFirebaseAuth().currentUser;
-      if(password && user?.email){
-        const cred=EmailAuthProvider.credential(user.email, password);
-        await reauthenticateWithCredential(user, cred);
+      if(user){
+        const { hasPassword, hasGoogle } = getProviderInfo();
+        if(hasPassword){
+          if(!password) throw new Error('Digite sua senha');
+          const cred=EmailAuthProvider.credential(user.email!, password);
+          await reauthenticateWithCredential(user, cred);
+        } else if(hasGoogle){
+          const provider=new GoogleAuthProvider();
+          await reauthenticateWithPopup(user, provider);
+        } else if(getProviderInfo().social){
+          const provider=new OAuthProvider(getProviderInfo().social!);
+          await reauthenticateWithPopup(user, provider);
+        }
       }
       const res = await regenerateRecoveryCodes(regenCode);
       setRecoveryCodes(res.recoveryCodes);
@@ -131,19 +188,32 @@ export function TwoFactorSection() {
         <p className="text-xs text-muted">Proteja sua conta com app autenticador. Compatível com Google Authenticator, Microsoft Authenticator, Authy, 1Password.</p>
         <button onClick={handleStartClick} className="w-full h-10 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover">CONFIGURAR 2FA</button>
 
-        {showReauth && action==='enroll' && (
+        {showReauth && action==='enroll' && (()=>{ const { hasPassword, hasGoogle, social } = getProviderInfo(); const providerLabel = hasGoogle ? 'Google' : social ? social : 'provedor social'; return (
           <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={()=>setShowReauth(false)}>
             <div className="bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-xl p-6 max-w-sm w-full" onClick={e=>e.stopPropagation()}>
               <h3 className="text-white font-bold mb-2">Confirme sua identidade</h3>
-              <p className="text-xs text-muted mb-3">Para continuar, confirme sua senha.</p>
-              <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Senha" className="w-full h-10 px-3 bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white mb-3" />
-              <div className="flex gap-2">
-                <button onClick={()=>setShowReauth(false)} className="flex-1 h-10 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-sm">Cancelar</button>
-                <button onClick={onReauthEnroll} className="flex-1 h-10 rounded-lg bg-accent text-white text-sm">Continuar</button>
-              </div>
+              {hasPassword ? (
+                <>
+                  <p className="text-xs text-muted mb-3">Para continuar, confirme sua senha.</p>
+                  <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Senha" className="w-full h-10 px-3 bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white mb-3" />
+                  <div className="flex gap-2">
+                    <button onClick={()=>setShowReauth(false)} className="flex-1 h-10 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-sm">Cancelar</button>
+                    <button onClick={onReauthEnroll} className="flex-1 h-10 rounded-lg bg-accent text-white text-sm">Continuar</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-muted mb-3">Você entrou com login social ({providerLabel}). Clique para reautenticar e continuar.</p>
+                  <div className="flex gap-2">
+                    <button onClick={()=>setShowReauth(false)} className="flex-1 h-10 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-sm">Cancelar</button>
+                    <button onClick={onReauthEnroll} className="flex-1 h-10 rounded-lg bg-accent text-white text-sm">Reautenticar com {providerLabel}</button>
+                  </div>
+                  <p className="text-[11px] text-muted mt-3 text-center">Uma janela popup será aberta para confirmar sua identidade.</p>
+                </>
+              )}
             </div>
           </div>
-        )}
+        )})()}
 
         {enrollmentId && (
           <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 overflow-auto" onClick={()=>{}}>
@@ -192,20 +262,28 @@ export function TwoFactorSection() {
   }
 
   // enabled view
-  return (
+  return (()=>{ const { hasPassword, hasGoogle, social } = getProviderInfo(); const providerLabel = hasGoogle ? 'Google' : social ? social : 'social'; return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 text-sm"><ShieldCheck size={16} className="text-emerald-400"/> Status: <span className="font-bold text-emerald-400">Ativada</span> <span className="text-xs text-muted">• App autenticador (SHA256 / 30s)</span></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div className="space-y-2 p-3 rounded-lg bg-[#050912] border border-[rgba(38,51,86,0.3)]">
           <p className="text-xs font-bold text-white">Gerar novos códigos</p>
           <input value={regenCode} onChange={e=>setRegenCode(e.target.value.replace(/\D/g,'').slice(0,6))} placeholder="Código TOTP atual" className="w-full h-9 px-2 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded text-sm text-white" />
-          <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Senha (reauth)" className="w-full h-9 px-2 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded text-sm text-white" />
+          {hasPassword ? (
+            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Senha (reauth)" className="w-full h-9 px-2 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded text-sm text-white" />
+          ) : (
+            <p className="text-[11px] text-muted">Reautenticação via {providerLabel} (popup) será solicitada.</p>
+          )}
           <button onClick={handleRegen} className="w-full h-9 rounded-lg bg-accent/15 border border-accent/30 text-accent text-xs hover:bg-accent hover:text-white">Gerar Novos Códigos</button>
         </div>
         <div className="space-y-2 p-3 rounded-lg bg-[#050912] border border-red-500/20">
           <p className="text-xs font-bold text-red-400">Desativar 2FA</p>
           <input value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,'').slice(0,6))} placeholder="Código atual" className="w-full h-9 px-2 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded text-sm text-white" />
-          <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Senha" className="w-full h-9 px-2 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded text-sm text-white" />
+          {hasPassword ? (
+            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Senha" className="w-full h-9 px-2 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded text-sm text-white" />
+          ) : (
+            <p className="text-[11px] text-muted">Confirmação via {providerLabel} (popup).</p>
+          )}
           <button onClick={handleDisable} disabled={disabling} className="w-full h-9 rounded-lg border border-red-500/30 text-red-400 text-xs hover:bg-red-500/10 disabled:opacity-50 flex items-center justify-center gap-1">{disabling && <Loader2 size={12} className="animate-spin"/>} Desativar 2FA</button>
         </div>
       </div>
@@ -216,5 +294,5 @@ export function TwoFactorSection() {
         </div>
       )}
     </div>
-  );
+  );})()
 }
