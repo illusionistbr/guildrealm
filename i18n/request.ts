@@ -37,6 +37,7 @@ export default getRequestConfig(async () => {
         ...englishMessages.GuildCreate,
         ...localeMessages.GuildCreate,
       },
+      Promotions: { ...englishMessages.Promotions, ...localeMessages.Promotions },
     },
   };
 });

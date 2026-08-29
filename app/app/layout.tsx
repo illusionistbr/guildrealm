@@ -22,12 +22,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  Tag,
   type LucideIcon,
 } from 'lucide-react';
 
 const navItems: { label: string; href: string; icon: LucideIcon }[] = [
   { label: 'Visão Geral', href: '/app/dashboard', icon: LayoutDashboard },
   { label: 'Conquistas', href: '/app/achievements', icon: Trophy },
+  { label: 'Promoções', href: '/app/promotions', icon: Tag },
   { label: 'Perfil', href: '/app/profile', icon: User },
   { label: 'Configurações', href: '/app/settings', icon: Settings },
 ];

@@ -1835,5 +1835,24 @@
     "analysisRecommendationPlaceholder": "Dê uma recomendação final ao jogador...",
     "analysisSaveReview": "Salvar análise",
     "analysisSaved": "Análise salva"
+  },
+  "Promotions": {
+    "eyebrow": "Benefícios Exclusivos",
+    "title": "Promoções",
+    "subtitle": "Ofertas curadas dos nossos parceiros para sua jornada. Cada banner leva direto ao desconto — use o cupom quando disponível e economize.",
+    "verified": "Parceiros verificados pela ClanForge",
+    "exclusiveCoupons": "Cupons exclusivos",
+    "realDiscounts": "Descontos reais",
+    "newPartners": "Novos parceiros toda semana",
+    "featured": "DESTAQUE",
+    "coupon": "Cupom:",
+    "discount": "OFF",
+    "redeem": "Resgatar oferta",
+    "openNewTab": "Abre em nova aba",
+    "viewOffer": "Ver oferta",
+    "access": "Acessar",
+    "partnerTitle": "Quer ver sua marca aqui?",
+    "partnerText": "Somos abertos a parcerias com marcas que elevam a experiência dos jogadores. Entre em contato e apareça para milhares de guildas.",
+    "partnerCta": "Falar com parcerias"
   }
 }
