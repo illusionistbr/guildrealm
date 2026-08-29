@@ -27,13 +27,13 @@ const promotions: Promotion[] = [
     id: '1',
     partner: 'ExitLag',
     title: 'Ping baixo, vitória garantida',
-    description: 'Reduza o lag em Aion 2 e outros MMORPGs. Conexão otimizada para raids e PvP.',
-    discount: '30% OFF',
+    description: 'Melhore o ping no seu MMORPG favorito. Domine o PvP.',
+    discount: '54% OFF anual • 34% OFF trimestral',
     image: '/images/guild-catalogue.png',
-    href: 'https://www.exitlag.com/?utm_source=clanforge',
+    href: 'https://www.exitlag.com/refer/10343552',
     badge: 'Parceiro Oficial',
-    expiresAt: 'Expira em 12 dias',
-    coupon: 'CLANFORGE30',
+    expiresAt: '',
+    coupon: '10343552',
     featured: true,
   },
   {
@@ -153,11 +153,10 @@ export default function PromotionsPage() {
           <div className="relative flex flex-col md:flex-row md:items-center gap-6 p-6 md:p-8">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent text-white text-[10px] font-bold tracking-wider">
-                  <Sparkles size={11} /> DESTAQUE
-                </span>
                 <span className="text-xs px-2 py-1 rounded-full bg-white/10 border border-white/10 text-white/80">{promo.partner}</span>
-                <span className="text-xs text-muted flex items-center gap-1"><Clock3 size={11} />{promo.expiresAt}</span>
+                {promo.expiresAt && (
+                  <span className="text-xs text-muted flex items-center gap-1"><Clock3 size={11} />{promo.expiresAt}</span>
+                )}
               </div>
               <h2 className="text-xl md:text-2xl font-heading font-bold text-white">{promo.title}</h2>
               <p className="text-sm text-muted mt-2 max-w-lg">{promo.description}</p>
