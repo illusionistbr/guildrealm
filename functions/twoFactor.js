@@ -28,6 +28,28 @@ const fv = admin.firestore.FieldValue;
 
 const ISSUER = process.env.TOTP_ISSUER || 'ClanForge';
 
+/**
+ * Verifica se o usuário com 2FA habilitado possui sessão válida.
+ * Lança failed-precondition se 2FA estiver habilitado mas sessão ausente/expirada.
+ * Usado para proteger callables sensíveis e para guard de UI via getTwoFactorStatus.
+ */
+async function requireTwoFactorVerified(ctx){
+  const snap = await totpDoc(ctx.auth.uid).get();
+  if(!snap.exists || !snap.data().enabled) return; // 2FA não habilitado -> ok
+  const sessSnap = await admin.firestore().doc(`users/${ctx.auth.uid}/security/twoFactorSession`).get();
+  if(!sessSnap.exists) throw new CallableError('failed-precondition','2FA verification required. Complete em /2fa');
+  const exp = sessSnap.data().expiresAt?.toMillis ? sessSnap.data().expiresAt.toMillis() : (sessSnap.data().expiresAt?.seconds ? sessSnap.data().expiresAt.seconds*1000 : 0);
+  if(!exp || Date.now() > exp) throw new CallableError('failed-precondition','2FA session expired. Re-verifique em /2fa');
+}
+async function isTwoFactorVerified(uid){
+  const snap = await totpDoc(uid).get();
+  if(!snap.exists || !snap.data().enabled) return true;
+  const sess = await admin.firestore().doc(`users/${uid}/security/twoFactorSession`).get();
+  if(!sess.exists) return false;
+  const exp = sess.data().expiresAt?.toMillis ? sess.data().expiresAt.toMillis() : (sess.data().expiresAt?.seconds ? sess.data().expiresAt.seconds*1000 : 0);
+  return !!exp && Date.now() <= exp;
+}
+
 class CallableError extends Error { constructor(code, message){ super(message); this.code=code; } }
 const CODE_TO_STATUS = { unauthenticated:'UNAUTHENTICATED', 'permission-denied':'PERMISSION_DENIED', 'not-found':'NOT_FOUND', 'already-exists':'ALREADY_EXISTS', 'invalid-argument':'INVALID_ARGUMENT', 'failed-precondition':'FAILED_PRECONDITION', 'resource-exhausted':'RESOURCE_EXHAUSTED' };
 const STATUS_TO_HTTP = { UNAUTHENTICATED:401, PERMISSION_DENIED:403, NOT_FOUND:404, ALREADY_EXISTS:409, INVALID_ARGUMENT:400, FAILED_PRECONDITION:400, RESOURCE_EXHAUSTED:429, INTERNAL:500 };
@@ -387,6 +409,9 @@ exports.regenerateRecoveryCodes = callable(async (data, ctx)=>{
   await batch.commit();
   return { recoveryCodes: codes };
 });
+
+exports.requireTwoFactorVerified = requireTwoFactorVerified;
+exports.isTwoFactorVerified = isTwoFactorVerified;
 
 // Cleanup expired enrollments/challenges hourly
 exports.cleanupTotpExpired = onSchedule('every 60 minutes', async ()=>{

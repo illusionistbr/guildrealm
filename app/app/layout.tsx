@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { getFirebaseAuth } from '@/lib/admin/firebase/client';
+import { useRequireTwoFactor } from '@/lib/twoFactor/useRequireTwoFactor';
+import { Loader2, ShieldCheck } from 'lucide-react';
 import {
   profileNickname,
   useCurrentUserProfile,
@@ -38,6 +40,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
   const isGuildsPage = pathname === '/app/guilds' || pathname?.startsWith('/app/guilds/');
+  const checking2FA = useRequireTwoFactor();
+
+  if (checking2FA) {
+    return (
+      <div className="min-h-screen bg-[#050912] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-muted">
+          <Loader2 className="animate-spin" size={24} />
+          <span className="text-sm flex items-center gap-2"><ShieldCheck size={16} /> Verificando 2FA...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050912] flex">
