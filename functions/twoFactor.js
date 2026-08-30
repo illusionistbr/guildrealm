@@ -6,8 +6,23 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { authenticator } = require('otplib');
 
-// otplib config SHA256 6 digits 30s window 1
-authenticator.options = { step: 30, window: 1, digits: 6, algorithm: 'sha256' };
+// otplib config SHA1 6 digits 30s window 1 (SHA1 = max compatibilidade com Google Authenticator / Authy / etc)
+authenticator.options = { step: 30, window: 1, digits: 6, algorithm: 'sha1' };
+
+function isValidTotp(code, secret){
+  // tenta algoritmo configurado primeiro
+  if (authenticator.check(code, secret)) return true;
+  // fallback: tenta o outro algoritmo para compatibilidade com enrollments antigos (SHA256) ou futuros
+  const currentAlgo = authenticator.allOptions().algorithm;
+  for (const algo of ['sha1','sha256','sha512']){
+    if (algo === currentAlgo) continue;
+    authenticator.options = { algorithm: algo };
+    const ok = authenticator.check(code, secret);
+    authenticator.options = { algorithm: currentAlgo };
+    if (ok) return true;
+  }
+  return false;
+}
 
 const fv = admin.firestore.FieldValue;
 
@@ -121,7 +136,7 @@ exports.getTwoFactorStatus = callable(async (data, ctx)=>{
   if(!snap.exists) return { enabled:false };
   const d=snap.data();
   const recSnap=await recoveryCol(ctx.auth.uid).where('usedAt','==',null).limit(1).get();
-  return { enabled: !!d.enabled, enabledAt: d.enabledAt ?? null, hasRecoveryCodes: !recSnap.empty, algorithm: d.algorithm ?? 'SHA256', period: d.period ?? 30, digits: d.digits ?? 6 };
+  return { enabled: !!d.enabled, enabledAt: d.enabledAt ?? null, hasRecoveryCodes: !recSnap.empty, algorithm: d.algorithm ?? 'SHA1', period: d.period ?? 30, digits: d.digits ?? 6 };
 });
 
 // ============ START ENROLLMENT ============
@@ -139,7 +154,7 @@ exports.startTotpEnrollment = callable(async (data, ctx)=>{
     if(exp > Date.now()){
       // reuse existing
       const d=doc.data();
-      const uri = `otpauth://totp/${encodeURIComponent(ISSUER)}:${encodeURIComponent(ctx.auth.token.email || uid)}?secret=${d.plainSecretForQr}&issuer=${encodeURIComponent(ISSUER)}&algorithm=SHA256&digits=6&period=30`;
+      const uri = `otpauth://totp/${encodeURIComponent(ISSUER)}:${encodeURIComponent(ctx.auth.token.email || uid)}?secret=${d.plainSecretForQr}&issuer=${encodeURIComponent(ISSUER)}&algorithm=SHA1&digits=6&period=30`;
       return { enrollmentId: doc.id, secret: d.plainSecretForQr, otpauthUrl: uri, expiresAt: d.expiresAt };
     }
   }
@@ -147,7 +162,7 @@ exports.startTotpEnrollment = callable(async (data, ctx)=>{
   const enc=encryptSecret(secret);
   const enrollmentId=admin.firestore().collection('totpEnrollments').doc().id;
   const email=ctx.auth.token.email || uid;
-  const otpauthUrl=`otpauth://totp/${encodeURIComponent(ISSUER)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(ISSUER)}&algorithm=SHA256&digits=6&period=30`;
+  const otpauthUrl=`otpauth://totp/${encodeURIComponent(ISSUER)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(ISSUER)}&algorithm=SHA1&digits=6&period=30`;
   const expiresAt=admin.firestore.Timestamp.fromMillis(Date.now()+10*60*1000);
   await admin.firestore().doc(`totpEnrollments/${enrollmentId}`).set({
     userId: uid,
@@ -184,13 +199,13 @@ exports.verifyTotpEnrollment = callable(async (data, ctx)=>{
   const secret = en.plainSecretForQr || decryptSecret(en.encryptedSecret, en.iv, en.authTag);
   const normalized=String(code).replace(/\s/g,'');
   if(!/^\d{6}$/.test(normalized)) throw new CallableError('invalid-argument','Code must be 6 digits');
-  const isValid=authenticator.check(normalized, secret);
+  const isValid=isValidTotp(normalized, secret);
   if(!isValid) throw new CallableError('invalid-argument','Invalid code');
   // success: activate 2FA
   const enc=encryptSecret(secret);
   await totpDoc(ctx.auth.uid).set({
     enabled:true,
-    algorithm:'SHA256',
+    algorithm:'SHA1',
     digits:6,
     period:30,
     encryptedSecret: enc.encryptedSecret,
@@ -262,7 +277,7 @@ exports.verifyTotpLogin = callable(async (data, ctx)=>{
   const normalized=String(code).replace(/\s/g,'');
   if(!/^\d{6}$/.test(normalized)) throw new CallableError('invalid-argument','Code must be 6 digits');
   // replay protection: check if same code already used for this challenge in window? Store lastVerifiedAt and step
-  const isValid=authenticator.check(normalized, secret);
+  const isValid=isValidTotp(normalized, secret);
   if(!isValid) throw new CallableError('invalid-argument','Invalid code');
 
   await ref.update({ status:'COMPLETED', completedAt: admin.firestore.FieldValue.serverTimestamp() });
@@ -330,7 +345,7 @@ exports.disableTotp = callable(async (data, ctx)=>{
   let valid=false;
   if(code){
     const norm=String(code).replace(/\s/g,'');
-    if(/^\d{6}$/.test(norm) && authenticator.check(norm, secret)) valid=true;
+    if(/^\d{6}$/.test(norm) && isValidTotp(norm, secret)) valid=true;
   }
   if(!valid && recoveryCode){
     const norm=String(recoveryCode).replace(/-/g,'').replace(/\s/g,'').toUpperCase();
@@ -358,7 +373,7 @@ exports.regenerateRecoveryCodes = callable(async (data, ctx)=>{
   const totp=snap.data();
   const secret=decryptSecret(totp.encryptedSecret, totp.iv, totp.authTag);
   const norm=String(code||'').replace(/\s/g,'');
-  if(!/^\d{6}$/.test(norm) || !authenticator.check(norm, secret)) throw new CallableError('invalid-argument','Valid TOTP code required');
+  if(!/^\d{6}$/.test(norm) || !isValidTotp(norm, secret)) throw new CallableError('invalid-argument','Valid TOTP code required');
   await rateLimit(`regen_${ctx.auth.uid}`, 3, 60*60*1000);
   const codes=generateRecoveryCodes();
   const batch=admin.firestore().batch();

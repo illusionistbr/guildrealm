@@ -264,7 +264,7 @@ export function TwoFactorSection() {
   // enabled view
   return (()=>{ const { hasPassword, hasGoogle, social } = getProviderInfo(); const providerLabel = hasGoogle ? 'Google' : social ? social : 'social'; return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 text-sm"><ShieldCheck size={16} className="text-emerald-400"/> Status: <span className="font-bold text-emerald-400">Ativada</span> <span className="text-xs text-muted">• App autenticador (SHA256 / 30s)</span></div>
+      <div className="flex items-center gap-2 text-sm"><ShieldCheck size={16} className="text-emerald-400"/> Status: <span className="font-bold text-emerald-400">Ativada</span> <span className="text-xs text-muted">• App autenticador (SHA1 / 30s)</span></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div className="space-y-2 p-3 rounded-lg bg-[#050912] border border-[rgba(38,51,86,0.3)]">
           <p className="text-xs font-bold text-white">Gerar novos códigos</p>
