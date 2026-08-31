@@ -393,6 +393,16 @@ exports.disableTotp = callable(async (data, ctx)=>{
   const batch=admin.firestore().batch();
   oldCodes.forEach(d=> batch.delete(d.ref));
   await batch.commit();
+  // Revoga todos os dispositivos confiáveis ao desativar 2FA
+  try {
+    const trusted = await admin.firestore().collection(`users/${ctx.auth.uid}/trustedDevices`).where('revoked','==',false).get();
+    const b2 = admin.firestore().batch();
+    trusted.docs.forEach(d=> b2.update(d.ref, { revoked:true, revokedAt: admin.firestore.FieldValue.serverTimestamp() }));
+    await b2.commit();
+    await admin.firestore().collection(`users/${ctx.auth.uid}/activity`).add({ type:'TRUSTED_DEVICES_REVOKED_ALL', reason:'TOTP_DISABLED', createdAt: admin.firestore.FieldValue.serverTimestamp()});
+  } catch {}
+  // limpa sessão 2FA
+  try { await admin.firestore().doc(`users/${ctx.auth.uid}/security/twoFactorSession`).delete(); } catch {}
   try{ await admin.firestore().collection('users').doc(ctx.auth.uid).collection('activity').add({ type:'TOTP_DISABLED', createdAt: admin.firestore.FieldValue.serverTimestamp()}); }catch{}
   return { success:true };
 });
@@ -424,11 +434,16 @@ exports.regenerateRecoveryCodes = callable(async (data, ctx)=>{
 exports.requireTwoFactorVerified = requireTwoFactorVerified;
 exports.isTwoFactorVerified = isTwoFactorVerified;
 
-// Cleanup expired enrollments/challenges hourly
+// Cleanup expired enrollments/challenges hourly + trusted devices expirados
 exports.cleanupTotpExpired = onSchedule('every 60 minutes', async ()=>{
   const now=Date.now();
   const enroll=await admin.firestore().collection('totpEnrollments').where('expiresAt','<', admin.firestore.Timestamp.fromMillis(now)).where('status','==','PENDING').get();
   for(const d of enroll.docs){ await d.ref.update({status:'EXPIRED'}).catch(()=>{}); }
   const chall=await admin.firestore().collection('authChallenges').where('expiresAt','<', admin.firestore.Timestamp.fromMillis(now)).where('status','==','PENDING').get();
   for(const d of chall.docs){ await d.ref.update({status:'EXPIRED'}).catch(()=>{}); }
+  // Marca trustedDevices expirados como revogados (não deleta para auditoria)
+  try{
+    const trusted = await admin.firestore().collectionGroup('trustedDevices').where('expiresAt','<', admin.firestore.Timestamp.fromMillis(now)).get();
+    for(const d of trusted.docs){ if(!d.data().revoked) await d.ref.update({ revoked:true, revokedAt: admin.firestore.FieldValue.serverTimestamp(), revokeReason:'expired' }).catch(()=>{}); }
+  } catch(e){ console.warn('cleanup trustedDevices failed', e); }
 });

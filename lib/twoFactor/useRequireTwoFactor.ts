@@ -40,7 +40,7 @@ export function useRequireTwoFactor(): boolean {
       }
       try {
         // Ensure ID token is fresh before callable
-        await user.getIdToken(false).catch(() => {});
+        const idToken = await user.getIdToken(false).catch(() => '');
         const tokenRes = await user.getIdTokenResult().catch(() => null);
         const authTimeMs = tokenRes?.claims?.auth_time ? Number(tokenRes.claims.auth_time) * 1000 : 0;
 
@@ -48,8 +48,6 @@ export function useRequireTwoFactor(): boolean {
         try {
           status = await getTwoFactorStatus();
         } catch (e: any) {
-          // Fail closed: se não conseguiu verificar status, assume 2FA necessário -> redireciona
-          // só libera se erro for claramente de não-autenticado e status não existe
           if (!cancelled) router.replace('/2fa');
           return;
         }
@@ -57,6 +55,20 @@ export function useRequireTwoFactor(): boolean {
           if (!cancelled) setChecking(false);
           return;
         }
+        // Primeiro tenta validar dispositivo confiável via backend (cookie HttpOnly)
+        try {
+          const vRes = await fetch('/api/trusted-device/validate', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${idToken}` },
+            credentials: 'include',
+          });
+          const vData: any = await vRes.json().catch(()=>({}));
+          if (vData?.trusted) {
+            if (!cancelled) setChecking(false);
+            return;
+          }
+        } catch {}
+
         const db = getFirebaseDb();
         const snap = await getDoc(doc(db, 'users', user.uid, 'security', 'twoFactorSession'));
         if (!snap.exists()) {
@@ -68,18 +80,14 @@ export function useRequireTwoFactor(): boolean {
         if (data.expiresAt?.toMillis) expMs = data.expiresAt.toMillis();
         else if (data.expiresAt?.seconds) expMs = data.expiresAt.seconds * 1000;
         else if (typeof data.expiresAt === 'number') expMs = data.expiresAt;
-        // Sessão expirada
         if (!expMs || Date.now() > expMs) {
           if (!cancelled) router.replace('/2fa');
           return;
         }
-        // Sessão stale: verificada antes do login atual (auth_time)
-        // Garante que verificação seja por login, não reutilização de sessão antiga de 30min
         let verifiedMs = 0;
         if (data.verifiedAt?.toMillis) verifiedMs = data.verifiedAt.toMillis();
         else if (data.verifiedAt?.seconds) verifiedMs = data.verifiedAt.seconds * 1000;
         if (authTimeMs && verifiedMs && verifiedMs < authTimeMs - 5000) {
-          // verified before this login -> exige novo 2FA
           if (!cancelled) router.replace('/2fa');
           return;
         }

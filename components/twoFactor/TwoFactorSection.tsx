@@ -142,6 +142,14 @@ export function TwoFactorSection() {
         }
       }
       await disableTotp(code);
+      // Limpa dispositivos confiáveis (cookie HttpOnly) ao desativar 2FA
+      try{
+        const u = getFirebaseAuth().currentUser;
+        if(u){
+          const t = await u.getIdToken();
+          await fetch('/api/trusted-device/revoke-all', { method:'POST', headers:{'Authorization':`Bearer ${t}`}, credentials:'include' });
+        }
+      }catch{}
       toast.success('2FA desativado');
       setStatus({ enabled:false });
       setCode(''); setPassword('');

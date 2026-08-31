@@ -415,6 +415,17 @@ match /members/{userId} {
     match /totp_attempts/{docId} {
       allow read, write: if false;
     }
+    // ============ TRUSTED DEVICES (2FA - Não solicitar neste navegador) ============
+    // Somente backend (Admin SDK) pode criar/alterar. Cliente não tem acesso direto.
+    match /users/{userId}/trustedDevices/{deviceId} {
+      allow read, write: if false;
+    }
+    match /trustedDevices/{deviceId} {
+      allow read, write: if false;
+    }
+    match /trusted_device_attempts/{docId} {
+      allow read, write: if false;
+    }
 
     // ============ LOOT & DKP ============
     match /guilds/{guildId}/settings/loot {

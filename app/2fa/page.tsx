@@ -17,6 +17,7 @@ export default function TwoFactorPage(){
   const [recoveryInput,setRecoveryInput]=useState('');
   const [loading,setLoading]=useState(true);
   const [verifying,setVerifying]=useState(false);
+  const [trustDevice,setTrustDevice]=useState(false);
 
   useEffect(()=>{
     const unsub=onAuthStateChanged(getFirebaseAuth(), async (user)=>{
@@ -45,6 +46,24 @@ export default function TwoFactorPage(){
     try{
       if(useRecovery) await verifyRecoveryCode(challengeId, recoveryInput);
       else await verifyTotpLogin(challengeId, code);
+      // Se marcou confiar neste navegador e não é recovery, cria dispositivo confiável
+      if(!useRecovery && trustDevice){
+        try{
+          const user = getFirebaseAuth().currentUser;
+          if(user){
+            const token = await user.getIdToken();
+            const res = await fetch('/api/trusted-device/create', {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({}),
+            });
+            if(!res.ok){
+              console.warn('trusted device create failed', await res.text());
+            }
+          }
+        } catch(e){ console.warn('trusted device', e); }
+      }
       sessionStorage.removeItem('totp_challenge');
       toast.success('Verificado! Acesso liberado.');
       router.replace('/app/dashboard');
@@ -66,6 +85,11 @@ export default function TwoFactorPage(){
         {!useRecovery ? (
           <div className="space-y-4">
             <input value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,'').slice(0,6))} inputMode="numeric" placeholder="123456" className="w-full h-14 text-center text-2xl tracking-[0.5em] bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-white" />
+            <label className="flex items-start gap-2 cursor-pointer select-none">
+              <input type="checkbox" checked={trustDevice} onChange={e=>setTrustDevice(e.target.checked)} className="mt-0.5 w-4 h-4 rounded border-[rgba(38,51,86,0.5)] bg-[#050912] text-accent focus:ring-accent/50" />
+              <span className="text-xs text-muted leading-tight">Não solicitar novamente neste navegador por 30 dias</span>
+            </label>
+            <p className="text-[11px] text-muted/70 -mt-2">Não utilize esta opção em computadores públicos ou compartilhados.</p>
             <button onClick={handleVerify} disabled={verifying} className="w-full h-11 rounded-lg bg-accent text-white font-medium disabled:opacity-50 flex items-center justify-center gap-2">{verifying && <Loader2 size={16} className="animate-spin"/>} Verificar</button>
             <button onClick={()=>setUseRecovery(true)} className="w-full text-xs text-accent hover:underline">Usar código de recuperação</button>
           </div>

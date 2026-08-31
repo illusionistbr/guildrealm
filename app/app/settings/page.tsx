@@ -10,6 +10,7 @@ import { cn } from '@/lib/admin/utils/cn';
 import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { Bell, Shield, Eye, Lock, Save, Loader2, AlertTriangle, X } from 'lucide-react';
 import { TwoFactorSection } from '@/components/twoFactor/TwoFactorSection';
+import { TrustedDevicesSection } from '@/components/twoFactor/TrustedDevicesSection';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -319,6 +320,9 @@ export default function SettingsPage() {
             <div className="mt-3">
               <TwoFactorSection />
             </div>
+          </div>
+          <div className="rounded-xl border border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)] p-4">
+            <TrustedDevicesSection />
           </div>
           <Row
             label="Sessões ativas"
