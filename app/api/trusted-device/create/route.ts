@@ -72,13 +72,22 @@ export async function POST(req: NextRequest) {
     }
 
     // Verifica se existe sessão 2FA recente (deve ter verificado TOTP nos últimos 5min)
-    const sessSnap = await adminDb.doc(`users/${uid}/security/twoFactorSession`).get();
+    // Retry 1x após 800ms para lidar com replicação eventual Firestore entre us-central1 (Functions) e iad1 (Vercel)
+    let sessSnap = await adminDb.doc(`users/${uid}/security/twoFactorSession`).get();
+    let sessData: any = sessSnap.data();
+    let verifiedAtMs = sessData?.verifiedAt?.toMillis ? sessData.verifiedAt.toMillis() : (sessData?.verifiedAt?.seconds ? sessData.verifiedAt.seconds*1000 : 0);
+    if (!sessSnap.exists || !verifiedAtMs || Date.now() - verifiedAtMs > 5 * 60 * 1000) {
+      await new Promise(r=>setTimeout(r, 800));
+      sessSnap = await adminDb.doc(`users/${uid}/security/twoFactorSession`).get();
+      sessData = sessSnap.data();
+      verifiedAtMs = sessData?.verifiedAt?.toMillis ? sessData.verifiedAt.toMillis() : (sessData?.verifiedAt?.seconds ? sessData.verifiedAt.seconds*1000 : 0);
+    }
     if (!sessSnap.exists) {
+      console.warn(`[create trusted] 2fa_not_verified uid=${uid} verifiedAtMs=${verifiedAtMs}`);
       return NextResponse.json({ error: '2fa_not_verified' }, { status: 403 });
     }
-    const sessData: any = sessSnap.data();
-    const verifiedAtMs = sessData.verifiedAt?.toMillis ? sessData.verifiedAt.toMillis() : 0;
     if (!verifiedAtMs || Date.now() - verifiedAtMs > 5 * 60 * 1000) {
+      console.warn(`[create trusted] session_not_fresh uid=${uid} verifiedAtMs=${verifiedAtMs} now=${Date.now()} diff=${Date.now()-verifiedAtMs}`);
       return NextResponse.json({ error: 'session_not_fresh' }, { status: 403 });
     }
 
@@ -128,20 +137,27 @@ export async function POST(req: NextRequest) {
       });
     } catch {}
 
-    // Cria cookie HttpOnly
+    // Cria cookie HttpOnly - domínio .clanforge.app para compartilhar www <-> não-www
     const cookieValue = `${deviceId}.${rawToken}`;
     const isProd = process.env.NODE_ENV === 'production';
+    const host = req.headers.get('host') || req.headers.get('x-forwarded-host') || '';
+    const isClanForgeHost = host.includes('clanforge.app');
+    const cookieDomain = isClanForgeHost ? '.clanforge.app' : undefined;
     const response = NextResponse.json({ success: true, deviceId, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 });
 
+    // Detecta se request é https (Vercel sempre https em prod) para Secure correto
+    const forwardedProto = req.headers.get('x-forwarded-proto') || '';
+    const isHttps = forwardedProto === 'https' || isProd;
     response.cookies.set(COOKIE_NAME, cookieValue, {
       httpOnly: true,
-      secure: isProd,
+      secure: isHttps,
       sameSite: 'lax',
       path: '/',
       maxAge: COOKIE_MAX_AGE,
+      ...(cookieDomain ? { domain: cookieDomain } : {}),
     });
     // Log para debug de produção (sem expor token)
-    console.log(`[create trusted] user=${uid} device=${deviceId} label=${label}`);
+    console.log(`[create trusted] user=${uid} device=${deviceId} label=${label} host=${host} domain=${cookieDomain||'(host-only)'} secure=${isHttps}`);
 
     return response;
   } catch (e: any) {

@@ -53,10 +53,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ trusted: false, reason: '2fa_not_enabled' });
     }
 
-    // NextRequest.cookies é mais confiável que parse manual (lida com encoding e múltiplos cookies)
-    // fallback para header caso cookies() esteja vazio em algum runtime
+    // NextRequest.cookies é mais confiável que parse manual; fallback para header
     const rawCookie = req.cookies.get(COOKIE_NAME)?.value ?? parseCookies(req.headers.get('cookie'))[COOKIE_NAME];
     if (!rawCookie) {
+      console.warn(`[validate trusted] no_cookie uid=${uid} cookieHeader=${(req.headers.get('cookie')||'').slice(0,120)} host=${req.headers.get('host')}`);
       return NextResponse.json({ trusted: false, reason: 'no_cookie' });
     }
     // cookie format: deviceId.rawToken
