@@ -252,6 +252,15 @@ exports.verifyTotpEnrollment = callable(async (data, ctx)=>{
   await batch.commit();
   // cleanup enrollment (remove plain secret)
   await ref.update({ status:'COMPLETED', plainSecretForQr: admin.firestore.FieldValue.delete(), completedAt: admin.firestore.FieldValue.serverTimestamp() });
+  // cria sessão válida pós-enrollment para não expulsar imediatamente do painel
+  try{
+    await admin.firestore().doc(`users/${ctx.auth.uid}/security/twoFactorSession`).set({
+      verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+      enrollmentId,
+      viaEnrollment: true,
+      expiresAt: admin.firestore.Timestamp.fromMillis(Date.now()+ 30*60*1000),
+    }, {merge:true});
+  } catch {}
   // audit
   try{ await admin.firestore().collection('users').doc(ctx.auth.uid).collection('activity').add({ type:'TOTP_ENABLED', createdAt: admin.firestore.FieldValue.serverTimestamp()}); }catch{}
   return { success:true, recoveryCodes: codes };
@@ -263,6 +272,8 @@ exports.createTotpChallenge = callable(async (data, ctx)=>{
   const statusSnap=await totpDoc(uid).get();
   if(!statusSnap.exists || !statusSnap.data().enabled) throw new CallableError('failed-precondition','2FA not enabled');
   await rateLimit(`challenge_${uid}`, 5, 5*60*1000);
+  // Invalida sessão anterior para garantir que novo login exige verificação fresca (evita bypass via aba nova)
+  try { await admin.firestore().doc(`users/${uid}/security/twoFactorSession`).delete(); } catch {}
   const challengeId=admin.firestore().collection('authChallenges').doc().id;
   const expiresAt=admin.firestore.Timestamp.fromMillis(Date.now()+5*60*1000);
   await admin.firestore().doc(`authChallenges/${challengeId}`).set({

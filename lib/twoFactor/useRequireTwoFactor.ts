@@ -25,7 +25,6 @@ export function useRequireTwoFactor(): boolean {
       return;
     }
 
-    // Only guard protected prefixes
     const isProtected = pathname?.startsWith('/app') || pathname?.startsWith('/panel');
     if (!isProtected) {
       setChecking(false);
@@ -40,12 +39,24 @@ export function useRequireTwoFactor(): boolean {
         return;
       }
       try {
-        const status: any = await getTwoFactorStatus().catch(() => ({ enabled: false }));
+        // Ensure ID token is fresh before callable
+        await user.getIdToken(false).catch(() => {});
+        const tokenRes = await user.getIdTokenResult().catch(() => null);
+        const authTimeMs = tokenRes?.claims?.auth_time ? Number(tokenRes.claims.auth_time) * 1000 : 0;
+
+        let status: any = null;
+        try {
+          status = await getTwoFactorStatus();
+        } catch (e: any) {
+          // Fail closed: se não conseguiu verificar status, assume 2FA necessário -> redireciona
+          // só libera se erro for claramente de não-autenticado e status não existe
+          if (!cancelled) router.replace('/2fa');
+          return;
+        }
         if (!status?.enabled) {
           if (!cancelled) setChecking(false);
           return;
         }
-        // 2FA enabled -> require valid session
         const db = getFirebaseDb();
         const snap = await getDoc(doc(db, 'users', user.uid, 'security', 'twoFactorSession'));
         if (!snap.exists()) {
@@ -57,13 +68,25 @@ export function useRequireTwoFactor(): boolean {
         if (data.expiresAt?.toMillis) expMs = data.expiresAt.toMillis();
         else if (data.expiresAt?.seconds) expMs = data.expiresAt.seconds * 1000;
         else if (typeof data.expiresAt === 'number') expMs = data.expiresAt;
+        // Sessão expirada
         if (!expMs || Date.now() > expMs) {
+          if (!cancelled) router.replace('/2fa');
+          return;
+        }
+        // Sessão stale: verificada antes do login atual (auth_time)
+        // Garante que verificação seja por login, não reutilização de sessão antiga de 30min
+        let verifiedMs = 0;
+        if (data.verifiedAt?.toMillis) verifiedMs = data.verifiedAt.toMillis();
+        else if (data.verifiedAt?.seconds) verifiedMs = data.verifiedAt.seconds * 1000;
+        if (authTimeMs && verifiedMs && verifiedMs < authTimeMs - 5000) {
+          // verified before this login -> exige novo 2FA
           if (!cancelled) router.replace('/2fa');
           return;
         }
         if (!cancelled) setChecking(false);
       } catch {
-        if (!cancelled) setChecking(false);
+        // Qualquer erro inesperado: fail closed -> força 2FA
+        if (!cancelled) router.replace('/2fa');
       }
     });
 
