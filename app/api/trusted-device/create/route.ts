@@ -71,24 +71,53 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '2fa_not_enabled' }, { status: 400 });
     }
 
-    // Verifica se existe sessão 2FA recente (deve ter verificado TOTP nos últimos 5min)
-    // Retry 1x após 800ms para lidar com replicação eventual Firestore entre us-central1 (Functions) e iad1 (Vercel)
-    let sessSnap = await adminDb.doc(`users/${uid}/security/twoFactorSession`).get();
-    let sessData: any = sessSnap.data();
-    let verifiedAtMs = sessData?.verifiedAt?.toMillis ? sessData.verifiedAt.toMillis() : (sessData?.verifiedAt?.seconds ? sessData.verifiedAt.seconds*1000 : 0);
-    if (!sessSnap.exists || !verifiedAtMs || Date.now() - verifiedAtMs > 5 * 60 * 1000) {
-      await new Promise(r=>setTimeout(r, 800));
-      sessSnap = await adminDb.doc(`users/${uid}/security/twoFactorSession`).get();
-      sessData = sessSnap.data();
-      verifiedAtMs = sessData?.verifiedAt?.toMillis ? sessData.verifiedAt.toMillis() : (sessData?.verifiedAt?.seconds ? sessData.verifiedAt.seconds*1000 : 0);
+    // Verifica prova de 2FA recente: aceita session OU challenge COMPLETED (evita lag us-central1->iad1)
+    const body = await req.json().catch(()=> ({}));
+    const proofChallengeId = typeof body.challengeId === 'string' ? body.challengeId.trim() : '';
+
+    let hasValidProof = false;
+    let proofReason = '';
+
+    // Caminho 1: challenge recém completado (mais confiável, ignora replicação de session)
+    if (proofChallengeId) {
+      try {
+        const chSnap = await adminDb.doc(`authChallenges/${proofChallengeId}`).get();
+        if (chSnap.exists) {
+          const ch: any = chSnap.data();
+          const completedMs = ch.completedAt?.toMillis ? ch.completedAt.toMillis() : (ch.completedAt?.seconds ? ch.completedAt.seconds*1000 : 0);
+          const isOwn = ch.userId === uid;
+          const isCompleted = ch.status === 'COMPLETED';
+          const isRecent = completedMs && Date.now() - completedMs < 5*60*1000;
+          if (isOwn && isCompleted && isRecent) hasValidProof = true;
+          else proofReason = `challenge_${ch.status}_${isOwn?'own':'foreign'}_${isRecent?'recent':'stale'}`;
+        } else proofReason = 'challenge_not_found';
+      } catch(e:any){ proofReason = 'challenge_error:'+e.message; }
     }
-    if (!sessSnap.exists) {
-      console.warn(`[create trusted] 2fa_not_verified uid=${uid} verifiedAtMs=${verifiedAtMs}`);
-      return NextResponse.json({ error: '2fa_not_verified' }, { status: 403 });
+
+    // Caminho 2: twoFactorSession recente (fallback, com retry para replicação)
+    if (!hasValidProof) {
+      let sessSnap = await adminDb.doc(`users/${uid}/security/twoFactorSession`).get();
+      let sessData: any = sessSnap.data();
+      let verifiedAtMs = sessData?.verifiedAt?.toMillis ? sessData.verifiedAt.toMillis() : (sessData?.verifiedAt?.seconds ? sessData.verifiedAt.seconds*1000 : 0);
+      if (!sessSnap.exists || !verifiedAtMs || Date.now() - verifiedAtMs > 5 * 60 * 1000) {
+        // retry 2x para replicação
+        for(let i=0;i<2;i++){
+          await new Promise(r=>setTimeout(r, 800));
+          sessSnap = await adminDb.doc(`users/${uid}/security/twoFactorSession`).get();
+          sessData = sessSnap.data();
+          verifiedAtMs = sessData?.verifiedAt?.toMillis ? sessData.verifiedAt.toMillis() : (sessData?.verifiedAt?.seconds ? sessData.verifiedAt.seconds*1000 : 0);
+          if (sessSnap.exists && verifiedAtMs && Date.now() - verifiedAtMs <= 5*60*1000) break;
+        }
+      }
+      if (sessSnap.exists && verifiedAtMs && Date.now() - verifiedAtMs <= 5*60*1000) hasValidProof = true;
+      else proofReason = proofReason || (sessSnap.exists ? `session_stale_${Date.now()- (verifiedAtMs||0)}ms` : '2fa_not_verified');
     }
-    if (!verifiedAtMs || Date.now() - verifiedAtMs > 5 * 60 * 1000) {
-      console.warn(`[create trusted] session_not_fresh uid=${uid} verifiedAtMs=${verifiedAtMs} now=${Date.now()} diff=${Date.now()-verifiedAtMs}`);
-      return NextResponse.json({ error: 'session_not_fresh' }, { status: 403 });
+
+    if (!hasValidProof) {
+      console.warn(`[create trusted] denied uid=${uid} reason=${proofReason} challengeId=${proofChallengeId||'none'}`);
+      // mapeia para erro compatível com cliente
+      const err = proofReason.includes('challenge') && proofReason.includes('stale') ? 'session_not_fresh' : (proofReason.includes('not_found') || proofReason.includes('2fa_not_verified') ? '2fa_not_verified' : 'session_not_fresh');
+      return NextResponse.json({ error: err, detail: proofReason }, { status: 403 });
     }
 
     await checkRateLimit(`create_${uid}`).catch((e) => {

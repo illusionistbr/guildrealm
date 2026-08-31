@@ -57,7 +57,7 @@ export default function TwoFactorPage(){
               headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
               credentials: 'include',
               cache: 'no-store',
-              body: JSON.stringify({}),
+              body: JSON.stringify({ challengeId }),
             });
             if(!res.ok){
               const txt = await res.text();
