@@ -61,13 +61,16 @@ export function useRequireTwoFactor(): boolean {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${idToken}` },
             credentials: 'include',
+            cache: 'no-store',
           });
           const vData: any = await vRes.json().catch(()=>({}));
           if (vData?.trusted) {
             if (!cancelled) setChecking(false);
             return;
+          } else {
+            console.debug('[useRequireTwoFactor] not trusted', vData?.reason);
           }
-        } catch {}
+        } catch(e){ console.debug('[useRequireTwoFactor] validate error', e); }
 
         const db = getFirebaseDb();
         const snap = await getDoc(doc(db, 'users', user.uid, 'security', 'twoFactorSession'));

@@ -128,7 +128,6 @@ export async function POST(req: NextRequest) {
       });
     } catch {}
 
-    // Renova sessão para 30 dias? Não, mantém sessão curta mas já está ok.
     // Cria cookie HttpOnly
     const cookieValue = `${deviceId}.${rawToken}`;
     const isProd = process.env.NODE_ENV === 'production';
@@ -141,6 +140,8 @@ export async function POST(req: NextRequest) {
       path: '/',
       maxAge: COOKIE_MAX_AGE,
     });
+    // Log para debug de produção (sem expor token)
+    console.log(`[create trusted] user=${uid} device=${deviceId} label=${label}`);
 
     return response;
   } catch (e: any) {

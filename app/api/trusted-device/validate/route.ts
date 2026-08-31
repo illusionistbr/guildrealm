@@ -53,9 +53,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ trusted: false, reason: '2fa_not_enabled' });
     }
 
-    const cookieHeader = req.headers.get('cookie');
-    const cookies = parseCookies(cookieHeader);
-    const rawCookie = cookies[COOKIE_NAME];
+    // NextRequest.cookies é mais confiável que parse manual (lida com encoding e múltiplos cookies)
+    // fallback para header caso cookies() esteja vazio em algum runtime
+    const rawCookie = req.cookies.get(COOKIE_NAME)?.value ?? parseCookies(req.headers.get('cookie'))[COOKIE_NAME];
     if (!rawCookie) {
       return NextResponse.json({ trusted: false, reason: 'no_cookie' });
     }

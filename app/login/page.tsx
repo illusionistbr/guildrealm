@@ -93,6 +93,7 @@ export default function LoginPage() {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${idToken}` },
               credentials: 'include',
+              cache: 'no-store',
             });
             const vData: any = await vRes.json().catch(()=>({}));
             if(vData?.trusted){
@@ -102,8 +103,10 @@ export default function LoginPage() {
               const target = isSafePath ? next : '/app/dashboard';
               window.location.href = target;
               return;
+            } else {
+              console.debug('[login] trusted validate not trusted', vData?.reason);
             }
-          }catch{ /* falha na validação -> exige TOTP */ }
+          }catch(e){ console.debug('[login] trusted validate error', e); /* falha na validação -> exige TOTP */ }
           const chFn = httpsCallable(getFunctions(getFirebaseApp()), 'createTotpChallenge');
           const ch: any = await chFn({});
           sessionStorage.setItem('totp_challenge', ch.data.challengeId);

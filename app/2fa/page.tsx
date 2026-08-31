@@ -51,18 +51,30 @@ export default function TwoFactorPage(){
         try{
           const user = getFirebaseAuth().currentUser;
           if(user){
-            const token = await user.getIdToken();
+            const token = await user.getIdToken(true);
             const res = await fetch('/api/trusted-device/create', {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
               credentials: 'include',
+              cache: 'no-store',
               body: JSON.stringify({}),
             });
             if(!res.ok){
-              console.warn('trusted device create failed', await res.text());
+              const txt = await res.text();
+              console.warn('trusted device create failed', res.status, txt);
+              // Explica falha para o usuário - caso contrário ele acha que salvou e na próxima vez pede de novo
+              if(txt.includes('session_not_fresh') || txt.includes('2fa_not_verified')){
+                toast.error('Falha ao salvar navegador confiável: sessão expirou. Faça login novamente e marque a opção.');
+              } else if(txt.includes('too_many_requests')){
+                toast.error('Muitas tentativas de salvar navegador. Aguarde 10 min.');
+              } else {
+                toast.warning('Não foi possível salvar "não solicitar neste navegador". Tente novamente em /app/settings.');
+              }
+            } else {
+              toast.success('Navegador confiável salvo por 30 dias.');
             }
           }
-        } catch(e){ console.warn('trusted device', e); }
+        } catch(e){ console.warn('trusted device', e); toast.warning('Erro ao salvar navegador confiável.'); }
       }
       sessionStorage.removeItem('totp_challenge');
       toast.success('Verificado! Acesso liberado.');
