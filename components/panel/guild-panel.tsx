@@ -49,7 +49,6 @@ import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
 import { useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
 import { LootView } from '@/components/loot/LootView';
 import { LootSettingsPanel } from '@/components/loot/LootSettingsPanel';
-import { useRequireTwoFactor } from '@/lib/twoFactor/useRequireTwoFactor';
 import { Gem } from 'lucide-react';
 import {
   AlertTriangle,
@@ -142,7 +141,6 @@ const FACIONS: Record<string, string> = {
 export function GuildPanel({ view = 'overview' }: { view?: View }) {
   const t = useTranslations('GuildPanel');
   const params = useParams<{ id: string }>();
-  const checking2FA = useRequireTwoFactor();
 
   const [uid, setUid] = useState<string | null>(null);
   const [guild, setGuild] = useState<GuildDoc | null>(null);
@@ -312,15 +310,6 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
   const canManageDkp = isLeader || !!(userPerms as any).manageDkp;
   const canCreateLoot = isLeader || !!(userPerms as any).createLoot;
   const canManageLootSettings = isLeader || !!(userPerms as any).manageLootSettings;
-
-  if (checking2FA) {
-    return (
-      <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center px-6 text-center">
-        <Loader2 size={24} className="animate-spin text-muted mb-3" />
-        <p className="text-sm text-muted flex items-center gap-2"><Shield size={14} /> Verificando 2FA...</p>
-      </div>
-    );
-  }
 
   if (!loading && !guild) {
     return (

@@ -81,40 +81,6 @@ export default function LoginPage() {
         return;
       }
 
-      // 2FA check: if enabled, verifica dispositivo confiável antes de exigir TOTP
-      try{
-        const fn = httpsCallable(getFunctions(getFirebaseApp()), 'getTwoFactorStatus');
-        const res: any = await fn({});
-        if(res.data?.enabled){
-          // Tenta validar dispositivo confiável via cookie HttpOnly (backend decide)
-          try{
-            const idToken = await credential.user.getIdToken();
-            const vRes = await fetch('/api/trusted-device/validate', {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${idToken}` },
-              credentials: 'include',
-              cache: 'no-store',
-            });
-            const vData: any = await vRes.json().catch(()=>({}));
-            if(vData?.trusted){
-              // Dispositivo confiável válido -> libera acesso sem TOTP
-              const next = new URLSearchParams(window.location.search).get('next');
-              const isSafePath = next && next.startsWith('/') && !next.startsWith('//') && !next.includes('://') && !next.includes('\\');
-              const target = isSafePath ? next : '/app/dashboard';
-              window.location.href = target;
-              return;
-            } else {
-              console.debug('[login] trusted validate not trusted', vData?.reason);
-            }
-          }catch(e){ console.debug('[login] trusted validate error', e); /* falha na validação -> exige TOTP */ }
-          const chFn = httpsCallable(getFunctions(getFirebaseApp()), 'createTotpChallenge');
-          const ch: any = await chFn({});
-          sessionStorage.setItem('totp_challenge', ch.data.challengeId);
-          window.location.href = '/2fa';
-          return;
-        }
-      }catch{ /* if status fails, proceed normal */ }
-
       setTimeout(() => {
         const next = new URLSearchParams(window.location.search).get('next');
         const isSafePath = next

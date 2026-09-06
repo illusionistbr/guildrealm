@@ -9,8 +9,6 @@ import { toast, Toaster } from 'sonner';
 import { cn } from '@/lib/admin/utils/cn';
 import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { Bell, Shield, Eye, Lock, Save, Loader2, AlertTriangle, X } from 'lucide-react';
-import { TwoFactorSection } from '@/components/twoFactor/TwoFactorSection';
-import { TrustedDevicesSection } from '@/components/twoFactor/TrustedDevicesSection';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -30,7 +28,6 @@ type SettingsData = {
     showOnline: boolean;
   };
   security: {
-    twoFactor: boolean;
     activeSessions: boolean;
   };
 };
@@ -38,7 +35,7 @@ type SettingsData = {
 const DEFAULT_SETTINGS: SettingsData = {
   notifications: { email: true, push: true, guildInvites: true, eventsPromos: false },
   privacy: { publicProfile: true, showAchievements: true, showOnline: true },
-  security: { twoFactor: false, activeSessions: true },
+  security: { activeSessions: true },
 };
 
 export default function SettingsPage() {
@@ -103,11 +100,6 @@ export default function SettingsPage() {
             toast.success('Notificações push ativadas!');
           }
         }
-      }
-
-      // 2FA: aviso
-      if (section === 'security' && key === 'twoFactor' && value === true) {
-        toast.info('Autenticação em 2 fatores será vinculada ao seu e-mail. Em breve com TOTP.');
       }
 
       setSettings((prev) => ({
@@ -305,7 +297,7 @@ export default function SettingsPage() {
         </div>
       </motion.div>
 
-      {/* Segurança - 2FA */}
+      {/* Segurança */}
       <motion.div
         variants={fadeUp}
         className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6"
@@ -314,16 +306,6 @@ export default function SettingsPage() {
           <Lock size={20} className="text-accent" /> Segurança
         </h2>
         <div className="space-y-6">
-          <div className="rounded-xl border border-accent/20 bg-accent/5 p-4">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">🔐 Autenticação em Dois Fatores</h3>
-            <p className="text-xs text-muted mt-1">Compatível com Google Authenticator, Microsoft Authenticator, Authy, 1Password.</p>
-            <div className="mt-3">
-              <TwoFactorSection />
-            </div>
-          </div>
-          <div className="rounded-xl border border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)] p-4">
-            <TrustedDevicesSection />
-          </div>
           <Row
             label="Sessões ativas"
             desc="Gerenciar dispositivos conectados"
