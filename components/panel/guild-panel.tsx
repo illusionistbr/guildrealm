@@ -703,8 +703,8 @@ function PanelSidebar({
       >
         {open && (
           <Link href="/app/dashboard" className="flex items-center gap-2">
-            <img src="/images/clanforge-emblem.png" alt="ClanForge" width={36} height={36} className="h-9 w-9 object-contain" />
-            <span className="font-heading font-bold text-white text-lg tracking-tight">ClanForge</span>
+            <img src="/images/clanforge-emblem.png" alt="" width={32} height={32} className="h-8 w-8 object-contain" />
+            <img src="/images/clanforge-name.png" alt="ClanForge" width={140} height={28} className="h-6 w-auto object-contain" />
           </Link>
         )}
         <button

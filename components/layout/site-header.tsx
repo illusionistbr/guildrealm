@@ -31,7 +31,7 @@ export function SiteHeader() {
     <header className="nav">
       <a href="/" className="brand" aria-label="ClanForge, início">
         <img src="/images/clanforge-emblem.png" alt="" width={36} height={36} className="h-9 w-9 object-contain mr-2.5" />
-        <span>ClanForge</span>
+        <img src="/images/clanforge-name.png" alt="ClanForge" width={160} height={32} className="h-7 w-auto object-contain" />
       </a>
       <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
         {navigationItems.map((item) => <a key={item.label} href={item.href} onClick={closeMenu}>{item.label}</a>)}
