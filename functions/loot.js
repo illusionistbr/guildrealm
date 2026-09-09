@@ -3,6 +3,13 @@ const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
+const {
+  BASE_URL,
+  getGuildName,
+  postToChannel,
+  guildFooter,
+  formatDuration,
+} = require('./discordNotify');
 
 const fv = admin.firestore.FieldValue;
 
@@ -419,8 +426,80 @@ exports.createLoot = callable(async (data, context) => {
 
   await docRef.set(base);
   await logGuildActivity(guildId, { type: type === 'AUCTION' ? 'loot_auction_created' : 'loot_raffle_created', userId: context.auth.uid, characterId: docRef.id, characterName: base.item.name, details: { lootId: docRef.id, type } });
+  // Notificação no Discord (canal de Loot) — nunca quebra a criação.
+  try {
+    await notifyLootCreated(guildId, docRef.id, base);
+  } catch (e) { console.warn('notifyLootCreated', e.message); }
   return { success: true, lootId: docRef.id };
 });
+
+// "🎁 Loot criado, termina em X, verifique aqui: link" no canal de Loot.
+async function notifyLootCreated(guildId, lootId, loot) {
+  const endsMs = loot.endsAt?.toMillis ? loot.endsAt.toMillis() : new Date(loot.endsAt).getTime();
+  const remaining = Number.isFinite(endsMs) ? endsMs - Date.now() : NaN;
+  const link = `${BASE_URL}/panel/guilds/${guildId}/loot`;
+  const guildName = await getGuildName(guildId);
+  const fields = [];
+  if (loot.type === 'AUCTION') {
+    fields.push({ name: '⚔️ Lance inicial', value: `${loot.auction?.startingBid ?? 0} DKP`, inline: true });
+    fields.push({ name: '📈 Incremento mín.', value: `${loot.auction?.minimumIncrement ?? 0} DKP`, inline: true });
+  } else {
+    fields.push({ name: '🎟️ Custo do ticket', value: `${loot.raffle?.entryCost ?? 0} DKP`, inline: true });
+  }
+  if (Number.isFinite(remaining) && remaining > 0) {
+    fields.push({ name: '⏳ Termina em', value: `**${formatDuration(remaining)}**`, inline: true });
+  }
+  fields.push({ name: '👉 Participar', value: `[⚔️ Verifique aqui](<${link}>)` });
+  await postToChannel(guildId, 'loot', {
+    embeds: [{
+      color: 0x6d28d9,
+      title: loot.type === 'AUCTION'
+        ? `🎁 LEILÃO CRIADO: ${String(loot.item.name).slice(0, 200)}`
+        : `🎰 SORTEIO CRIADO: ${String(loot.item.name).slice(0, 200)}`,
+      description: loot.item.description
+        ? String(loot.item.description).slice(0, 500)
+        : (loot.type === 'AUCTION'
+          ? '⚔️ Um novo leilão começou! Que vença o maior lance! 💰'
+          : '🍀 Um novo sorteio começou! Garanta seus tickets! 🎟️'),
+      fields,
+      timestamp: new Date().toISOString(),
+      footer: guildFooter(guildName),
+    }],
+  });
+}
+
+// "🏆 Loot encerrado, vencedor {nick}" no canal de Loot.
+async function notifyLootWinner(guildId, loot, winnerName) {
+  const link = `${BASE_URL}/panel/guilds/${guildId}/loot`;
+  const guildName = await getGuildName(guildId);
+  const isAuction = loot.type === 'AUCTION';
+  const detail = isAuction
+    ? `por **${loot.auction?.winningBid ?? loot.auction?.currentBid ?? '?'} DKP** ⚔️`
+    : `com o ticket **#${loot.raffle?.winningTicketNumber ?? '?'}** 🍀`;
+  await postToChannel(guildId, 'loot', {
+    embeds: [{
+      color: 0x22c55e,
+      title: isAuction ? '🏆 LEILÃO ENCERRADO!' : '🏆 SORTEIO ENCERRADO!',
+      description: `🎉 **${winnerName}** levou **${String(loot.item.name).slice(0, 200)}** ${detail}! GG! 🔥`,
+      fields: [{ name: '👉 Ver loot', value: `[⚔️ Verifique aqui](<${link}>)` }],
+      timestamp: new Date().toISOString(),
+      footer: guildFooter(guildName),
+    }],
+  });
+}
+
+async function notifyLootNoWinner(guildId, loot) {
+  const guildName = await getGuildName(guildId);
+  await postToChannel(guildId, 'loot', {
+    embeds: [{
+      color: 0x64748b,
+      title: '🌑 Loot encerrado sem vencedor',
+      description: `😴 Ninguém disputou **${String(loot.item.name).slice(0, 200)}**... O item volta para o cofre da guild! 🏦`,
+      timestamp: new Date().toISOString(),
+      footer: guildFooter(guildName),
+    }],
+  });
+}
 
 exports.updateLoot = callable(async (data, context) => {
   const { guildId, lootId, ...updates } = data ?? {};
@@ -733,6 +812,9 @@ async function finalizeAuction(guildId, lootId, loot) {
   if (!winnerId || !winningBid) {
     await lootRef.update({ status: 'FINISHED', updatedAt: admin.firestore.FieldValue.serverTimestamp() });
     await logGuildActivity(guildId, { type: 'loot_auction_finished_no_bids', characterId: lootId, characterName: loot.item.name });
+    try {
+      await notifyLootNoWinner(guildId, loot);
+    } catch (e) { console.warn('notifyLootNoWinner', e.message); }
     return;
   }
 
@@ -793,6 +875,9 @@ async function finalizeAuction(guildId, lootId, loot) {
     if (winChar?.ownerId) {
       await createNotification(winChar.ownerId, guildId, { type: 'AUCTION_WON', title: 'Você venceu o leilão!', body: `${loot.item.name} por ${winningBid} DKP` });
     }
+    try {
+      await notifyLootWinner(guildId, { ...loot, type: 'AUCTION', auction: { ...loot.auction, winningBid } }, winChar?.name || winnerId);
+    } catch (e) { console.warn('notifyLootWinner', e.message); }
     // notify outbid? Could fetch bidders but skip for now
   } catch (e) {
     if (e.message === 'already') return;
@@ -808,6 +893,9 @@ async function finalizeRaffle(guildId, lootId, loot) {
   if (!loot.raffle || loot.raffle.totalTickets === 0) {
     await lootRef.update({ status: 'FINISHED', 'raffle.drawProcessed': true, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
     await logGuildActivity(guildId, { type: 'loot_raffle_finished_no_tickets', characterId: lootId, characterName: loot.item.name });
+    try {
+      await notifyLootNoWinner(guildId, loot);
+    } catch (e) { console.warn('notifyLootNoWinner', e.message); }
     return;
   }
   try {
@@ -847,6 +935,9 @@ async function finalizeRaffle(guildId, lootId, loot) {
       if (winChar?.ownerId) {
         await createNotification(winChar.ownerId, guildId, { type: 'RAFFLE_WON', title: 'Você venceu o sorteio!', body: `${loot.item.name} ticket #${updData.raffle.winningTicketNumber}` });
       }
+      try {
+        await notifyLootWinner(guildId, { ...loot, type: 'RAFFLE', raffle: { ...loot.raffle, winningTicketNumber: updData.raffle.winningTicketNumber } }, winChar?.name || winnerId);
+      } catch (e) { console.warn('notifyLootWinner', e.message); }
     }
   } catch (e) {
     if (e.message === 'already') return;

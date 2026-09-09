@@ -1508,7 +1508,7 @@ function SettingsView({
     (settingsTab === 'general' && canSeeGeneral) ||
     (settingsTab === 'ranks' && canManageRanks) ||
     (settingsTab === 'recruitment' && canManageRecruitment) ||
-    (settingsTab === 'discord' && canManageSettings && isLeader) ||
+    (settingsTab === 'discord' && canManageSettings) ||
     (settingsTab === 'loot' && lootAllowed);
   const activeTab = currentAllowed
     ? settingsTab
@@ -1683,7 +1683,7 @@ function SettingsView({
             {t('tabRecruitment')}
           </button>
         )}
-        {canManageSettings && isLeader && (
+        {canManageSettings && (
           <button
             onClick={() => setSettingsTab('discord')}
             className={cn(

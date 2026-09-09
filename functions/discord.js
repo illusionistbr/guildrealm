@@ -10,13 +10,16 @@ const {
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const admin = require('firebase-admin');
 
+const {
+  BASE_URL,
+  getChannelWebhooks,
+  getGuildName,
+} = require('./discordNotify');
+
 const COLOR_ACCENT = 0x6d28d9; // roxo padrão do ClanForge
 const COLOR_GREEN = 0x22c55e;
 const COLOR_RED = 0xef4444;
 const COLOR_ORANGE = 0xf97316;
-
-// URL base pública do produto (usada nos links para o evento)
-const BASE_URL = process.env.CLANFORGE_BASE_URL || 'https://clanforge.app';
 
 const START_WINDOW_MINUTES = 5;
 // Janela "iniciou": com o scheduler rodando a cada 1 minuto, um buffer de 3
@@ -25,24 +28,11 @@ const START_WINDOW_MINUTES = 5;
 const STARTED_WINDOW_MINUTES = 3;
 const ENDED_WINDOW_MINUTES = 30;
 
-function discordSettingsDoc(guildId) {
-  return admin.firestore().doc(`guilds/${guildId}/settings/discord`);
-}
-
+// Webhook do canal de Eventos (modo "separate") ou o canal único (modo "single").
 async function getGuildDiscordWebhook(guildId) {
   try {
-    const snap = await discordSettingsDoc(guildId).get();
-    const url = snap.exists ? snap.data().webhookUrl : null;
-    return typeof url === 'string' && url ? url : null;
-  } catch {
-    return null;
-  }
-}
-
-async function getGuildName(guildId) {
-  try {
-    const snap = await admin.firestore().doc(`guilds/${guildId}`).get();
-    return snap.exists && snap.data().name ? String(snap.data().name) : null;
+    const webhooks = await getChannelWebhooks(guildId);
+    return webhooks.events;
   } catch {
     return null;
   }

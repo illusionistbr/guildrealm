@@ -3,6 +3,12 @@ const admin = require('firebase-admin');
 const { S3Client, PutObjectCommand, HeadObjectCommand, GetObjectCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand, AbortMultipartUploadCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const crypto = require('crypto');
+const {
+  BASE_URL,
+  getGuildName,
+  postToChannel,
+  guildFooter,
+} = require('./discordNotify');
 
 const r2Client = new S3Client({
   region: 'auto',
@@ -281,6 +287,21 @@ exports.createAnalysisRequest = callable(async (data, context) => {
     status: 'open',
   };
   const ref = await guildDoc(guildId).collection('analysisRequests').add(requestData);
+  // Aviso no Discord (canal de Avisos) com @everyone — nunca quebra a criação.
+  try {
+    const link = `${BASE_URL}/panel/guilds/${guildId}/analyses`;
+    const guildName = await getGuildName(guildId);
+    await postToChannel(guildId, 'notices', {
+      content: '@everyone',
+      embeds: [{
+        color: 0xeab308,
+        title: '🎬 PEDIDO DE VÍDEO, TROPA!',
+        description: `📢 Foi solicitado o envio do vídeo do último evento **"${String(title).slice(0, 200)}"**! 🎮🔥\n\n👉 [📤 Envie aqui](<${link}>)`,
+        timestamp: new Date().toISOString(),
+        footer: guildFooter(guildName),
+      }],
+    });
+  } catch (e) { console.warn('notifyAnalysisRequest', e.message); }
   return { success: true, requestId: ref.id };
 });
 

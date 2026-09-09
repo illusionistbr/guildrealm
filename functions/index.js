@@ -1222,6 +1222,57 @@ exports.testDiscordWebhook = callable(async (data, context) => {
   }
 });
 
+// Salva a configuração de canais do Discord (modo único ou separado).
+// Permite o dono ou quem tiver manageSettings.
+exports.saveDiscordSettings = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, mode, webhookUrl, eventsUrl, lootUrl, noticesUrl, clear } = data ?? {};
+  if (!guildId) {
+    throw new CallableError('invalid-argument', 'guildId is required');
+  }
+
+  await requireGuildPermission(guildId, context.auth.uid, 'manageSettings');
+
+  if (clear === true) {
+    await admin.firestore().doc(`guilds/${guildId}/settings/discord`).delete();
+    return { success: true };
+  }
+
+  const cleanMode = mode === 'separate' ? 'separate' : 'single';
+  const cleanUrl = (url) => {
+    if (typeof url !== 'string') return '';
+    const clean = url.trim().slice(0, 500);
+    return /^https:\/\/discord\.com\/api\/webhooks\//.test(clean) ? clean : '';
+  };
+
+  const payload = {
+    mode: cleanMode,
+    updatedAt: fv.serverTimestamp(),
+    updatedBy: context.auth.uid,
+  };
+  if (cleanMode === 'separate') {
+    payload.eventsUrl = cleanUrl(eventsUrl);
+    payload.lootUrl = cleanUrl(lootUrl);
+    payload.noticesUrl = cleanUrl(noticesUrl);
+    if (!payload.eventsUrl && !payload.lootUrl && !payload.noticesUrl) {
+      throw new CallableError(
+        'invalid-argument',
+        'At least one Discord webhook URL is required',
+      );
+    }
+  } else {
+    const single = cleanUrl(webhookUrl);
+    if (!single) {
+      throw new CallableError('invalid-argument', 'Invalid Discord webhook URL');
+    }
+    payload.webhookUrl = single;
+  }
+
+  await admin.firestore().doc(`guilds/${guildId}/settings/discord`).set(payload, { merge: true });
+  return { success: true };
+});
+
 // ============ PRESENÇAS (confirmação de presença em eventos) ============
 
 // Alfabeto sem caracteres ambíguos (0/O, 1/I/L) para o código compartilhável.
