@@ -275,10 +275,13 @@ export default function UserDashboard() {
             );
             if (settingsSnap.exists()) {
               const data = settingsSnap.data();
+              const isDiscordMode = data.mode === 'discord';
               requiresApp =
                 data.enabled === true &&
-                Array.isArray(data.questions) &&
-                data.questions.length > 0;
+                (isDiscordMode
+                  ? typeof data.discordUrl === 'string' && !!data.discordUrl.trim()
+                  : Array.isArray(data.questions) &&
+                    data.questions.length > 0);
               passwordEnabled = data.passwordEnabled === true;
             }
           } catch {

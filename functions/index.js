@@ -909,15 +909,38 @@ function recruitmentApplicationsCol(guildId) {
   return admin.firestore().collection(`guilds/${guildId}/applications`);
 }
 
-// Uma guild exige candidatura quando o recrutamento está ativo com perguntas
-// configuradas. Nesse caso, ninguém pode entrar direto via joinGuild.
+// Uma guild exige candidatura quando o recrutamento está ativo e o líder
+// escolheu um modo de candidatura (perguntas ou link do Discord).
+// Nesse caso, ninguém pode entrar direto via joinGuild (só com a senha).
+function getRecruitmentMode(settings) {
+  if (!settings) return 'questions';
+  if (settings.mode === 'discord') return 'discord';
+  return 'questions';
+}
+
+function sanitizeDiscordInviteUrl(url) {
+  if (typeof url !== 'string') return '';
+  const clean = url.trim().slice(0, 500);
+  if (!clean) return '';
+  if (
+    /^https?:\/\/(www\.)?(discord\.gg|discord\.com\/invite)\/[A-Za-z0-9-]+/.test(clean) ||
+    /^https?:\/\/.+/.test(clean)
+  ) {
+    return clean;
+  }
+  return '';
+}
+
 async function guildRequiresApplication(guildId) {
   try {
     const settingsSnap = await recruitmentDoc(guildId).get();
     if (!settingsSnap.exists) return false;
     const settings = settingsSnap.data();
+    if (settings.enabled !== true) return false;
+    if (getRecruitmentMode(settings) === 'discord') {
+      return !!sanitizeDiscordInviteUrl(settings.discordUrl);
+    }
     return (
-      settings.enabled === true &&
       Array.isArray(settings.questions) &&
       settings.questions.length > 0
     );
@@ -984,7 +1007,7 @@ function sanitizeRecruitmentQuestions(questions) {
 exports.saveRecruitmentSettings = callable(async (data, context) => {
   if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
 
-  const { guildId, enabled, message, questions, passwordEnabled, password } = data ?? {};
+  const { guildId, enabled, message, questions, passwordEnabled, password, mode, discordUrl } = data ?? {};
   if (!guildId || typeof enabled !== 'boolean') {
     throw new CallableError('invalid-argument', 'guildId and enabled are required');
   }
@@ -993,11 +1016,126 @@ exports.saveRecruitmentSettings = callable(async (data, context) => {
 
   const cleanMessage =
     typeof message === 'string' ? message.trim().slice(0, 5000) : '';
-  const cleanQuestions = sanitizeRecruitmentQuestions(questions);
+  const cleanMode = mode === 'discord' ? 'discord' : 'questions';
+  const cleanDiscordUrl = sanitizeDiscordInviteUrl(discordUrl);
+  const cleanQuestions = cleanMode === 'discord' ? [] : sanitizeRecruitmentQuestions(questions);
+
+  if (enabled && cleanMode === 'discord' && !cleanDiscordUrl) {
+    throw new CallableError(
+      'invalid-argument',
+      'A Discord invite link is required for discord recruitment mode',
+    );
+  }
+
+  // Senha é gerenciada pela aba Geral (saveGuildPassword). Aqui mantemos
+  // compatibilidade: se o cliente enviar os campos, preserva; senão, não mexe.
+  const wantsPasswordChange = passwordEnabled !== undefined || (typeof password === 'string' && password);
+  const wantPassword = passwordEnabled === true;
+  const cleanPassword =
+    typeof password === 'string' && password ? password.slice(0, 128) : '';
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const currentSnap = await tx.get(recruitmentDoc(guildId));
+    const current = currentSnap.exists ? currentSnap.data() : null;
+
+    let passwordSet = current?.passwordSet === true;
+    let passwordEnabledValue = current?.passwordEnabled === true;
+    if (wantsPasswordChange) {
+      const secretSnap = await tx.get(recruitmentSecretDoc(guildId));
+      const existing = secretSnap.exists ? secretSnap.data() : null;
+
+      passwordSet = false;
+      if (wantPassword) {
+        if (cleanPassword) {
+          if (cleanPassword.length < 4 || cleanPassword.length > 64) {
+            throw new CallableError(
+              'invalid-argument',
+              'Password must be between 4 and 64 characters',
+            );
+          }
+          const salt = newGuildPasswordSalt();
+          tx.set(recruitmentSecretDoc(guildId), {
+            passwordHash: hashGuildPassword(cleanPassword, salt),
+            passwordSalt: salt,
+            updatedAt: fv.serverTimestamp(),
+            updatedBy: context.auth.uid,
+          });
+          passwordSet = true;
+        } else if (existing && existing.passwordHash && existing.passwordSalt) {
+          passwordSet = true;
+        } else {
+          throw new CallableError(
+            'invalid-argument',
+            'A password is required to enable the guild password',
+          );
+        }
+      } else {
+        tx.delete(recruitmentSecretDoc(guildId));
+      }
+      passwordEnabledValue = wantPassword;
+    }
+
+    tx.set(
+      recruitmentDoc(guildId),
+      {
+        enabled,
+        message: cleanMessage,
+        questions: cleanQuestions,
+        mode: cleanMode,
+        discordUrl: cleanMode === 'discord' ? cleanDiscordUrl : '',
+        passwordEnabled: passwordEnabledValue,
+        passwordSet,
+        updatedAt: fv.serverTimestamp(),
+        updatedBy: context.auth.uid,
+      },
+      { merge: true },
+    );
+    // Mantém o campo legado da guild sincronizado com o novo estado,
+    // para que badges públicos, listagem e joinGuild reflitam a mesma config.
+    tx.update(guildDoc(guildId), {
+      recruitment: enabled ? 'open' : 'closed',
+    });
+  });
+
+  return { success: true };
+});
+
+// Salva apenas a senha da guild (aba Geral das configurações).
+// Permite quem tem manageRecruitment OU manageSettings (líder sempre pode).
+exports.saveGuildPassword = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, passwordEnabled, password } = data ?? {};
+  if (!guildId || passwordEnabled === undefined) {
+    throw new CallableError('invalid-argument', 'guildId and passwordEnabled are required');
+  }
+
+  const snap = await guildDoc(guildId).get();
+  if (!snap.exists) throw new CallableError('not-found', 'Guild not found');
+  const guild = snap.data();
+  const uid = context.auth.uid;
+  let allowed = guild.ownerId === uid || (guild.leaders ?? []).includes(uid);
+  if (!allowed) {
+    const rank = await getCallerRank(guildId, guild, uid);
+    allowed = !!(
+      rank &&
+      rank.permissions &&
+      (rank.permissions.manageRecruitment || rank.permissions.manageSettings)
+    );
+  }
+  if (!allowed) {
+    throw new CallableError('permission-denied', 'Missing permission: manageRecruitment');
+  }
 
   const wantPassword = passwordEnabled === true;
   const cleanPassword =
     typeof password === 'string' && password ? password.slice(0, 128) : '';
+  if (wantPassword && cleanPassword && (cleanPassword.length < 4 || cleanPassword.length > 64)) {
+    throw new CallableError(
+      'invalid-argument',
+      'Password must be between 4 and 64 characters',
+    );
+  }
 
   await admin.firestore().runTransaction(async (tx) => {
     const secretSnap = await tx.get(recruitmentSecretDoc(guildId));
@@ -1029,9 +1167,6 @@ exports.saveRecruitmentSettings = callable(async (data, context) => {
     tx.set(
       recruitmentDoc(guildId),
       {
-        enabled,
-        message: cleanMessage,
-        questions: cleanQuestions,
         passwordEnabled: wantPassword,
         passwordSet,
         updatedAt: fv.serverTimestamp(),
@@ -1039,11 +1174,6 @@ exports.saveRecruitmentSettings = callable(async (data, context) => {
       },
       { merge: true },
     );
-    // Mantém o campo legado da guild sincronizado com o novo estado,
-    // para que badges públicos, listagem e joinGuild reflitam a mesma config.
-    tx.update(guildDoc(guildId), {
-      recruitment: enabled ? 'open' : 'closed',
-    });
   });
 
   return { success: true };
@@ -1379,6 +1509,12 @@ exports.submitGuildApplication = callable(async (data, context) => {
     throw new CallableError('recruitment-closed', 'Recruitment is closed');
   }
   const settings = settingsSnap.data();
+  if (getRecruitmentMode(settings) === 'discord') {
+    throw new CallableError(
+      'failed-precondition',
+      'Guild receives applications via Discord',
+    );
+  }
 
   const cleanAnswers = validateAnswers(settings.questions ?? [], answers);
 

@@ -249,6 +249,8 @@ export function useRecruitmentSettings(guildId: string | null) {
             enabled: data.enabled === true,
             message: data.message ?? '',
             questions: Array.isArray(data.questions) ? data.questions : [],
+            mode: data.mode === 'discord' ? 'discord' : 'questions',
+            discordUrl: typeof data.discordUrl === 'string' ? data.discordUrl : '',
             passwordEnabled: data.passwordEnabled === true,
             passwordSet: data.passwordSet === true,
             updatedBy: data.updatedBy,
@@ -269,8 +271,10 @@ export function useRecruitmentSettings(guildId: string | null) {
       enabled: boolean;
       message: string;
       questions: RecruitmentSettings['questions'];
-      passwordEnabled: boolean;
-      password: string;
+      mode?: RecruitmentSettings['mode'];
+      discordUrl?: string;
+      passwordEnabled?: boolean;
+      password?: string;
     }) => {
       const gid = guildIdRef.current;
       if (!gid) throw new Error('no-guild');
@@ -280,8 +284,10 @@ export function useRecruitmentSettings(guildId: string | null) {
           enabled: boolean;
           message: string;
           questions: RecruitmentSettings['questions'];
-          passwordEnabled: boolean;
-          password: string;
+          mode?: string;
+          discordUrl?: string;
+          passwordEnabled?: boolean;
+          password?: string;
         },
         { success: boolean }
       >(getFunctions(getFirebaseApp()), 'saveRecruitmentSettings');
@@ -290,8 +296,10 @@ export function useRecruitmentSettings(guildId: string | null) {
         enabled: data.enabled,
         message: data.message,
         questions: data.questions,
+        mode: data.mode ?? 'questions',
+        discordUrl: data.discordUrl ?? '',
         passwordEnabled: data.passwordEnabled,
-        password: data.password,
+        password: data.password ?? '',
       });
       return res.data.success;
     },
@@ -299,6 +307,19 @@ export function useRecruitmentSettings(guildId: string | null) {
   );
 
   return { settings, loading, save };
+}
+
+export async function saveGuildPassword(
+  guildId: string,
+  passwordEnabled: boolean,
+  password: string,
+): Promise<boolean> {
+  const fn = httpsCallable<
+    { guildId: string; passwordEnabled: boolean; password: string },
+    { success: boolean }
+  >(getFunctions(getFirebaseApp()), 'saveGuildPassword');
+  const res = await fn({ guildId, passwordEnabled, password });
+  return res.data.success;
 }
 
 export async function submitGuildApplication(

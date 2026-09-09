@@ -24,9 +24,9 @@ import {
   CheckCircle2,
   Copy,
   Eye,
-  EyeOff,
   GripVertical,
-  KeyRound,
+  Link2,
+  ListChecks,
   Loader2,
   MessageSquareText,
   Pencil,
@@ -56,10 +56,8 @@ export function RecruitmentSettings({ guildId }: RecruitmentSettingsProps) {
   const [enabled, setEnabled] = useState(false);
   const [message, setMessage] = useState('');
   const [questions, setQuestions] = useState<RecruitmentQuestion[]>([]);
-  const [passwordEnabled, setPasswordEnabled] = useState(false);
-  const [passwordInput, setPasswordInput] = useState('');
-  const [hasPassword, setHasPassword] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [mode, setMode] = useState<'questions' | 'discord'>('questions');
+  const [discordUrl, setDiscordUrl] = useState('');
   const hydrated = useRef(false);
 
   const [editor, setEditor] = useState<{
@@ -82,8 +80,8 @@ export function RecruitmentSettings({ guildId }: RecruitmentSettingsProps) {
       setEnabled(settings.enabled);
       setMessage(settings.message);
       setQuestions([...settings.questions].sort((a, b) => a.order - b.order));
-      setPasswordEnabled(settings.passwordEnabled === true);
-      setHasPassword(settings.passwordSet === true);
+      setMode(settings.mode === 'discord' ? 'discord' : 'questions');
+      setDiscordUrl(settings.discordUrl ?? '');
     }
   }, [settings]);
 
@@ -136,13 +134,13 @@ export function RecruitmentSettings({ guildId }: RecruitmentSettingsProps) {
     setSaving(true);
     setSaved(false);
     setError('');
-    if (passwordEnabled && !hasPassword && !passwordInput) {
-      setError(t('passwordRequiredError'));
+    if (enabled && mode === 'discord' && !discordUrl.trim()) {
+      setError(t('discordUrlRequiredError'));
       setSaving(false);
       return;
     }
-    if (passwordInput && (passwordInput.length < 4 || passwordInput.length > 64)) {
-      setError(t('passwordLengthError'));
+    if (enabled && mode === 'questions' && sortedQuestions.length === 0) {
+      setError(t('questionsRequiredError'));
       setSaving(false);
       return;
     }
@@ -151,12 +149,10 @@ export function RecruitmentSettings({ guildId }: RecruitmentSettingsProps) {
       await save({
         enabled,
         message,
-        questions: ordered,
-        passwordEnabled,
-        password: passwordInput,
+        questions: mode === 'discord' ? [] : ordered,
+        mode,
+        discordUrl: mode === 'discord' ? discordUrl.trim() : '',
       });
-      setPasswordInput('');
-      setHasPassword(passwordEnabled);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {
@@ -169,6 +165,8 @@ export function RecruitmentSettings({ guildId }: RecruitmentSettingsProps) {
     enabled: true,
     message,
     questions: sortedQuestions,
+    mode,
+    discordUrl: discordUrl.trim(),
   };
 
   const previewSubmit = async (_answers: ApplicationAnswer[]) => {
@@ -261,67 +259,67 @@ export function RecruitmentSettings({ guildId }: RecruitmentSettingsProps) {
             />
           </section>
 
-          {/* Senha da guild */}
+          {/* Como receber candidatos */}
           <section className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#070f1d]/60 p-4">
-            <div className="flex items-start justify-between gap-3 flex-wrap">
-              <div>
-                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                  <KeyRound size={14} className="text-accent" />
-                  {t('sectionPassword')}
-                </h3>
-                <p className="text-xs text-muted mt-1">{t('sectionPasswordSub')}</p>
-              </div>
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <ListChecks size={14} className="text-accent" />
+              {t('sectionMode')}
+            </h3>
+            <p className="text-xs text-muted mt-1">{t('sectionModeSub')}</p>
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setPasswordEnabled(!passwordEnabled)}
+                onClick={() => setMode('questions')}
                 className={cn(
-                  'flex items-center gap-2 h-8 px-3 rounded-lg border text-xs font-medium transition-colors',
-                  passwordEnabled
-                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400'
-                    : 'border-[rgba(38,51,86,0.5)] bg-[#0a1122] text-muted hover:text-white',
+                  'flex items-start gap-2.5 p-3 rounded-lg border text-left transition-colors',
+                  mode === 'questions'
+                    ? 'bg-accent/10 border-accent/40'
+                    : 'border-[rgba(38,51,86,0.5)] bg-[#0a1122] hover:border-accent/30',
                 )}
               >
-                <span
-                  className={cn(
-                    'w-2 h-2 rounded-full',
-                    passwordEnabled ? 'bg-emerald-400' : 'bg-emerald-500/40',
-                  )}
-                />
-                {passwordEnabled ? t('passwordOn') : t('passwordOff')}
+                <ListChecks size={16} className={mode === 'questions' ? 'text-accent mt-0.5' : 'text-muted mt-0.5'} />
+                <span>
+                  <span className="block text-sm font-medium text-white">{t('modeQuestions')}</span>
+                  <span className="block text-xs text-muted mt-0.5">{t('modeQuestionsSub')}</span>
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('discord')}
+                className={cn(
+                  'flex items-start gap-2.5 p-3 rounded-lg border text-left transition-colors',
+                  mode === 'discord'
+                    ? 'bg-accent/10 border-accent/40'
+                    : 'border-[rgba(38,51,86,0.5)] bg-[#0a1122] hover:border-accent/30',
+                )}
+              >
+                <Link2 size={16} className={mode === 'discord' ? 'text-accent mt-0.5' : 'text-muted mt-0.5'} />
+                <span>
+                  <span className="block text-sm font-medium text-white">{t('modeDiscord')}</span>
+                  <span className="block text-xs text-muted mt-0.5">{t('modeDiscordSub')}</span>
+                </span>
               </button>
             </div>
 
-            {passwordEnabled && (
+            {mode === 'discord' && (
               <div className="mt-3 space-y-2">
                 <label className="block text-sm text-white font-medium">
-                  {hasPassword ? t('passwordLabelReset') : t('passwordLabel')}
+                  {t('discordUrlLabel')}
                 </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                    maxLength={64}
-                    placeholder={
-                      hasPassword ? t('passwordKeepPlaceholder') : t('passwordPlaceholder')
-                    }
-                    className="w-full bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors px-3 py-2.5 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted hover:text-white transition-colors"
-                    title={showPassword ? t('hidePassword') : t('showPassword')}
-                  >
-                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-                <p className="text-xs text-muted">{t('passwordHint')}</p>
+                <input
+                  type="url"
+                  value={discordUrl}
+                  onChange={(e) => setDiscordUrl(e.target.value)}
+                  maxLength={500}
+                  placeholder={t('discordUrlPlaceholder')}
+                  className="w-full bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors px-3 py-2.5"
+                />
+                <p className="text-xs text-muted">{t('discordUrlHint')}</p>
               </div>
             )}
           </section>
 
-          {/* Perguntas */}
+          {mode === 'questions' ? (
           <section className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#070f1d]/60 p-4">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
@@ -381,6 +379,25 @@ export function RecruitmentSettings({ guildId }: RecruitmentSettingsProps) {
               </DndContext>
             )}
           </section>
+          ) : (
+          <section className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#070f1d]/60 p-4">
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <Eye size={14} className="text-accent" />
+              {t('discordPreviewTitle')}
+            </h3>
+            <p className="text-xs text-muted mt-1">{t('discordPreviewSub')}</p>
+            <div className="mt-3 rounded-lg border border-[rgba(38,51,86,0.5)] bg-[#0a1122] p-4 text-sm text-white">
+              {t('discordCandidateMessage')}{' '}
+              {discordUrl.trim() ? (
+                <a href={discordUrl.trim()} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover underline break-all">
+                  {discordUrl.trim()}
+                </a>
+              ) : (
+                <span className="text-muted">{t('discordUrlPlaceholder')}</span>
+              )}
+            </div>
+          </section>
+          )}
 
           <button
             type="button"

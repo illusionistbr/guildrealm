@@ -46,7 +46,7 @@ import { GuildActivityFeed } from '@/components/panel/GuildActivityFeed';
 import { UpcomingEvents } from '@/components/panel/UpcomingEvents';
 import { GuildAuditView } from '@/components/panel/GuildAuditView';
 import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
-import { useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
+import { saveGuildPassword, useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
 import { LootView } from '@/components/loot/LootView';
 import { LootSettingsPanel } from '@/components/loot/LootSettingsPanel';
 import { Gem } from 'lucide-react';
@@ -61,10 +61,13 @@ import {
   ChevronRight,
   ClipboardList,
   Crown,
+  Eye,
+  EyeOff,
   FileSearch,
   Gamepad2,
   Globe2,
   ImagePlus,
+  KeyRound,
   LayoutDashboard,
   Loader2,
   MapPin,
@@ -1499,15 +1502,17 @@ function SettingsView({
   >('general');
   const canManageLootSettings = isLeader || (guild as any).memberRanks ? false : false; // will be overridden by parent? For now allow isLeader
   const lootAllowed = isLeader; // only leader for loot settings (spec: manageLootSettings)
+  const canManagePassword = canManageSettings || canManageRecruitment;
+  const canSeeGeneral = canManagePassword;
   const currentAllowed =
-    (settingsTab === 'general' && canManageSettings) ||
+    (settingsTab === 'general' && canSeeGeneral) ||
     (settingsTab === 'ranks' && canManageRanks) ||
     (settingsTab === 'recruitment' && canManageRecruitment) ||
     (settingsTab === 'discord' && canManageSettings && isLeader) ||
     (settingsTab === 'loot' && lootAllowed);
   const activeTab = currentAllowed
     ? settingsTab
-    : canManageSettings
+    : canSeeGeneral
       ? 'general'
       : canManageRanks
         ? 'ranks'
@@ -1639,7 +1644,7 @@ function SettingsView({
   return (
     <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
       <div className="flex items-center gap-1 mb-6 border-b border-[rgba(38,51,86,0.3)] pb-4">
-        {canManageSettings && (
+        {canSeeGeneral && (
           <button
             onClick={() => setSettingsTab('general')}
             className={cn(
@@ -1726,6 +1731,16 @@ function SettingsView({
       )}
 
       <div className="space-y-5">
+        <GuildPasswordSection guildId={guild.id} canEdit={canManagePassword} />
+
+        {!canManageSettings && (
+          <p className="text-xs text-muted rounded-lg border border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)] p-3">
+            {t('settingsPermission')}
+          </p>
+        )}
+
+        {canManageSettings && (
+        <>
         <div>
           <label className="block text-sm text-muted mb-1.5">
             {t('settingsNameLabel')}
@@ -1973,9 +1988,152 @@ function SettingsView({
             </>
           )}
         </button>
+        </>
+        )}
       </div>
       </>
       )}
     </div>
+  );
+}
+
+function GuildPasswordSection({
+  guildId,
+  canEdit,
+}: {
+  guildId: string;
+  canEdit: boolean;
+}) {
+  const tPanel = useTranslations('GuildPanel');
+  const t = useTranslations('Recruitment');
+  const { settings, loading } = useRecruitmentSettings(guildId);
+
+  const [passwordEnabled, setPasswordEnabled] = useState<boolean | null>(null);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
+
+  const hasPassword = settings?.passwordSet === true;
+  const active = passwordEnabled ?? settings?.passwordEnabled ?? false;
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError('');
+    setSaved(false);
+    if (active && !hasPassword && !passwordInput) {
+      setError(t('passwordRequiredError'));
+      setSaving(false);
+      return;
+    }
+    if (passwordInput && (passwordInput.length < 4 || passwordInput.length > 64)) {
+      setError(t('passwordLengthError'));
+      setSaving(false);
+      return;
+    }
+    try {
+      await saveGuildPassword(guildId, active, passwordInput);
+      setPasswordInput('');
+      setPasswordEnabled(null);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setError(t('saveError'));
+    }
+    setSaving(false);
+  };
+
+  return (
+    <section className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#070f1d]/60 p-4">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+            <KeyRound size={14} className="text-accent" />
+            {t('sectionPassword')}
+          </h3>
+          <p className="text-xs text-muted mt-1">{t('sectionPasswordSub')}</p>
+        </div>
+        <button
+          type="button"
+          disabled={!canEdit || loading}
+          onClick={() => setPasswordEnabled(!active)}
+          className={cn(
+            'flex items-center gap-2 h-8 px-3 rounded-lg border text-xs font-medium transition-colors disabled:opacity-50',
+            active
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400'
+              : 'border-[rgba(38,51,86,0.5)] bg-[#0a1122] text-muted hover:text-white',
+          )}
+        >
+          <span
+            className={cn(
+              'w-2 h-2 rounded-full',
+              active ? 'bg-emerald-400' : 'bg-emerald-500/40',
+            )}
+          />
+          {active ? t('passwordOn') : t('passwordOff')}
+        </button>
+      </div>
+
+      {error && (
+        <div className="flex items-center gap-2 p-2.5 mt-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+          <AlertTriangle size={14} /> {error}
+        </div>
+      )}
+      {saved && (
+        <div className="flex items-center gap-2 p-2.5 mt-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
+          <CheckCircle2 size={14} /> {tPanel('settingsSaved')}
+        </div>
+      )}
+
+      {active && (
+        <div className="mt-3 space-y-2">
+          <label className="block text-sm text-white font-medium">
+            {hasPassword ? t('passwordLabelReset') : t('passwordLabel')}
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              maxLength={64}
+              disabled={!canEdit}
+              placeholder={
+                hasPassword ? t('passwordKeepPlaceholder') : t('passwordPlaceholder')
+              }
+              className="w-full bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors px-3 py-2.5 pr-10 disabled:opacity-50"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted hover:text-white transition-colors"
+              title={showPassword ? t('hidePassword') : t('showPassword')}
+            >
+              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+            </button>
+          </div>
+          <p className="text-xs text-muted">{t('passwordHint')}</p>
+        </div>
+      )}
+
+      {canEdit && (
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving || loading}
+          className="mt-3 w-full h-10 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {saving ? (
+            <>
+              <Loader2 size={15} className="animate-spin" /> {tPanel('settingsSaving')}
+            </>
+          ) : (
+            <>
+              <Check size={16} /> {t('savePassword')}
+            </>
+          )}
+        </button>
+      )}
+    </section>
   );
 }

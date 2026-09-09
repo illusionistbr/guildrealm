@@ -251,10 +251,14 @@ export interface RecruitmentQuestion {
   config: RecruitmentQuestionConfig;
 }
 
+export type RecruitmentMode = 'questions' | 'discord';
+
 export interface RecruitmentSettings {
   enabled: boolean;
   message: string;
   questions: RecruitmentQuestion[];
+  mode?: RecruitmentMode;
+  discordUrl?: string;
   passwordEnabled?: boolean;
   passwordSet?: boolean;
   updatedBy?: string;

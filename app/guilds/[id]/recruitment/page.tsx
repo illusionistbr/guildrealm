@@ -31,6 +31,7 @@ import {
   KeyRound,
   Loader2,
   Lock,
+  MessageCircle,
   Shield,
   Swords,
 } from 'lucide-react';
@@ -115,6 +116,8 @@ export default function GuildRecruitmentPage() {
               enabled: data.enabled === true,
               message: data.message ?? '',
               questions: Array.isArray(data.questions) ? data.questions : [],
+              mode: data.mode === 'discord' ? 'discord' : 'questions',
+              discordUrl: typeof data.discordUrl === 'string' ? data.discordUrl : '',
               passwordEnabled: data.passwordEnabled === true,
               passwordSet: data.passwordSet === true,
             });
@@ -199,6 +202,8 @@ export default function GuildRecruitmentPage() {
   };
 
   const open = settings?.enabled === true;
+  const isDiscordMode = settings?.mode === 'discord';
+  const discordUrl = settings?.discordUrl?.trim() ?? '';
 
   if (!authReady || loading) {
     return (
@@ -386,6 +391,41 @@ export default function GuildRecruitmentPage() {
                 {!open ? (
                   <div className="flex items-center gap-2 p-3 rounded-lg border border-red-500/20 bg-red-500/5 text-red-400 text-sm">
                     <AlertCircle size={16} /> {t('closedMessage')}
+                  </div>
+                ) : isDiscordMode ? (
+                  <div className="space-y-5">
+                    {settings?.passwordEnabled === true && (
+                      <div className="flex items-center gap-3">
+                        <span className="h-px flex-1 bg-[rgba(38,51,86,0.3)]" />
+                        <span className="text-xs text-muted">
+                          {t('orApply')}
+                        </span>
+                        <span className="h-px flex-1 bg-[rgba(38,51,86,0.3)]" />
+                      </div>
+                    )}
+                    <div className="rounded-lg border border-accent/25 bg-accent/5 p-5 text-center">
+                      <div className="w-12 h-12 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center mx-auto mb-3">
+                        <MessageCircle size={22} className="text-accent" />
+                      </div>
+                      <p className="text-sm text-white leading-relaxed">
+                        {t('discordCandidateMessage')}{' '}
+                        {discordUrl ? (
+                          <a
+                            href={discordUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-accent hover:text-accent-hover underline break-all font-medium"
+                          >
+                            {discordUrl}
+                          </a>
+                        ) : null}
+                      </p>
+                      {settings?.message && (
+                        <p className="text-xs text-muted mt-3 leading-relaxed whitespace-pre-wrap">
+                          {settings.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-5">
