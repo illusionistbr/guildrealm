@@ -1216,6 +1216,14 @@ button {
   display: flex;
   align-items: flex-start;
   padding: 14px;
+  overflow: hidden;
+}
+.guild-art-banner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .guild-art > span {
   display: flex;
@@ -1229,6 +1237,8 @@ button {
     700 11px 'Outfit',
     sans-serif;
   backdrop-filter: blur(6px);
+  position: relative;
+  z-index: 1;
 }
 .guild-body {
   padding: 18px 20px 22px;
@@ -1246,9 +1256,15 @@ button {
   border: 2px solid #1e2d4a;
   background: #0c1525;
   color: #a864ff;
+  overflow: hidden;
 }
 .guild-symbol svg {
   width: 22px;
+}
+.guild-symbol-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .recruitment {
   display: inline-block;

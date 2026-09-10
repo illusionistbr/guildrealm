@@ -35,6 +35,7 @@ type GuildDoc = {
   region?: string;
   languages?: string[];
   logoUrl?: string | null;
+  bannerUrl?: string | null;
   members?: string[];
   createdAt?: { seconds: number };
 };
@@ -264,13 +265,28 @@ export default function GuildsPage() {
                   transition={{ delay: index * 0.05 }}
                 >
                   <div className="guild-art">
+                    {guild.bannerUrl ? (
+                      <img
+                        src={guild.bannerUrl}
+                        alt=""
+                        className="guild-art-banner"
+                      />
+                    ) : null}
                     <span>
                       <Gamepad2 size={13} /> {gameLabel(guild.game)}
                     </span>
                   </div>
                   <div className="guild-body">
                     <div className="guild-symbol">
-                      <ShieldCheck />
+                      {guild.logoUrl ? (
+                        <img
+                          src={guild.logoUrl}
+                          alt={guild.name ?? ''}
+                          className="guild-symbol-logo"
+                        />
+                      ) : (
+                        <ShieldCheck />
+                      )}
                     </div>
                     <span
                       className={`recruitment ${isRecruiting ? 'open' : 'closed'}`}
