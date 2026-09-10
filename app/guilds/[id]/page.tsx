@@ -181,9 +181,9 @@ export default function PublicGuildPage() {
                 <div className="w-full h-full bg-gradient-to-r from-accent/25 via-accent/10 to-transparent" />
               )}
             </div>
-            <div className="px-6 pb-8 -mt-12">
+            <div className="px-6 pb-8 -mt-14 relative z-10">
               <div className="flex items-end gap-4">
-                <div className="w-24 h-24 rounded-2xl border-4 border-[#0a1122] bg-[#0a1122] flex items-center justify-center overflow-hidden shrink-0">
+                <div className="w-24 h-24 rounded-2xl border-4 border-[#0a1122] bg-[#0a1122] flex items-center justify-center overflow-hidden shrink-0 shadow-xl shadow-black/50 relative">
                   {guild.logoUrl ? (
                     <img
                       src={guild.logoUrl}
