@@ -61,6 +61,19 @@ const MENTALITY_LABELS: Record<string, string> = {
   casual: 'Casual',
 };
 
+const FOCUS_STYLES: Record<string, string> = {
+  pvp: 'bg-rose-500/10 text-rose-400 border border-rose-500/25',
+  pve: 'bg-sky-500/10 text-sky-400 border border-sky-500/25',
+  pvpve: 'bg-violet-500/10 text-violet-300 border border-violet-500/25',
+  rp: 'bg-amber-500/10 text-amber-400 border border-amber-500/25',
+};
+
+const MENTALITY_STYLES: Record<string, string> = {
+  hardcore: 'bg-red-500/10 text-red-400 border border-red-500/25',
+  semi_hardcore: 'bg-orange-500/10 text-orange-400 border border-orange-500/25',
+  casual: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25',
+};
+
 export default function PublicGuildPage() {
   const t = useTranslations('GuildPage');
   const params = useParams<{ id: string }>();
@@ -181,9 +194,9 @@ export default function PublicGuildPage() {
                 <div className="w-full h-full bg-gradient-to-r from-accent/25 via-accent/10 to-transparent" />
               )}
             </div>
-            <div className="px-6 pb-8 -mt-14 relative z-10">
-              <div className="flex items-end gap-4">
-                <div className="w-24 h-24 rounded-2xl border-4 border-[#0a1122] bg-[#0a1122] flex items-center justify-center overflow-hidden shrink-0 shadow-xl shadow-black/50 relative">
+            <div className="px-6 pb-8 relative z-10">
+              <div className="flex gap-4">
+                <div className="-mt-14 w-24 h-24 rounded-2xl border-4 border-[#0a1122] bg-[#0a1122] flex items-center justify-center overflow-hidden shrink-0 shadow-xl shadow-black/50 relative">
                   {guild.logoUrl ? (
                     <img
                       src={guild.logoUrl}
@@ -196,11 +209,11 @@ export default function PublicGuildPage() {
                     </div>
                   )}
                 </div>
-                <div className="pb-1 min-w-0">
-                  <h1 className="text-2xl md:text-3xl font-heading font-bold text-white truncate">
+                <div className="pt-2 min-w-0">
+                  <h1 className="text-2xl md:text-3xl font-heading font-bold text-white truncate leading-tight">
                     {guild.name}
                   </h1>
-                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <div className="flex items-center gap-2 mt-2.5 flex-wrap">
                     <span className="text-xs px-2 py-0.5 rounded-full bg-accent/15 text-accent">
                       {guild.faction ? FACIONS[guild.faction] : ''}
                     </span>
@@ -215,12 +228,24 @@ export default function PublicGuildPage() {
                       {isRecruiting ? t('recruiting') : t('closedRecruitment')}
                     </span>
                     {guild.focus && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[rgba(38,51,86,0.4)] text-white">
+                      <span
+                        className={cn(
+                          'text-xs px-2 py-0.5 rounded-full',
+                          FOCUS_STYLES[guild.focus] ??
+                            'bg-[rgba(38,51,86,0.4)] text-white border border-transparent',
+                        )}
+                      >
                         {t('focusLabel')}: {FOCUS_LABELS[guild.focus]}
                       </span>
                     )}
                     {guild.mentality && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[rgba(38,51,86,0.4)] text-white">
+                      <span
+                        className={cn(
+                          'text-xs px-2 py-0.5 rounded-full',
+                          MENTALITY_STYLES[guild.mentality] ??
+                            'bg-[rgba(38,51,86,0.4)] text-white border border-transparent',
+                        )}
+                      >
                         {t('mentalityLabel')}: {MENTALITY_LABELS[guild.mentality]}
                       </span>
                     )}
