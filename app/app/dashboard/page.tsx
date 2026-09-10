@@ -823,7 +823,7 @@ function JoinGuildModal({
                       </div>
                     ) : info.requiresApp ? (
                       <Link
-                        href={`/guilds/${guild.id}/recruitment`}
+                        href={`/guilds/${guild.id}/recruitment?from=dashboard`}
                         onClick={onClose}
                         className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors"
                       >

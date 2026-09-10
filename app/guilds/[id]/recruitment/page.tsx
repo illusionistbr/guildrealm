@@ -77,6 +77,20 @@ export default function GuildRecruitmentPage() {
   const [joinBusy, setJoinBusy] = useState(false);
   const [joinError, setJoinError] = useState('');
   const [joined, setJoined] = useState(false);
+  const [fromQuery, setFromQuery] = useState('');
+
+  useEffect(() => {
+    try {
+      setFromQuery(
+        new URLSearchParams(window.location.search).get('from') ===
+          'dashboard'
+          ? '?from=dashboard'
+          : '',
+      );
+    } catch {
+      // sem query param: volta simples para a guild
+    }
+  }, []);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(getFirebaseAuth(), (user) => {
@@ -222,7 +236,7 @@ export default function GuildRecruitmentPage() {
           </div>
           <p className="text-white font-heading font-semibold">{t('notFound')}</p>
           <Link
-            href={`/guilds/${params.id}`}
+            href={`/guilds/${params.id}${fromQuery}`}
             className="inline-flex items-center gap-1.5 text-sm text-accent hover:text-accent-hover mt-4 transition-colors"
           >
             <ChevronLeft size={16} /> {t('backToGuild')}
@@ -236,7 +250,7 @@ export default function GuildRecruitmentPage() {
     <div className="min-h-screen bg-[#050912]">
       <div className="shell py-10">
         <Link
-          href={`/guilds/${params.id}`}
+          href={`/guilds/${params.id}${fromQuery}`}
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-white transition-colors mb-8"
         >
           <ChevronLeft size={18} /> {t('backToGuild')}

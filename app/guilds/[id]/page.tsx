@@ -81,9 +81,21 @@ export default function PublicGuildPage() {
   const [guild, setGuild] = useState<GuildDoc | null>(null);
   const [recruitmentOpen, setRecruitmentOpen] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fromDashboard, setFromDashboard] = useState(false);
 
   const regions = useMemo(() => t.raw('regions') as Option[], [t]);
   const languages = useMemo(() => t.raw('languages') as Option[], [t]);
+
+  useEffect(() => {
+    try {
+      setFromDashboard(
+        new URLSearchParams(window.location.search).get('from') ===
+          'dashboard',
+      );
+    } catch {
+      // sem query param: mantém o fallback da página inicial
+    }
+  }, []);
 
   useEffect(() => {
     let disposed = false;
@@ -140,10 +152,11 @@ export default function PublicGuildPage() {
             {t('notFound')}
           </p>
           <Link
-            href="/"
+            href={fromDashboard ? '/app/dashboard' : '/'}
             className="inline-flex items-center gap-1.5 text-sm text-accent hover:text-accent-hover mt-4 transition-colors"
           >
-            <ChevronLeft size={16} /> {t('backToHome')}
+            <ChevronLeft size={16} />{' '}
+            {t(fromDashboard ? 'backToDashboard' : 'backToHome')}
           </Link>
         </div>
       </div>
@@ -167,10 +180,11 @@ export default function PublicGuildPage() {
     <div className="min-h-screen bg-[#050912]">
       <div className="shell py-10">
         <Link
-          href="/guilds"
+          href={fromDashboard ? '/app/dashboard' : '/'}
           className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-white transition-colors mb-8"
         >
-          <ChevronLeft size={18} /> {t('backToHome')}
+          <ChevronLeft size={18} />{' '}
+          {t(fromDashboard ? 'backToDashboard' : 'backToHome')}
         </Link>
 
         <motion.div
@@ -292,7 +306,7 @@ export default function PublicGuildPage() {
               </div>
 
               <Link
-                href={`/guilds/${guild.id}/recruitment`}
+                href={`/guilds/${guild.id}/recruitment${fromDashboard ? '?from=dashboard' : ''}`}
                 className="mt-5 w-full h-11 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors flex items-center justify-center gap-2"
               >
                 <Shield size={16} /> {t('apply')}

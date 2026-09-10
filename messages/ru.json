@@ -1017,6 +1017,7 @@
   "GuildPage": {
     "notFound": "Гильдия не найдена.",
     "backToHome": "Вернуться на главную",
+    "backToDashboard": "Вернуться в панель",
     "recruiting": "Набираем",
     "closedRecruitment": "Набор закрыт",
     "leader": "Лидер",

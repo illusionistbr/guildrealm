@@ -1017,6 +1017,7 @@
   "GuildPage": {
     "notFound": "Guild não encontrada.",
     "backToHome": "Voltar para a página inicial",
+    "backToDashboard": "Voltar para o dashboard",
     "recruiting": "Recrutando",
     "closedRecruitment": "Recrutamento fechado",
     "leader": "Líder",

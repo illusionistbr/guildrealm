@@ -1017,6 +1017,7 @@
   "GuildPage": {
     "notFound": "Gremio no encontrado.",
     "backToHome": "Volver a la página de inicio",
+    "backToDashboard": "Volver al panel",
     "recruiting": "Reclutando",
     "closedRecruitment": "Reclutamiento cerrado",
     "leader": "Líder",

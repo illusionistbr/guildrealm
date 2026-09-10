@@ -1017,6 +1017,7 @@
   "GuildPage": {
     "notFound": "Guild not found.",
     "backToHome": "Back to home",
+    "backToDashboard": "Back to the dashboard",
     "recruiting": "Recruiting",
     "closedRecruitment": "Recruitment closed",
     "leader": "Leader",

@@ -274,8 +274,8 @@ export default function AppGuildsCataloguePage() {
                         </div>
                       )}
                       <div className="guild-actions">
-                        <Link href={`/guilds/${guild.id}`}>{t('viewGuild')}</Link>
-                        <Link href={`/guilds/${guild.id}`}>{t('apply')}</Link>
+                        <Link href={`/guilds/${guild.id}?from=dashboard`}>{t('viewGuild')}</Link>
+                        <Link href={`/guilds/${guild.id}?from=dashboard`}>{t('apply')}</Link>
                       </div>
                     </div>
                   </motion.article>

@@ -1017,6 +1017,7 @@
   "GuildPage": {
     "notFound": "未找到公会。",
     "backToHome": "返回首页",
+    "backToDashboard": "返回仪表板",
     "recruiting": "招募中",
     "closedRecruitment": "招募已关闭",
     "leader": "会长",

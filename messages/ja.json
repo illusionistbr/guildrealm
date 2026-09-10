@@ -1017,6 +1017,7 @@
   "GuildPage": {
     "notFound": "ギルドが見つかりませんでした。",
     "backToHome": "ホームページに戻る",
+    "backToDashboard": "ダッシュボードに戻る",
     "recruiting": "募集中",
     "closedRecruitment": "募集終了",
     "leader": "リーダー",
