@@ -1210,7 +1210,7 @@ button {
     0 0 18px rgba(165, 95, 255, 0.15);
 }
 .guild-art {
-  height: 110px;
+  height: 150px;
   background: linear-gradient(135deg, #1a1040, #0c1525);
   position: relative;
   display: flex;
@@ -1241,25 +1241,27 @@ button {
   z-index: 1;
 }
 .guild-body {
-  padding: 18px 20px 22px;
+  padding: 48px 22px 24px;
   position: relative;
 }
 .guild-symbol {
   position: absolute;
-  top: -24px;
-  left: 20px;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  top: -38px;
+  left: 22px;
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
-  border: 2px solid #1e2d4a;
+  border: 2px solid #2a3d63;
   background: #0c1525;
   color: #a864ff;
   overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
 }
 .guild-symbol svg {
-  width: 22px;
+  width: 32px;
+  height: 32px;
 }
 .guild-symbol-logo {
   width: 100%;
@@ -1268,11 +1270,11 @@ button {
 }
 .recruitment {
   display: inline-block;
-  margin-top: 8px;
-  padding: 3px 10px;
-  border-radius: 5px;
+  margin-top: 16px;
+  padding: 4px 12px;
+  border-radius: 6px;
   font:
-    700 9px 'Outfit',
+    700 10px 'Outfit',
     sans-serif;
   letter-spacing: 0.06em;
   background: rgba(100, 116, 139, 0.15);
@@ -1289,9 +1291,9 @@ button {
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
 .guild-card h2 {
-  margin: 10px 0 6px;
+  margin: 12px 0 6px;
   font:
-    700 17px 'Outfit',
+    700 19px 'Outfit',
     sans-serif;
   color: #e8edfa;
 }
@@ -1509,7 +1511,7 @@ button {
     width: 170px;
   }
   .guild-art {
-    height: 160px;
+    height: 190px;
   }
 }
 
