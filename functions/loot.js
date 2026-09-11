@@ -1092,12 +1092,14 @@ exports.awardDkpOnAttendance = onDocumentCreated('guild_events/{eventId}/confirm
 exports.getMyDkpHistory = callable(async (data, context) => {
   const { guildId, characterId, limit = 50 } = data ?? {};
   if (!guildId) throw new CallableError('invalid-argument', 'guildId required');
+  if (!characterId) throw new CallableError('invalid-argument', 'characterId required');
   await requireGuildMember(guildId, context.auth.uid);
-  let q = dkpTxCol(guildId).orderBy('createdAt', 'desc').limit(Math.min(limit, 100));
-  if (characterId) {
-    q = dkpTxCol(guildId).where('characterId', '==', characterId).orderBy('createdAt', 'desc').limit(Math.min(limit, 100));
-  }
-  const snap = await q.get();
+  // IDOR: o characterId é controlado pelo chamador — só o DONO do
+  // personagem pode ver seu extrato (antes, qualquer membro lia o
+  // histórico de qualquer personagem, ou até o da guild inteira).
+  await requireCharacterInGuild(guildId, characterId, context.auth.uid);
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 50, 100));
+  const snap = await dkpTxCol(guildId).where('characterId', '==', characterId).orderBy('createdAt', 'desc').limit(safeLimit).get();
   const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   return { transactions: list };
 });
