@@ -118,6 +118,35 @@ async function getCallerRank(guildId, guild, uid) {
   return rankSnap.data();
 }
 
+async function getOwnerPlanIdLocal(ownerUid) {
+  try {
+    const snap = await admin.firestore().collection('users').doc(ownerUid).get();
+    const user = snap.exists ? snap.data() : null;
+    const raw = user?.plan;
+    if (raw !== 'elite' && raw !== 'conquistador') return 'free';
+    const exp = user?.planExpiresAt;
+    let expMs = null;
+    if (exp && typeof exp.toMillis === 'function') expMs = exp.toMillis();
+    else if (exp && typeof exp.seconds === 'number') expMs = exp.seconds * 1000;
+    if (expMs !== null && expMs <= Date.now()) return 'free';
+    return raw;
+  } catch {
+    return 'free';
+  }
+}
+
+// Loot & DKP: apenas Elite/Conquistador (plano do dono). Retorna a guild.
+async function requirePremiumLoot(guildId, feature) {
+  const snap = await guildDoc(guildId).get();
+  if (!snap.exists) throw new CallableError('not-found', 'Guild not found');
+  const guild = snap.data();
+  const planId = await getOwnerPlanIdLocal(guild.ownerId);
+  if (planId === 'free') {
+    throw new CallableError('permission-denied', 'Loot & DKP disponíveis apenas nos planos Elite e Conquistador. Faça upgrade em Configurações.');
+  }
+  return guild;
+}
+
 async function requireLootPermission(guildId, uid, permission) {
   const snap = await guildDoc(guildId).get();
   if (!snap.exists) throw new CallableError('not-found', 'Guild not found');
@@ -290,6 +319,7 @@ async function addDkp(guildId, characterId, userId, amount, type, referenceType,
 exports.saveLootSettings = callable(async (data, context) => {
   const { guildId, dkpEnabled, allowNegativeDKP, decay, antiSnipingDefault } = data ?? {};
   if (!guildId) throw new CallableError('invalid-argument', 'guildId required');
+  await requirePremiumLoot(guildId, 'loot');
   await requireLootPermission(guildId, context.auth.uid, 'manageLootSettings');
 
   const payload = {};
@@ -335,6 +365,7 @@ exports.manageDkp = callable(async (data, context) => {
     throw new CallableError('invalid-argument', 'guildId, characterId, amount, reason required');
   }
   if (!['add', 'remove'].includes(operation)) throw new CallableError('invalid-argument', 'operation must be add or remove');
+  await requirePremiumLoot(guildId, 'dkp');
   await requireLootPermission(guildId, context.auth.uid, 'manageDkp');
   const char = await requireCharacterInGuild(guildId, characterId, (await characterDoc(characterId).get()).data()?.ownerId || '');
   // actually char check should allow admin to manage any character, not necessarily own
@@ -361,6 +392,7 @@ exports.manageDkp = callable(async (data, context) => {
 exports.createLoot = callable(async (data, context) => {
   const { guildId, type, item, startsAt, endsAt, eligibility, auction, raffle } = data ?? {};
   if (!guildId) throw new CallableError('invalid-argument', 'guildId required');
+  await requirePremiumLoot(guildId, 'loot');
   await requireLootPermission(guildId, context.auth.uid, 'createLoot');
   validateLootPayload({ type, item, startsAt, endsAt, eligibility, auction, raffle });
 
@@ -504,6 +536,7 @@ async function notifyLootNoWinner(guildId, loot) {
 exports.updateLoot = callable(async (data, context) => {
   const { guildId, lootId, ...updates } = data ?? {};
   if (!guildId || !lootId) throw new CallableError('invalid-argument', 'guildId and lootId required');
+  await requirePremiumLoot(guildId, 'loot');
   await requireLootPermission(guildId, context.auth.uid, 'editLoot');
   const snap = await lootDoc(guildId, lootId).get();
   if (!snap.exists) throw new CallableError('not-found', 'Loot not found');
@@ -535,6 +568,7 @@ exports.updateLoot = callable(async (data, context) => {
 exports.cancelLoot = callable(async (data, context) => {
   const { guildId, lootId } = data ?? {};
   if (!guildId || !lootId) throw new CallableError('invalid-argument', 'guildId and lootId required');
+  await requirePremiumLoot(guildId, 'loot');
   await requireLootPermission(guildId, context.auth.uid, 'cancelLoot');
   const snap = await lootDoc(guildId, lootId).get();
   if (!snap.exists) throw new CallableError('not-found', 'Loot not found');
@@ -548,6 +582,7 @@ exports.cancelLoot = callable(async (data, context) => {
 exports.placeBid = callable(async (data, context) => {
   const { guildId, lootId, characterId, amount } = data ?? {};
   if (!guildId || !lootId || !characterId || typeof amount !== 'number') throw new CallableError('invalid-argument', 'Missing fields');
+  await requirePremiumLoot(guildId, 'loot');
   await requireGuildMember(guildId, context.auth.uid);
   await requireLootPermission(guildId, context.auth.uid, 'participateLoot').catch(async () => {
     // if view but not participate, deny
@@ -653,6 +688,7 @@ exports.purchaseRaffleTickets = callable(async (data, context) => {
   const { guildId, lootId, characterId, quantity } = data ?? {};
   if (!guildId || !lootId || !characterId || typeof quantity !== 'number') throw new CallableError('invalid-argument', 'Missing fields');
   if (quantity < 1 || quantity > 100) throw new CallableError('invalid-argument', 'Invalid quantity');
+  await requirePremiumLoot(guildId, 'loot');
   await requireGuildMember(guildId, context.auth.uid);
   const char = await requireCharacterInGuild(guildId, characterId, context.auth.uid);
 

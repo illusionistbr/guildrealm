@@ -139,6 +139,98 @@ function requireSuperAdmin(context) {
   }
 }
 
+// ============ PLANOS PREMIUM (por USUÁRIO) ============
+// O premium é do usuário: todos os personagens herdam. Limites e recursos
+// da guild derivam do plano do DONO (ownerId). Preparado para "Comunidades".
+const PLAN_LIMITS = {
+  free: {
+    maxGuilds: 1,
+    maxMembers: 50,
+    features: { vod: false, discordWebhook: false, loot: false, dkp: false, groups: true, calendar: true, audit: false },
+  },
+  elite: {
+    maxGuilds: 1,
+    maxMembers: 100,
+    features: { vod: true, discordWebhook: true, loot: true, dkp: true, groups: true, calendar: true, audit: true },
+  },
+  conquistador: {
+    maxGuilds: 5,
+    maxMembers: 100,
+    features: { vod: true, discordWebhook: true, loot: true, dkp: true, groups: true, calendar: true, audit: true },
+  },
+};
+
+function resolvePlanIdServer(user) {
+  const raw = user?.plan;
+  if (raw !== 'elite' && raw !== 'conquistador') return 'free';
+  const exp = user?.planExpiresAt;
+  let expMs = null;
+  if (exp && typeof exp.toMillis === 'function') expMs = exp.toMillis();
+  else if (exp && typeof exp.seconds === 'number') expMs = exp.seconds * 1000;
+  else if (exp instanceof Date) expMs = exp.getTime();
+  if (expMs !== null && expMs <= Date.now()) return 'free';
+  return raw;
+}
+
+async function getOwnerPlanId(ownerUid) {
+  try {
+    const snap = await admin.firestore().collection('users').doc(ownerUid).get();
+    return resolvePlanIdServer(snap.exists ? snap.data() : null);
+  } catch {
+    return 'free';
+  }
+}
+
+async function getGuildMemberLimit(guild) {
+  const planId = await getOwnerPlanId(guild.ownerId);
+  return (PLAN_LIMITS[planId] || PLAN_LIMITS.free).maxMembers;
+}
+
+async function requirePremiumFeature(guild, feature) {
+  const planId = await getOwnerPlanId(guild.ownerId);
+  const allowed = (PLAN_LIMITS[planId] || PLAN_LIMITS.free).features[feature];
+  if (!allowed) {
+    throw new CallableError(
+      'permission-denied',
+      'Recurso disponível apenas nos planos Elite e Conquistador. Faça upgrade em Configurações.'
+    );
+  }
+  return planId;
+}
+
+function requireStaff(context) {
+  const role = context.auth?.token?.role;
+  if (!['super_admin', 'admin'].includes(role)) {
+    throw new CallableError('permission-denied', 'Only staff can assign plans');
+  }
+}
+
+// Atribui plano premium a um usuário (staff). Ex.: setUserPlan({uid, plan:'elite', days:60})
+exports.setUserPlan = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+  requireStaff(context);
+  const { uid, plan, days } = data ?? {};
+  if (!uid || !['free', 'elite', 'conquistador'].includes(plan)) {
+    throw new CallableError('invalid-argument', 'uid and valid plan are required');
+  }
+  const durationDays = plan === 'free' ? 0 : Math.max(1, Math.min(3650, Number(days) || 30));
+  const payload = { plan, updatedAt: admin.firestore.FieldValue.serverTimestamp() };
+  if (plan === 'free') {
+    payload.planExpiresAt = null;
+    payload.planStartedAt = null;
+    payload.premium = false;
+  } else {
+    const now = admin.firestore.Timestamp.now();
+    payload.planStartedAt = now;
+    payload.planExpiresAt = admin.firestore.Timestamp.fromMillis(
+      now.toMillis() + durationDays * 24 * 60 * 60 * 1000
+    );
+    payload.premium = true;
+  }
+  await admin.firestore().collection('users').doc(uid).set(payload, { merge: true });
+  return { success: true, plan, days: durationDays };
+});
+
 exports.setAdminClaims = callable(async (data, context) => {
   requireSuperAdmin(context);
 
@@ -217,6 +309,7 @@ exports.createUserProfile = callable(async (data, context) => {
       isActive: true,
       xp: 0,
       premium: false,
+      plan: 'free',
       role: 'user',
     },
     { merge: true }
@@ -271,6 +364,7 @@ exports.updateProfileNickname = callable(async (data, context) => {
     payload.isActive = true;
     payload.xp = 0;
     payload.premium = false;
+    payload.plan = 'free';
     payload.role = 'user';
   }
 
@@ -534,6 +628,14 @@ exports.joinGuild = callable(async (data, context) => {
 
   const uid = context.auth.uid;
 
+  // Limite de membros pelo plano do DONO (free: 50, elite/conquistador: 100).
+  // Pré-leitura fora da transação (evita leitura fora do tx dentro dela).
+  let joinMemberLimit = PLAN_LIMITS.free.maxMembers;
+  try {
+    const preGuild = await guildDoc(guildId).get();
+    if (preGuild.exists) joinMemberLimit = (PLAN_LIMITS[await getOwnerPlanId(preGuild.data().ownerId)] || PLAN_LIMITS.free).maxMembers;
+  } catch {}
+
   await admin.firestore().runTransaction(async (tx) => {
     const charSnap = await tx.get(characterDoc(characterId));
     if (!charSnap.exists) {
@@ -593,6 +695,9 @@ exports.joinGuild = callable(async (data, context) => {
     const members = guild.members ?? [];
     if (members.includes(characterId)) {
       throw new CallableError('already-in-group', 'Character is already a guild member');
+    }
+    if (members.length >= joinMemberLimit) {
+      throw new CallableError('resource-exhausted', `Guild cheia (${members.length}/${joinMemberLimit} membros). O dono precisa liberar vagas ou assinar um plano premium.`);
     }
 
     const owners = guild.memberOwnerIds ?? [];
@@ -1193,6 +1298,14 @@ exports.testDiscordWebhook = callable(async (data, context) => {
 
   await requireGuildPermission(guildId, context.auth.uid, 'manageSettings');
 
+  // Webhook do Discord: apenas Elite/Conquistador
+  try {
+    const gSnap = await guildDoc(guildId).get();
+    if (gSnap.exists) await requirePremiumFeature(gSnap.data(), 'discordWebhook');
+  } catch (err) {
+    if (err instanceof CallableError) throw err;
+  }
+
   try {
     const res = await fetch(webhookUrl.trim(), {
       method: 'POST',
@@ -1233,6 +1346,12 @@ exports.saveDiscordSettings = callable(async (data, context) => {
   }
 
   await requireGuildPermission(guildId, context.auth.uid, 'manageSettings');
+
+  // Webhook do Discord: apenas Elite/Conquistador
+  {
+    const gSnap = await guildDoc(guildId).get();
+    if (gSnap.exists) await requirePremiumFeature(gSnap.data(), 'discordWebhook');
+  }
 
   if (clear === true) {
     await admin.firestore().doc(`guilds/${guildId}/settings/discord`).delete();
@@ -1647,6 +1766,12 @@ exports.reviewGuildApplication = callable(async (data, context) => {
     throw new CallableError('invalid-argument', 'Application has no character to accept');
   }
 
+  // Limite de membros pelo plano do DONO
+  const acceptMemberLimit = (PLAN_LIMITS[await getOwnerPlanId(guild.ownerId)] || PLAN_LIMITS.free).maxMembers;
+  if ((guild.members ?? []).length >= acceptMemberLimit) {
+    throw new CallableError('resource-exhausted', `Guild cheia (${(guild.members ?? []).length}/${acceptMemberLimit} membros). Libere vagas ou assine um plano premium.`);
+  }
+
   await admin.firestore().runTransaction(async (tx) => {
     const charSnap = await tx.get(characterDoc(characterId));
     if (!charSnap.exists) throw new CallableError('not-found', 'Character not found');
@@ -1666,6 +1791,9 @@ exports.reviewGuildApplication = callable(async (data, context) => {
     const members = guild.members ?? [];
     if (members.includes(characterId)) {
       throw new CallableError('already-in-group', 'Character is already a guild member');
+    }
+    if (members.length >= acceptMemberLimit) {
+      throw new CallableError('resource-exhausted', `Guild cheia (${members.length}/${acceptMemberLimit} membros). Libere vagas ou assine um plano premium.`);
     }
 
     const owners = guild.memberOwnerIds ?? [];
@@ -1722,6 +1850,134 @@ exports.deleteCharacter = callable(async (data, context) => {
   await characterDoc(characterId).delete();
 
   return { success: true };
+});
+
+// ============ COMUNIDADES (agregado de guilds do mesmo clã) ============
+// - Qualquer usuário pode criar 1 comunidade (todos os planos).
+// - Cada guild pode pertencer a no máximo 1 comunidade (guilds/{id}.communityId).
+// - Vincular: só o DONO da guild vincula a própria guild (as guilds
+//   vinculáveis já respeitam os limites do plano: 1 free/elite, 5 conquistador).
+// - Desvincular: dono da guild OU dono da comunidade.
+
+function communityDoc(communityId) {
+  return admin.firestore().doc(`communities/${communityId}`);
+}
+
+// Vincula uma guild do próprio usuário a uma comunidade (atômico, 2 lados).
+exports.linkGuildToCommunity = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId, communityId } = data ?? {};
+  if (!guildId || !communityId) {
+    throw new CallableError('invalid-argument', 'guildId and communityId are required');
+  }
+
+  const uid = context.auth.uid;
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const guildSnap = await tx.get(guildDoc(guildId));
+    if (!guildSnap.exists) throw new CallableError('not-found', 'Guild not found');
+    const guild = guildSnap.data();
+    if (guild.ownerId !== uid) {
+      throw new CallableError('permission-denied', 'Only the guild owner can link it to a community');
+    }
+    if (guild.communityId && guild.communityId !== communityId) {
+      throw new CallableError('already-in-guild', 'Guild is already linked to another community');
+    }
+    if (guild.communityId === communityId) return; // idempotente
+
+    const communitySnap = await tx.get(communityDoc(communityId));
+    if (!communitySnap.exists) throw new CallableError('not-found', 'Community not found');
+
+    tx.update(guildDoc(guildId), { communityId, updatedAt: fv.serverTimestamp() });
+    tx.update(communityDoc(communityId), {
+      guildIds: admin.firestore.FieldValue.arrayUnion(guildId),
+      updatedAt: fv.serverTimestamp(),
+    });
+  });
+
+  return { success: true };
+});
+
+// Desvincula uma guild da comunidade (dono da guild ou dono da comunidade).
+exports.unlinkGuildFromCommunity = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { guildId } = data ?? {};
+  if (!guildId) {
+    throw new CallableError('invalid-argument', 'guildId is required');
+  }
+
+  const uid = context.auth.uid;
+
+  await admin.firestore().runTransaction(async (tx) => {
+    const guildSnap = await tx.get(guildDoc(guildId));
+    if (!guildSnap.exists) throw new CallableError('not-found', 'Guild not found');
+    const guild = guildSnap.data();
+    const communityId = guild.communityId;
+    if (!communityId) return; // idempotente
+
+    const communitySnap = await tx.get(communityDoc(communityId));
+    const community = communitySnap.exists ? communitySnap.data() : null;
+    const isGuildOwner = guild.ownerId === uid;
+    const isCommunityOwner = community && community.ownerId === uid;
+    if (!isGuildOwner && !isCommunityOwner) {
+      throw new CallableError('permission-denied', 'Only the guild or community owner can unlink');
+    }
+
+    tx.update(guildDoc(guildId), { communityId: null, updatedAt: fv.serverTimestamp() });
+    if (communitySnap.exists) {
+      tx.update(communityDoc(communityId), {
+        guildIds: admin.firestore.FieldValue.arrayRemove(guildId),
+        updatedAt: fv.serverTimestamp(),
+      });
+    }
+  });
+
+  return { success: true };
+});
+
+// Exclui a comunidade do próprio usuário, desvinculando as guilds antes.
+exports.deleteCommunity = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { communityId } = data ?? {};
+  if (!communityId) {
+    throw new CallableError('invalid-argument', 'communityId is required');
+  }
+
+  const uid = context.auth.uid;
+  const commSnap = await communityDoc(communityId).get();
+  if (!commSnap.exists) throw new CallableError('not-found', 'Community not found');
+  const community = commSnap.data();
+  if (community.ownerId !== uid) {
+    throw new CallableError('permission-denied', 'Only the community owner can delete it');
+  }
+
+  const guildIds = Array.isArray(community.guildIds) ? community.guildIds : [];
+  const batch = admin.firestore().batch();
+  for (const gid of guildIds.slice(0, 500)) {
+    batch.update(guildDoc(gid), { communityId: null, updatedAt: fv.serverTimestamp() });
+  }
+  batch.delete(communityDoc(communityId));
+  await batch.commit();
+
+  return { success: true };
+});
+
+// Ao excluir uma guild, remove seu vínculo da comunidade (sem órfãos).
+exports.communityCleanupOnGuildDeleted = onDocumentDeleted('guilds/{guildId}', async (event) => {
+  const before = event.data?.data();
+  const communityId = before?.communityId;
+  if (!communityId || typeof communityId !== 'string') return;
+  try {
+    await communityDoc(communityId).update({
+      guildIds: admin.firestore.FieldValue.arrayRemove(event.params.guildId),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    console.error('communityCleanupOnGuildDeleted', err?.message ?? err);
+  }
 });
 
 // ============ GRUPOS DE GUILD (validação server-side) ============

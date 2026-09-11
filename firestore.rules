@@ -148,6 +148,28 @@ service cloud.firestore {
         (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
+    // ============ COMUNIDADES ============
+    // Agregado de guilds do mesmo clã. Leitura pública (catálogo pesquisável).
+    // Criação: qualquer usuário logado como dono. Edição: dono ou staff.
+    // Exclusão: dono ou admin. O vínculo guild <-> comunidade é mantido
+    // atomicamente pelas Cloud Functions (link/unlink), nunca pelo cliente.
+    match /communities/{communityId} {
+      allow read: if true;
+      allow create: if isSignedIn() &&
+        request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 60;
+      allow update: if isSignedIn() &&
+        (resource.data.ownerId == request.auth.uid ||
+          request.resource.data.ownerId == request.auth.uid ||
+          isStaff()) &&
+        // cliente nunca altera guildIds diretamente (só via functions)
+        request.resource.data.get('guildIds', []) == resource.data.get('guildIds', []);
+      allow delete: if isSignedIn() &&
+        (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
     // ============ GRUPOS DE GUILD ============
     match /guilds/{guildId}/roles/{roleId} {
       allow read: if isSignedIn() && isGuildMember(guildId);

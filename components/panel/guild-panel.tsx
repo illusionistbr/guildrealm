@@ -49,6 +49,8 @@ import { DEFAULT_ROLES, type GuildRank } from '@/lib/groups/types';
 import { saveGuildPassword, useGuildRanks, useRecruitmentSettings } from '@/lib/groups/hooks';
 import { LootView } from '@/components/loot/LootView';
 import { LootSettingsPanel } from '@/components/loot/LootSettingsPanel';
+import { PlanLocked } from '@/components/panel/plan-locked';
+import { useGuildOwnerPlan } from '@/lib/premium/use-user-plan';
 import { Gem } from 'lucide-react';
 import {
   AlertTriangle,
@@ -314,6 +316,16 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
   const canCreateLoot = isLeader || !!(userPerms as any).createLoot;
   const canManageLootSettings = isLeader || !!(userPerms as any).manageLootSettings;
 
+  // Plano do DONO da guild define limites e recursos (premium é por usuário).
+  const ownerPlan = useGuildOwnerPlan(guild?.ownerId);
+  const planFeatures = ownerPlan.plan.features;
+  const memberLimit = ownerPlan.plan.maxMembers;
+  const memberCount = guild?.members?.length ?? 0;
+  const planAllowsVod = planFeatures.vod;
+  const planAllowsDiscord = planFeatures.discordWebhook;
+  const planAllowsLoot = planFeatures.loot || planFeatures.dkp;
+  const planAllowsAudit = planFeatures.audit;
+
   if (!loading && !guild) {
     return (
       <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center px-6 text-center">
@@ -364,8 +376,11 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
         canManageRecruitment={canManageRecruitment}
         canManageEvents={canManageEvents}
         recruitmentOpen={recruitmentOpen}
-        canViewAudit={canViewAudit}
-        canViewLoot={canViewLoot}
+        canViewAudit={canViewAudit && planAllowsAudit}
+        canViewLoot={canViewLoot && planAllowsLoot}
+        canUseVod={planAllowsVod}
+        memberCount={memberCount}
+        memberLimit={memberLimit}
       />
 
       <div
@@ -483,6 +498,8 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                   canManageSettings={canManageSettings}
                   canManageRanks={canManageRanks}
                   canManageRecruitment={canManageRecruitment}
+                  planAllowsDiscord={planAllowsDiscord}
+                  planAllowsLoot={planAllowsLoot}
                 />
               ) : (
                 <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] p-6 flex items-center gap-2 text-muted">
@@ -499,14 +516,21 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                 </h1>
                 <p className="text-muted mt-1">{t('analysisSub')}</p>
               </div>
-              <AnalysisTabs
-                guildId={guild.id}
-                isLeader={isLeader}
-                canManageEvents={canManageEvents}
-                canManageMembers={canManageMembers}
-                memberIds={guild.memberOwnerIds ?? []}
-                memberNames={memberNames}
-              />
+              {!planAllowsVod ? (
+                <PlanLocked
+                  title="VODs disponíveis nos planos Elite e Conquistador"
+                  description="O envio e a requisição de VODs (análises) não estão incluídos no plano Grátis. Faça upgrade para liberar para todos os seus personagens."
+                />
+              ) : (
+                <AnalysisTabs
+                  guildId={guild.id}
+                  isLeader={isLeader}
+                  canManageEvents={canManageEvents}
+                  canManageMembers={canManageMembers}
+                  memberIds={guild.memberOwnerIds ?? []}
+                  memberNames={memberNames}
+                />
+              )}
             </div>
           ) : view === 'audit' ? (
             <div>
@@ -518,7 +542,12 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                   Registro completo de ações na guild — sem dados pessoais. Acesso restrito ao líder e cargos com permissão.
                 </p>
               </div>
-              {canViewAudit ? (
+              {!planAllowsAudit ? (
+                <PlanLocked
+                  title="Auditoria disponível nos planos Elite e Conquistador"
+                  description="O plano Grátis não inclui acesso à auditoria. Faça upgrade para ver o registro completo de ações da guild."
+                />
+              ) : canViewAudit ? (
                 <GuildAuditView guildId={guild.id} guild={guild} memberNames={memberNames} />
               ) : (
                 <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] p-6 flex items-center gap-2 text-muted">
@@ -527,7 +556,12 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
               )}
             </div>
           ) : view === 'loot' ? (
-            canViewLoot ? (
+            !planAllowsLoot ? (
+              <PlanLocked
+                title="Loot & DKP disponíveis nos planos Elite e Conquistador"
+                description="O plano Grátis não inclui sistema de loot nem DKP. Faça upgrade para liberar leilões, sorteios e DKP para a guild."
+              />
+            ) : canViewLoot ? (
               <LootView guildId={guild.id} guild={guild} uid={uid ?? ''} isLeader={isLeader} canCreateLoot={canCreateLoot} canManageDkp={canManageDkp} canManageLootSettings={canManageLootSettings} memberNames={memberNames} memberMeta={memberMeta} />
             ) : (
               <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[rgba(19,29,48,0.4)] p-6 flex items-center gap-2 text-muted">
@@ -556,6 +590,7 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                   <OverviewView
                     guild={guild}
                     recruitmentOpen={recruitmentOpen}
+                    memberLimit={memberLimit}
                   />
                 )}
 
@@ -569,6 +604,7 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
                     defaultRankId={defaultRankId}
                     leaderRankId={leaderRankId}
                     canManage={canManageMembers}
+                    memberLimit={memberLimit}
                   />
                 )}
               </motion.div>
@@ -592,6 +628,9 @@ function PanelSidebar({
   recruitmentOpen,
   canViewAudit,
   canViewLoot,
+  canUseVod,
+  memberCount,
+  memberLimit,
 }: {
   open: boolean;
   onToggle: () => void;
@@ -604,6 +643,9 @@ function PanelSidebar({
   recruitmentOpen: boolean | null;
   canViewAudit?: boolean;
   canViewLoot?: boolean;
+  canUseVod?: boolean;
+  memberCount?: number;
+  memberLimit?: number;
 }) {
   const t = useTranslations('GuildPanel');
   const isRecruiting =
@@ -618,6 +660,7 @@ function PanelSidebar({
     icon: ReactNode;
     label: string;
     sub?: boolean;
+    planLocked?: boolean;
   }[] = [
     {
       key: 'overview',
@@ -665,6 +708,7 @@ function PanelSidebar({
       href: `${base}/analyses`,
       icon: <BarChart3 size={20} />,
       label: t('menuAnalyses'),
+      planLocked: canUseVod === false,
     },
     ...(canViewLoot
       ? [
@@ -775,10 +819,40 @@ function PanelSidebar({
               <span className={cn(view === item.key && 'text-accent')}>
                 {item.icon}
               </span>
-              {open && <span>{item.label}</span>}
+              {open && (
+                <span className="flex-1 flex items-center gap-1.5">
+                  {item.label}
+                  {item.planLocked && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/20 font-medium">
+                      PRO
+                    </span>
+                  )}
+                </span>
+              )}
             </Link>
           ))}
       </nav>
+
+      {open && typeof memberCount === 'number' && typeof memberLimit === 'number' && (
+        <div className="px-4 pb-2">
+          <div className="rounded-lg border border-[rgba(38,51,86,0.3)] bg-[#0a1122] px-3 py-2">
+            <p className="text-[11px] text-muted">
+              Membros: <span className="text-white font-medium">{memberCount}/{memberLimit}</span>
+            </p>
+            <div className="mt-1.5 h-1.5 rounded-full bg-[rgba(38,51,86,0.4)] overflow-hidden">
+              <div
+                className={cn('h-full rounded-full transition-all', memberCount >= memberLimit ? 'bg-red-400' : 'bg-accent')}
+                style={{ width: `${Math.min(100, Math.round((memberCount / Math.max(1, memberLimit)) * 100))}%` }}
+              />
+            </div>
+            {memberCount >= memberLimit && (
+              <p className="text-[10px] text-amber-300 mt-1.5">
+                Guild cheia. Faça upgrade para aumentar o limite.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       <div
         className={cn(
@@ -881,9 +955,11 @@ function PanelHeader({
 function OverviewView({
   guild,
   recruitmentOpen,
+  memberLimit,
 }: {
   guild: GuildDoc;
   recruitmentOpen: boolean | null;
+  memberLimit?: number;
 }) {
   const t = useTranslations('GuildPanel');
   const recruiting =
@@ -926,7 +1002,9 @@ function OverviewView({
           </div>
           <div className="hidden sm:flex items-center gap-2 text-sm text-muted">
             <Users size={16} />
-            {t('membersCount', { count: guild.members?.length ?? 0 })}
+            {typeof memberLimit === 'number'
+              ? `${guild.members?.length ?? 0}/${memberLimit} membros`
+              : t('membersCount', { count: guild.members?.length ?? 0 })}
           </div>
         </div>
       </div>
@@ -1020,6 +1098,7 @@ function MembersView({
   defaultRankId,
   leaderRankId,
   canManage,
+  memberLimit,
 }: {
   guild: GuildDoc;
   memberNames: MemberNames;
@@ -1029,6 +1108,7 @@ function MembersView({
   defaultRankId: string | null;
   leaderRankId: string | null;
   canManage: boolean;
+  memberLimit?: number;
 }) {
   const t = useTranslations('GuildPanel');
   const classOptions = useMemo(() => t.raw('classes') as ClassOption[], [t]);
@@ -1140,9 +1220,17 @@ function MembersView({
 
   return (
     <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
-      <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2 mb-4">
+      <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2 mb-1">
         <Users size={18} className="text-accent" /> {t('membersTitle')}
       </h2>
+      {typeof memberLimit === 'number' && (
+        <p className="text-xs text-muted mb-4">
+          {guild.members?.length ?? 0}/{memberLimit} membros utilizados
+          {(guild.members?.length ?? 0) >= memberLimit && (
+            <span className="text-amber-300"> — guild cheia. Novos convites serão recusados até liberar vagas ou fazer upgrade.</span>
+          )}
+        </p>
+      )}
 
       {error && (
         <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
@@ -1487,12 +1575,16 @@ function SettingsView({
   canManageSettings,
   canManageRanks,
   canManageRecruitment,
+  planAllowsDiscord,
+  planAllowsLoot,
 }: {
   guild: GuildDoc;
   isLeader: boolean;
   canManageSettings: boolean;
   canManageRanks: boolean;
   canManageRecruitment: boolean;
+  planAllowsDiscord?: boolean;
+  planAllowsLoot?: boolean;
 }) {
   // loot settings tab integration: check permission via memberRanks
 
@@ -1711,9 +1803,23 @@ function SettingsView({
       </div>
 
       {activeTab === 'discord' ? (
-        <DiscordSettings guildId={guild.id} />
+        planAllowsDiscord === false ? (
+          <PlanLocked
+            title="Webhook do Discord disponível nos planos Elite e Conquistador"
+            description="O plano Grátis não inclui a configuração do webhook do Discord para notificações. Faça upgrade para liberar."
+          />
+        ) : (
+          <DiscordSettings guildId={guild.id} />
+        )
       ) : activeTab === 'loot' ? (
-        <LootSettingsPanel guildId={guild.id} />
+        planAllowsLoot === false ? (
+          <PlanLocked
+            title="Loot & DKP disponíveis nos planos Elite e Conquistador"
+            description="O plano Grátis não inclui sistema de loot nem DKP. Faça upgrade para liberar."
+          />
+        ) : (
+          <LootSettingsPanel guildId={guild.id} />
+        )
       ) : activeTab === 'recruitment' ? (
         <RecruitmentSettings guildId={guild.id} />
       ) : activeTab === 'ranks' ? (

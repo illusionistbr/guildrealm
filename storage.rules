@@ -43,6 +43,15 @@ service firebase.storage {
       allow delete: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // Logos de comunidade: leitura pública, upload apenas para usuários logados
+    match /community-logos/{communityId}/{fileName} {
+      allow read: if true;
+      allow write: if isSignedIn() &&
+        request.resource.size < 2 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if isSignedIn();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

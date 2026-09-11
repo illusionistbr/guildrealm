@@ -38,6 +38,7 @@ import {
   Sword,
   Trash2,
   Users,
+  UsersRound,
   X,
 } from 'lucide-react';
 
@@ -72,6 +73,18 @@ type GuildDoc = {
   ownerCharacterId?: string;
   members?: string[];
   memberOwnerIds?: string[];
+  communityId?: string | null;
+  createdAt?: { seconds: number };
+};
+
+type CommunityDoc = {
+  id: string;
+  ownerId?: string;
+  name?: string;
+  tag?: string;
+  description?: string;
+  logoUrl?: string | null;
+  guildIds?: string[];
   createdAt?: { seconds: number };
 };
 
@@ -89,6 +102,7 @@ export default function UserDashboard() {
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
   const [characters, setCharacters] = useState<CharacterDoc[]>([]);
   const [guilds, setGuilds] = useState<GuildDoc[]>([]);
+  const [communities, setCommunities] = useState<CommunityDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -206,6 +220,26 @@ export default function UserDashboard() {
             ),
             mergeMemberGuilds,
           ),
+          onSnapshot(
+            query(
+              collection(db, COLLECTIONS.COMMUNITIES),
+              where('ownerId', '==', user.uid),
+            ),
+            (snap: QuerySnapshot) => {
+              const list: CommunityDoc[] = [];
+              snap.forEach((d) => {
+                list.push({ id: d.id, ...d.data() } as CommunityDoc);
+              });
+              if (!disposed) {
+                setCommunities(
+                  list.sort(
+                    (a, b) =>
+                      (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+                  ),
+                );
+              }
+            },
+          ),
         );
 
         if (!disposed) setLoading(false);
@@ -314,10 +348,14 @@ export default function UserDashboard() {
       });
       setJoinCharacter(null);
     } catch (err) {
-      const e = err as { code?: string };
-      setJoinError(
-        e?.code === 'functions/invalid-password' ? t('invalidPassword') : t('joinError'),
-      );
+      const e = err as { code?: string; message?: string };
+      if (e?.code === 'functions/resource-exhausted') {
+        setJoinError('Esta guild está cheia para o plano do dono. Tente outra guild ou peça um upgrade do plano.');
+      } else {
+        setJoinError(
+          e?.code === 'functions/invalid-password' ? t('invalidPassword') : t('joinError'),
+        );
+      }
     }
   };
 
@@ -395,6 +433,7 @@ export default function UserDashboard() {
             uid={userDoc?.id}
             onCreateFirst={t('createFirstGuild')}
           />
+          <CommunitiesSection communities={communities} />
         </div>
       )}
 
@@ -438,7 +477,7 @@ function CreateActions() {
   return (
     <motion.div
       variants={fadeUp}
-      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      className="grid grid-cols-1 md:grid-cols-3 gap-4"
     >
       <Link
         href="/app/characters/new"
@@ -476,6 +515,27 @@ function CreateActions() {
               {t('createGuild')}
             </p>
             <p className="text-muted text-sm mt-1">{t('createGuildSub')}</p>
+          </div>
+          <ChevronRight
+            size={22}
+            className="text-muted group-hover:translate-x-1 group-hover:text-accent transition-all shrink-0"
+          />
+        </div>
+      </Link>
+
+      <Link
+        href="/app/communities/new"
+        className="group relative overflow-hidden rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.8)] to-[rgba(10,18,32,0.6)] p-7 md:p-8 transition-all duration-300 hover:border-accent/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)]"
+      >
+        <div className="flex items-center gap-5">
+          <div className="w-14 h-14 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <UsersRound size={28} className="text-accent" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-heading font-bold text-white text-xl md:text-2xl">
+              Criar Comunidade
+            </p>
+            <p className="text-muted text-sm mt-1">Agregue as guilds do seu clã em vários jogos</p>
           </div>
           <ChevronRight
             size={22}
@@ -1025,6 +1085,87 @@ function GuildsSection({
               </div>
             );
           })}
+        </div>
+      )}
+    </motion.section>
+  );
+}
+
+function CommunitiesSection({ communities }: { communities: CommunityDoc[] }) {
+  return (
+    <motion.section variants={fadeUp}>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+          <UsersRound size={20} className="text-accent" /> Minha Comunidade
+        </h2>
+        {communities.length > 0 && (
+          <Link
+            href="/app/communities"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/15 border border-accent/30 text-accent text-xs font-medium hover:bg-accent hover:text-white transition-all duration-200"
+          >
+            Explorar comunidades
+          </Link>
+        )}
+      </div>
+
+      {communities.length === 0 ? (
+        <EmptyState
+          icon={<UsersRound size={28} className="text-accent" />}
+          message="Você ainda não tem uma comunidade. Crie a do seu clã e vincule suas guilds."
+          cta="Criar comunidade"
+          href="/app/communities/new"
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {communities.map((community) => (
+            <div
+              key={community.id}
+              className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-5 hover:border-accent/30 hover:bg-[rgba(109,40,217,0.04)] transition-all duration-300 group"
+            >
+              <Link
+                href={`/app/communities/${community.id}`}
+                className="flex items-center gap-4"
+              >
+                <div className="w-10 h-10 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0 overflow-hidden">
+                  {community.logoUrl ? (
+                    <img src={community.logoUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    community.name?.charAt(0) ?? '?'
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-white font-medium truncate">
+                      {community.name}
+                    </p>
+                    {community.tag && (
+                      <span className="text-xs text-muted truncate">
+                        [{community.tag}]
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-xs text-muted flex items-center gap-1">
+                      <Shield size={12} />{' '}
+                      {(community.guildIds?.length ?? 0) === 1
+                        ? '1 guild vinculada'
+                        : `${community.guildIds?.length ?? 0} guilds vinculadas`}
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight
+                  size={18}
+                  className="text-muted group-hover:translate-x-1 group-hover:text-accent transition-all shrink-0"
+                />
+              </Link>
+              <Link
+                href={`/app/communities/${community.id}`}
+                className="mt-4 flex items-center justify-center gap-2 w-full h-10 rounded-lg bg-accent/15 border border-accent/30 text-accent text-sm font-medium hover:bg-accent hover:text-white transition-all duration-200"
+              >
+                <UsersRound size={16} /> Gerenciar comunidade
+              </Link>
+            </div>
+          ))}
         </div>
       )}
     </motion.section>

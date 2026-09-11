@@ -2,6 +2,7 @@ export const COLLECTIONS = {
   USERS: 'users',
   CHARACTERS: 'characters',
   GUILDS: 'guilds',
+  COMMUNITIES: 'communities',
   GUILD_EVENTS: 'guild_events',
   GAMES: 'games',
   ACHIEVEMENTS: 'achievements',

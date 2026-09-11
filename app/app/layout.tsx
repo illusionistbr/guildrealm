@@ -23,11 +23,13 @@ import {
   ChevronRight,
   Eye,
   Tag,
+  UsersRound,
   type LucideIcon,
 } from 'lucide-react';
 
 const navItems: { label: string; href: string; icon: LucideIcon }[] = [
   { label: 'Visão Geral', href: '/app/dashboard', icon: LayoutDashboard },
+  { label: 'Comunidades', href: '/app/communities', icon: UsersRound },
   { label: 'Conquistas', href: '/app/achievements', icon: Trophy },
   { label: 'Promoções', href: '/app/promotions', icon: Tag },
   { label: 'Perfil', href: '/app/profile', icon: User },
@@ -38,6 +40,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
   const isGuildsPage = pathname === '/app/guilds' || pathname?.startsWith('/app/guilds/');
+  // Só o catálogo de comunidades é full-bleed (usa .shell interno);
+  // /new e /[id] usam o shell padrão com respiro.
+  const isCommunitiesPage = pathname === '/app/communities';
+  const isFullBleedPage = isGuildsPage || isCommunitiesPage;
 
   return (
     <div className="min-h-screen bg-[#050912] flex">
@@ -50,8 +56,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         sidebarOpen ? 'ml-64' : 'ml-16',
       )}>
         <AppHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
-        <main className={cn('flex-1 overflow-auto', isGuildsPage ? 'p-0' : 'p-6')}>
-          {isGuildsPage ? children : <div className="shell">{children}</div>}
+        <main className={cn('flex-1 overflow-auto', isFullBleedPage ? 'p-0' : 'p-6')}>
+          {isFullBleedPage ? children : <div className="shell">{children}</div>}
         </main>
       </div>
     </div>
@@ -182,6 +188,7 @@ function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }) {
   const { fbUser, profile, loading } = useCurrentUserProfile();
   const nickname = profileNickname(profile);
   const isGuildsActive = pathname === '/app/guilds' || pathname.startsWith('/app/guilds/');
+  const isCommunitiesActive = pathname === '/app/communities' || pathname.startsWith('/app/communities/');
 
   const handleSignOut = async () => {
     if (signingOut) return;
@@ -220,6 +227,18 @@ function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }) {
           )}
         >
           <Shield size={16} className={isGuildsActive ? 'text-accent' : ''} /> Guildas
+        </Link>
+
+        <Link
+          href="/app/communities"
+          className={cn(
+            'hidden md:flex items-center gap-2 h-9 px-4 rounded-lg border text-sm font-medium transition-all',
+            isCommunitiesActive
+              ? 'bg-accent/15 text-white border-accent/30'
+              : 'text-muted hover:text-white hover:bg-[rgba(109,40,217,0.08)] border-transparent hover:border-[rgba(38,51,86,0.5)]',
+          )}
+        >
+          <UsersRound size={16} className={isCommunitiesActive ? 'text-accent' : ''} /> Comunidades
         </Link>
       </div>
 

@@ -1,0 +1,277 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { onAuthStateChanged } from 'firebase/auth';
+import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import {
+  ChevronDown,
+  Gamepad2,
+  Globe2,
+  Plus,
+  Search,
+  ShieldCheck,
+  Swords,
+  UsersRound,
+} from 'lucide-react';
+import { PrimaryButton } from '@/components/ui/primary-button';
+import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
+import { COLLECTIONS } from '@/lib/admin/firebase/collections';
+
+export type CommunityDoc = {
+  id: string;
+  ownerId?: string;
+  ownerName?: string | null;
+  name?: string;
+  tag?: string;
+  description?: string;
+  logoUrl?: string | null;
+  bannerUrl?: string | null;
+  guildIds?: string[];
+  createdAt?: { seconds: number };
+};
+
+type GuildMini = {
+  id: string;
+  name?: string;
+  game?: string;
+};
+
+const GAME_FILTERS = [
+  { value: 'all', label: 'Todos os jogos' },
+  { value: 'aion2', label: 'Aion 2' },
+];
+
+export default function AppCommunitiesCataloguePage() {
+  const [communities, setCommunities] = useState<CommunityDoc[]>([]);
+  const [guildsById, setGuildsById] = useState<Record<string, GuildMini>>({});
+  const [ownerNames, setOwnerNames] = useState<Record<string, string>>({});
+  const [uid, setUid] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [game, setGame] = useState('all');
+
+  useEffect(() => {
+    const unsubAuth = onAuthStateChanged(getFirebaseAuth(), (user) => {
+      setUid(user?.uid ?? null);
+    });
+
+    const db = getFirebaseDb();
+    const unsubCommunities = onSnapshot(
+      collection(db, COLLECTIONS.COMMUNITIES),
+      (snap) => {
+        const list: CommunityDoc[] = [];
+        snap.forEach((d) => list.push({ id: d.id, ...d.data() } as CommunityDoc));
+        list.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+        setCommunities(list);
+        setLoading(false);
+      },
+      () => setLoading(false),
+    );
+
+    // Mapa de guilds para exibir jogos/qtd por comunidade
+    const unsubGuilds = onSnapshot(
+      collection(db, COLLECTIONS.GUILDS),
+      (snap) => {
+        const map: Record<string, GuildMini> = {};
+        snap.forEach((d) => {
+          const data = d.data() as { name?: string; game?: string };
+          map[d.id] = { id: d.id, name: data.name, game: data.game };
+        });
+        setGuildsById(map);
+      },
+      () => {},
+    );
+
+    return () => {
+      unsubAuth();
+      unsubCommunities();
+      unsubGuilds();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!uid) return;
+    let disposed = false;
+    const needed = [
+      ...new Set(
+        communities.filter((c) => !c.ownerName && c.ownerId).map((c) => c.ownerId as string),
+      ),
+    ].filter((id) => !ownerNames[id]);
+    if (needed.length === 0) return;
+    const db = getFirebaseDb();
+    const load = async () => {
+      const names: Record<string, string> = {};
+      await Promise.all(
+        needed.map(async (ownerId) => {
+          try {
+            const snap = await getDoc(doc(db, COLLECTIONS.USERS, ownerId));
+            if (snap.exists()) {
+              const data = snap.data() as { displayName?: string };
+              if (data.displayName) names[ownerId] = data.displayName;
+            }
+          } catch {}
+        }),
+      );
+      if (!disposed) setOwnerNames((prev) => ({ ...prev, ...names }));
+    };
+    load();
+    return () => {
+      disposed = true;
+    };
+  }, [uid, communities, ownerNames]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return communities.filter((c) => {
+      if (q) {
+        const hay = `${c.name ?? ''} ${c.tag ?? ''} ${c.description ?? ''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      if (game !== 'all') {
+        const ids = c.guildIds ?? [];
+        const hasGame = ids.some((gid) => guildsById[gid]?.game === game);
+        if (!hasGame) return false;
+      }
+      return true;
+    });
+  }, [communities, search, game, guildsById]);
+
+  return (
+    <main className="guilds-page">
+      <section className="catalogue-hero">
+        <div className="catalogue-art" />
+        <div className="shell catalogue-heading">
+          <div>
+            <p className="catalogue-kicker">
+              <ShieldCheck /> Clãs multijogos
+            </p>
+            <h1>
+              Encontre sua <em>comunidade</em>
+            </h1>
+            <p>Comunidades agregam as guilds do mesmo clã em vários jogos. Encontre a sua ou crie a do seu clã.</p>
+          </div>
+          <PrimaryButton className="create-guild" href="/app/communities/new">
+            <Plus size={19} /> Criar Comunidade
+          </PrimaryButton>
+        </div>
+      </section>
+      <section className="shell catalogue-content">
+        <div className="filter-panel">
+          <label className="search-field">
+            <Search size={21} />
+            <input
+              placeholder="Buscar comunidade por nome, tag ou descrição..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </label>
+          <div className="filter-row">
+            <label className="select-filter">
+              <span>Jogo das guilds</span>
+              <div className="filter-select">
+                <select value={game} onChange={(e) => setGame(e.target.value)}>
+                  {GAME_FILTERS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={17} />
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div className="results-toolbar">
+          <p>{filtered.length} {filtered.length === 1 ? 'comunidade encontrada' : 'comunidades encontradas'}</p>
+        </div>
+
+        {loading ? (
+          <div className="guild-grid">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="guild-card h-72 animate-pulse" style={{ opacity: 0.6 }} />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-16">
+            <Swords size={36} className="text-accent mx-auto mb-4" />
+            <p className="text-[#c0c9df] font-medium">Nenhuma comunidade encontrada</p>
+            <Link
+              href="/app/communities/new"
+              className="inline-flex items-center gap-2 mt-4 text-[#a864ff] hover:text-[#c39dff] text-sm transition-colors"
+            >
+              <Plus size={16} /> Criar a primeira
+            </Link>
+          </div>
+        ) : (
+          <div className="guild-grid">
+            {filtered.map((community, index) => {
+              const ownerName = community.ownerName ?? ownerNames[community.ownerId ?? ''];
+              const guildIds = community.guildIds ?? [];
+              const games = [...new Set(guildIds.map((gid) => guildsById[gid]?.game).filter(Boolean))] as string[];
+              return (
+                <motion.article
+                  key={community.id}
+                  className="guild-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <div className="guild-art">
+                    {community.bannerUrl ? (
+                      <img
+                        src={community.bannerUrl}
+                        alt=""
+                        className="guild-art-banner"
+                      />
+                    ) : null}
+                    <span>
+                      <Gamepad2 size={13} /> {games.length > 0 ? `${games.length} ${games.length === 1 ? 'jogo' : 'jogos'}` : 'Multijogos'}
+                    </span>
+                  </div>
+                  <div className="guild-body">
+                    <div className="guild-symbol">
+                      {community.logoUrl ? (
+                        <img
+                          src={community.logoUrl}
+                          alt={community.name ?? ''}
+                          className="guild-symbol-logo"
+                        />
+                      ) : (
+                        <ShieldCheck />
+                      )}
+                    </div>
+                    <h2>{community.name}</h2>
+                    <p className="guild-meta">
+                      {community.tag && (
+                        <>
+                          <Globe2 size={14} /> [{community.tag}]
+                          <i />
+                        </>
+                      )}
+                      {ownerName ? `por ${ownerName}` : 'Comunidade'}
+                    </p>
+                    <p className="guild-members">
+                      <UsersRound size={15} /> {guildIds.length} {guildIds.length === 1 ? 'guild vinculada' : 'guilds vinculadas'}
+                    </p>
+                    {community.description && (
+                      <p className="guild-meta" style={{ marginTop: 8 }}>
+                        {community.description.slice(0, 120)}{community.description.length > 120 ? '…' : ''}
+                      </p>
+                    )}
+                    <div className="guild-actions">
+                      <Link href={`/app/communities/${community.id}`}>Ver comunidade</Link>
+                      <Link href={`/app/communities/${community.id}`}>Ver guilds</Link>
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}

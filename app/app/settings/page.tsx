@@ -9,6 +9,8 @@ import { toast, Toaster } from 'sonner';
 import { cn } from '@/lib/admin/utils/cn';
 import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { Bell, Shield, Eye, Lock, Save, Loader2, AlertTriangle, X } from 'lucide-react';
+import { useUserPlan } from '@/lib/premium/use-user-plan';
+import { PremiumTicket } from '@/components/app/premium-ticket';
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -49,6 +51,7 @@ export default function SettingsPage() {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [dangerLoading, setDangerLoading] = useState(false);
+  const planState = useUserPlan(uid);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(getFirebaseAuth(), async (user) => {
@@ -230,6 +233,11 @@ export default function SettingsPage() {
           <AlertTriangle size={14} /> Você tem alterações não salvas.
         </motion.div>
       )}
+
+      {/* Plano / Premium */}
+      <motion.div variants={fadeUp}>
+        <PremiumTicket planState={planState} />
+      </motion.div>
 
       {/* Notificações */}
       <motion.div

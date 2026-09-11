@@ -27,6 +27,7 @@ import {
   getFirebaseStorage,
 } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
+import { useUserPlan } from '@/lib/premium/use-user-plan';
 import { cn } from '@/lib/admin/utils/cn';
 import {
   AlertCircle,
@@ -107,6 +108,8 @@ export default function CreateGuildPage() {
   const [creating, setCreating] = useState(false);
   const [createdGuildId, setCreatedGuildId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const planState = useUserPlan(uid);
+  const [ownedGuildCount, setOwnedGuildCount] = useState<number | null>(null);
 
   const logoInput = useRef<HTMLInputElement>(null);
 
@@ -157,7 +160,22 @@ export default function CreateGuildPage() {
       if (!disposed) setCharactersLoading(false);
     };
 
+    const loadOwnedGuilds = async () => {
+      try {
+        const snap = await getDocs(
+          query(
+            collection(getFirebaseDb(), COLLECTIONS.GUILDS),
+            where('ownerId', '==', uid),
+          ),
+        );
+        if (!disposed) setOwnedGuildCount(snap.size);
+      } catch {
+        if (!disposed) setOwnedGuildCount(null);
+      }
+    };
+
     load();
+    loadOwnedGuilds();
     return () => {
       disposed = true;
     };
@@ -198,9 +216,21 @@ export default function CreateGuildPage() {
     }));
   };
 
+  const guildLimitHit =
+    ownedGuildCount !== null &&
+    ownedGuildCount >= planState.plan.maxGuilds;
+
+  const guildLimitMessage = planState.planId === 'conquistador'
+    ? `Você atingiu o limite de ${planState.plan.maxGuilds} guilds do plano Conquistador. Exclua uma guild para criar outra.`
+    : `Você atingiu o limite de ${planState.plan.maxGuilds} ${planState.plan.maxGuilds === 1 ? 'guild' : 'guilds'} do seu plano. Exclua a guild que você tem ou assine um plano premium para criar mais.`;
+
   const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (guildLimitHit) {
+      setError(guildLimitMessage);
+      return;
+    }
     if (!form.name.trim()) {
       setError(t('nameRequired'));
       return;
@@ -214,6 +244,23 @@ export default function CreateGuildPage() {
 
   const handleCreate = async () => {
     if (!uid || !leaderCharacter) return;
+    // Revalida o limite no momento da criação (evita corrida entre abas)
+    try {
+      const snap = await getDocs(
+        query(
+          collection(getFirebaseDb(), COLLECTIONS.GUILDS),
+          where('ownerId', '==', uid),
+        ),
+      );
+      setOwnedGuildCount(snap.size);
+      if (snap.size >= planState.plan.maxGuilds) {
+        setError(guildLimitMessage);
+        setCreating(false);
+        return;
+      }
+    } catch {
+      // se a contagem falhar, segue e deixa as rules/functions decidirem
+    }
     const leader = characters.find((c) => c.id === leaderCharacter);
     if (!leader) return;
     if (leader.guildId) {
@@ -327,7 +374,35 @@ export default function CreateGuildPage() {
       </motion.div>
 
       {step === 'form' && (
-        <FormStep
+        <>
+          {guildLimitHit ? (
+            <div className="mt-6 flex items-start gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-200">
+              <AlertCircle size={17} className="shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium">Limite de guilds atingido ({ownedGuildCount}/{planState.plan.maxGuilds})</p>
+                <p className="text-xs mt-1 text-amber-200/80">{guildLimitMessage}</p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Link
+                    href="/app/dashboard"
+                    className="inline-flex items-center px-3 h-9 rounded-lg border border-amber-500/30 text-amber-200 text-xs hover:bg-amber-500/10 transition-colors"
+                  >
+                    Gerenciar minhas guilds
+                  </Link>
+                  <Link
+                    href="/app/settings"
+                    className="inline-flex items-center px-3 h-9 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors"
+                  >
+                    Ver planos premium
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : ownedGuildCount !== null ? (
+            <p className="mt-4 text-xs text-muted">
+              Você usa {ownedGuildCount}/{planState.plan.maxGuilds} {planState.plan.maxGuilds === 1 ? 'guild' : 'guilds'} do plano {planState.plan.label}.
+            </p>
+          ) : null}
+          <FormStep
           t={t}
           form={form}
           setForm={setForm}
@@ -349,6 +424,7 @@ export default function CreateGuildPage() {
           onToggleLanguage={toggleLanguage}
           onSubmit={handleSubmitForm}
         />
+        </>
       )}
 
       {step === 'preview' && (

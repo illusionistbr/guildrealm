@@ -123,12 +123,40 @@ function validateVideoFile(fileName, contentType, fileSize, maxVideoSize) {
   if (fileSize <= 0) throw new AnalysisError('invalid-argument', 'File size must be greater than 0');
 }
 
+async function getOwnerPlanIdAnalyses(ownerUid) {
+  try {
+    const snap = await admin.firestore().collection('users').doc(ownerUid).get();
+    const user = snap.exists ? snap.data() : null;
+    const raw = user?.plan;
+    if (raw !== 'elite' && raw !== 'conquistador') return 'free';
+    const exp = user?.planExpiresAt;
+    let expMs = null;
+    if (exp && typeof exp.toMillis === 'function') expMs = exp.toMillis();
+    else if (exp && typeof exp.seconds === 'number') expMs = exp.seconds * 1000;
+    if (expMs !== null && expMs <= Date.now()) return 'free';
+    return raw;
+  } catch {
+    return 'free';
+  }
+}
+
+// VOD (envio + requisição): apenas Elite/Conquistador (plano do dono).
+async function requirePremiumVod(guildId) {
+  const snap = await guildDoc(guildId).get();
+  if (!snap.exists) throw new AnalysisError('not-found', 'Guild not found');
+  const planId = await getOwnerPlanIdAnalyses(snap.data().ownerId);
+  if (planId === 'free') {
+    throw new AnalysisError('permission-denied', 'Envio e requisição de VOD disponíveis apenas nos planos Elite e Conquistador. Faça upgrade em Configurações.');
+  }
+}
+
 exports.getAnalysisUploadUrl = callable(async (data, context) => {
   const { guildId, requestId, fileName, contentType, fileSize } = data || {};
   if (!guildId || !requestId || !fileName || !contentType || !fileSize) {
     throw new AnalysisError('invalid-argument', 'Missing required fields');
   }
   if (!checkRateLimit(context.auth.uid)) throw new AnalysisError('resource-exhausted', 'Rate limit exceeded');
+  await requirePremiumVod(guildId);
   await requireGuildAuth(guildId, context.auth.uid);
   const requestSnap = await guildDoc(guildId).collection('analysisRequests').doc(requestId).get();
   if (!requestSnap.exists) throw new AnalysisError('not-found', 'Analysis request not found');
@@ -156,6 +184,7 @@ exports.initMultipartUpload = callable(async (data, context) => {
   const { guildId, requestId, fileName, contentType, fileSize, partSize } = data || {};
   if (!guildId || !requestId || !fileName || !contentType || !fileSize) throw new AnalysisError('invalid-argument', 'Missing required fields');
   if (!checkRateLimit(context.auth.uid)) throw new AnalysisError('resource-exhausted', 'Rate limit exceeded');
+  await requirePremiumVod(guildId);
   await requireGuildAuth(guildId, context.auth.uid);
   const requestSnap = await guildDoc(guildId).collection('analysisRequests').doc(requestId).get();
   if (!requestSnap.exists) throw new AnalysisError('not-found', 'Analysis request not found');
@@ -275,6 +304,7 @@ exports.getAnalysisPlayUrl = callable(async (data, context) => {
 exports.createAnalysisRequest = callable(async (data, context) => {
   const { guildId, title, description, game, type, eventDate, deadline, maxVideoSize, allowMultipleSubmissions, targetMembers } = data || {};
   if (!guildId || !title || !game) throw new AnalysisError('invalid-argument', 'guildId, title, and game are required');
+  await requirePremiumVod(guildId);
   await requireGuildAdmin(guildId, context.auth.uid);
   const requestData = {
     title, description: description || '', game, type: type || 'other',
