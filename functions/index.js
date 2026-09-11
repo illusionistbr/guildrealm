@@ -231,6 +231,83 @@ exports.setUserPlan = callable(async (data, context) => {
   return { success: true, plan, days: durationDays };
 });
 
+// ============ PERFIL PÚBLICO (resposta ao finding: Logic Flaw) ============
+// A página /profile/[nickname] NÃO pode ler o documento inteiro de users/
+// (ele contém email, xp, premium/plano, role, settings...). Este callable
+// retorna apenas os campos seguros para exibição pública, respeitando as
+// flags de visibilidade do dono do perfil. Nunca expõe: email, xp,
+// premium/plan*, role, isActive, settings, nicknameChanged*.
+exports.getPublicProfile = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const raw = typeof data?.nickname === 'string' ? data.nickname : '';
+  const routeNickname = raw.trim().slice(0, 120);
+  if (!routeNickname) {
+    throw new CallableError('invalid-argument', 'nickname is required');
+  }
+
+  const usersCol = admin.firestore().collection('users');
+  const lowered = routeNickname.toLowerCase();
+
+  // 1) Busca pelo nickname (definido no cadastro, sempre minúsculo)
+  let snap = await usersCol.where('nickname', '==', lowered).limit(1).get();
+  let found = snap.empty ? null : snap.docs[0];
+
+  // 2) Contas antigas sem nickname: busca pelo displayName exato
+  if (!found) {
+    snap = await usersCol.where('displayName', '==', routeNickname).limit(1).get();
+    found = snap.empty ? null : snap.docs[0];
+  }
+
+  if (!found) throw new CallableError('not-found', 'Profile not found');
+
+  const user = found.data() || {};
+  // Contas desativadas não são expostas
+  if (user.isActive === false) throw new CallableError('not-found', 'Profile not found');
+
+  const visibility = {
+    showBio: true,
+    showGuilds: true,
+    showAchievements: true,
+    showFriends: true,
+    ...(user.visibility || {}),
+  };
+
+  const cleanLinks = {};
+  if (user.socialLinks && typeof user.socialLinks === 'object') {
+    for (const [k, v] of Object.entries(user.socialLinks)) {
+      if (typeof k === 'string' && typeof v === 'string' && v.trim()) {
+        cleanLinks[k.slice(0, 32)] = v.trim().slice(0, 500);
+      }
+    }
+  }
+
+  let createdAt = null;
+  const ca = user.createdAt;
+  if (ca && typeof ca.toMillis === 'function') {
+    createdAt = { seconds: Math.floor(ca.toMillis() / 1000) };
+  } else if (ca && typeof ca.seconds === 'number') {
+    createdAt = { seconds: ca.seconds };
+  }
+
+  return {
+    id: found.id,
+    displayName: typeof user.displayName === 'string' ? user.displayName.slice(0, 120) : '',
+    nickname: typeof user.nickname === 'string' ? user.nickname.slice(0, 32) : '',
+    bio: visibility.showBio && typeof user.bio === 'string' ? user.bio.slice(0, 2000) : '',
+    photoURL: typeof user.photoURL === 'string' ? user.photoURL.slice(0, 2000) : null,
+    coverUrl: typeof user.coverUrl === 'string' ? user.coverUrl.slice(0, 2000) : null,
+    socialLinks: cleanLinks,
+    visibility: {
+      showBio: visibility.showBio !== false,
+      showGuilds: visibility.showGuilds !== false,
+      showAchievements: visibility.showAchievements !== false,
+      showFriends: visibility.showFriends !== false,
+    },
+    createdAt,
+  };
+});
+
 exports.setAdminClaims = callable(async (data, context) => {
   requireSuperAdmin(context);
 

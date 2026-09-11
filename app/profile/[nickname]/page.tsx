@@ -4,15 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth';
-import {
-  collection,
-  getDocs,
-  limit,
-  query,
-  where,
-} from 'firebase/firestore';
-import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
-import { COLLECTIONS } from '@/lib/admin/firebase/collections';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getFirebaseApp, getFirebaseAuth } from '@/lib/admin/firebase/client';
 import { DEFAULT_VISIBILITY } from '@/lib/app/use-current-user-profile';
 import { ProfileMural } from '@/components/app/profile-mural';
 import {
@@ -103,38 +96,24 @@ export default function PublicProfilePage() {
       setProfile(null);
 
       try {
-        const db = getFirebaseDb();
-        // 1) Busca pelo nickname (definido no cadastro)
-        const byNickname = await getDocs(
-          query(
-            collection(db, COLLECTIONS.USERS),
-            where('nickname', '==', routeNickname.toLowerCase()),
-            limit(1),
-          ),
+        // Perfil público via callable: o servidor retorna APENAS campos
+        // seguros (nunca email/xp/plano/role/settings). A página não lê
+        // o documento users/ diretamente.
+        const fn = httpsCallable<{ nickname: string }, PublicProfile>(
+          getFunctions(getFirebaseApp()),
+          'getPublicProfile',
         );
-        let found = byNickname.docs[0];
-
-        // 2) Contas antigas sem campo nickname: busca pelo displayName exato
-        if (!found) {
-          const byDisplayName = await getDocs(
-            query(
-              collection(db, COLLECTIONS.USERS),
-              where('displayName', '==', routeNickname),
-              limit(1),
-            ),
-          );
-          found = byDisplayName.docs[0];
-        }
-
+        const res = await fn({ nickname: routeNickname });
         if (disposed) return;
-
-        if (!found || !found.exists()) {
+        setProfile(res.data);
+      } catch (err) {
+        if (disposed) return;
+        const code = (err as { code?: string })?.code;
+        if (code === 'functions/not-found') {
           setNotFound(true);
         } else {
-          setProfile({ id: found.id, ...found.data() } as PublicProfile);
+          setLoadError(true);
         }
-      } catch {
-        if (!disposed) setLoadError(true);
       }
       if (!disposed) setLoading(false);
     };
@@ -153,6 +132,14 @@ export default function PublicProfilePage() {
     );
   }
 
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center text-center px-4">
+        <p className="text-sm text-red-400">Não foi possível carregar este perfil.</p>
+      </div>
+    );
+  }
+
   if (notFound || !profile) {
     return (
       <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center text-center px-4">
@@ -163,14 +150,6 @@ export default function PublicProfilePage() {
         <p className="text-muted text-sm mt-1 max-w-xs">
           O perfil @{routeNickname} não existe ou está indisponível.
         </p>
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center text-center px-4">
-        <p className="text-sm text-red-400">Não foi possível carregar este perfil.</p>
       </div>
     );
   }
