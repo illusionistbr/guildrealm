@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
   ChevronDown,
   Gamepad2,
@@ -16,7 +17,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { PrimaryButton } from '@/components/ui/primary-button';
-import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
+import { getFirebaseApp, getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 
 export type CommunityDoc = {
@@ -100,21 +101,18 @@ export default function AppCommunitiesCataloguePage() {
       ),
     ].filter((id) => !ownerNames[id]);
     if (needed.length === 0) return;
-    const db = getFirebaseDb();
     const load = async () => {
-      const names: Record<string, string> = {};
-      await Promise.all(
-        needed.map(async (ownerId) => {
-          try {
-            const snap = await getDoc(doc(db, COLLECTIONS.USERS, ownerId));
-            if (snap.exists()) {
-              const data = snap.data() as { displayName?: string };
-              if (data.displayName) names[ownerId] = data.displayName;
-            }
-          } catch {}
-        }),
-      );
-      if (!disposed) setOwnerNames((prev) => ({ ...prev, ...names }));
+      // Nomes via callable (só displayNames — nunca lê users/ no cliente).
+      try {
+        const fn = httpsCallable<{ uids: string[] }, { names: Record<string, string> }>(
+          getFunctions(getFirebaseApp()),
+          'getOwnerDisplayNames',
+        );
+        const res = await fn({ uids: needed });
+        if (!disposed && res.data?.names) {
+          setOwnerNames((prev) => ({ ...prev, ...res.data.names }));
+        }
+      } catch {}
     };
     load();
     return () => {

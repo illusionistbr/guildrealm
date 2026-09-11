@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
   ChevronDown,
   Gamepad2,
@@ -18,7 +19,7 @@ import {
 } from 'lucide-react';
 import { SiteHeader } from '@/components/layout/site-header';
 import { PrimaryButton } from '@/components/ui/primary-button';
-import { getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
+import { getFirebaseApp, getFirebaseAuth, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 
 type Option = { value: string; label: string };
@@ -104,25 +105,22 @@ export default function GuildsPage() {
     ].filter((id) => !ownerNames[id]);
 
     if (needed.length === 0) return;
-    const db = getFirebaseDb();
 
     const load = async () => {
-      const names: Record<string, string> = {};
-      await Promise.all(
-        needed.map(async (ownerId) => {
-          try {
-            const snap = await getDoc(doc(db, COLLECTIONS.USERS, ownerId));
-            if (snap.exists()) {
-              const data = snap.data() as { displayName?: string };
-              if (data.displayName) names[ownerId] = data.displayName;
-            }
-          } catch {
-            // sem acesso: exibe apenas ownerName quando disponível
-          }
-        }),
-      );
-      if (!disposed) {
-        setOwnerNames((prev) => (names ? { ...prev, ...names } : prev));
+      // Nomes via callable: o servidor retorna APENAS displayNames.
+      // A página nunca lê documentos users/ (que contêm email, xp,
+      // plano, role, settings).
+      try {
+        const fn = httpsCallable<{ uids: string[] }, { names: Record<string, string> }>(
+          getFunctions(getFirebaseApp()),
+          'getOwnerDisplayNames',
+        );
+        const res = await fn({ uids: needed });
+        if (!disposed && res.data?.names) {
+          setOwnerNames((prev) => ({ ...prev, ...res.data.names }));
+        }
+      } catch {
+        // sem acesso: exibe apenas ownerName quando disponível
       }
     };
 

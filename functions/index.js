@@ -308,6 +308,36 @@ exports.getPublicProfile = callable(async (data, context) => {
   };
 });
 
+// Nomes de donos para catálogos (resposta ao finding: Logic Flaw).
+// As páginas de catálogo exibem apenas o displayName do dono da guild/
+// comunidade — ler o documento users/ inteiro exporia email, xp, plano,
+// role e settings ao navegador. Este batch retorna SOMENTE displayNames.
+exports.getOwnerDisplayNames = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const uids = Array.isArray(data?.uids) ? data.uids : [];
+  const clean = [...new Set(
+    uids.filter((u) => typeof u === 'string' && u.trim()).map((u) => u.trim().slice(0, 128))
+  )].slice(0, 50);
+  if (clean.length === 0) return { names: {} };
+
+  const names = {};
+  await Promise.all(
+    clean.map(async (uid) => {
+      try {
+        const snap = await admin.firestore().collection('users').doc(uid).get();
+        if (snap.exists) {
+          const displayName = snap.data()?.displayName;
+          if (typeof displayName === 'string' && displayName.trim()) {
+            names[uid] = displayName.trim().slice(0, 120);
+          }
+        }
+      } catch {}
+    })
+  );
+  return { names };
+});
+
 exports.setAdminClaims = callable(async (data, context) => {
   requireSuperAdmin(context);
 
