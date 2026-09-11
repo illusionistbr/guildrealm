@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { doc, getDoc, collection, onSnapshot } from 'firebase/firestore';
-import { getFirebaseDb } from '@/lib/admin/firebase/client';
+import { doc, getDoc } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getFirebaseApp, getFirebaseDb } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import { EVENT_TYPE_CONFIG } from '@/lib/calendar/types';
 import { tsToDate } from '@/lib/calendar/hooks';
@@ -78,16 +79,30 @@ export default function PublicEventPage() {
   }, [params.eventId]);
 
   useEffect(() => {
-    const colRef = collection(
-      getFirebaseDb(),
-      COLLECTIONS.GUILD_EVENTS,
-      params.eventId,
-      'confirmations',
-    );
-    const unsubscribe = onSnapshot(colRef, (snap) => {
-      setConfirmationCount(snap.size);
-    });
-    return unsubscribe;
+    // Contagem via servidor: a página exibe só o número — assinar a
+    // subcoleção confirmations entregaria todos os docs (displayName,
+    // guildId, confirmedAt) ao navegador. Atualiza a cada 30s.
+    let disposed = false;
+    const fetchCount = async () => {
+      try {
+        const fn = httpsCallable<{ eventId: string }, { count: number }>(
+          getFunctions(getFirebaseApp()),
+          'getEventConfirmationCount',
+        );
+        const res = await fn({ eventId: params.eventId });
+        if (!disposed && typeof res.data?.count === 'number') {
+          setConfirmationCount(res.data.count);
+        }
+      } catch {
+        // evento inexistente ou fora do ar: mantém a contagem atual
+      }
+    };
+    fetchCount();
+    const timer = setInterval(fetchCount, 30_000);
+    return () => {
+      disposed = true;
+      clearInterval(timer);
+    };
   }, [params.eventId]);
 
   const formatDate = (ts?: { seconds: number }) => {

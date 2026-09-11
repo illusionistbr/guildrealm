@@ -32,6 +32,16 @@ service cloud.firestore {
           .data.memberOwnerIds;
     }
 
+    // Membro da guild dona do evento (para subcoleções de guild_events).
+    // Falha fechada: evento sem guildId ou sem lista de membros nega.
+    function isEventGuildMember(eventId) {
+      return isSignedIn() &&
+        request.auth.uid in
+        get(/databases/$(database)/documents/guilds/$(
+          get(/databases/$(database)/documents/guild_events/$(eventId)).data.guildId
+        )).data.memberOwnerIds;
+    }
+
     // ============ USUARIOS ============
     // Atualização pelo próprio usuário limitada aos campos do perfil;
     // campos sensíveis (email, xp, role, premium...) exigem staff.
@@ -284,11 +294,12 @@ match /members/{userId} {
         allow read, write: if false;
       }
 
-      // Confirmações de presença: leitura livre para autenticados (a validação
-      // de membro/código é feita inteiramente pela Cloud Function; aqui só
-      // precisamos que o usuário logado possa ler seu próprio status).
+      // Confirmações de presença: leitura restrita a MEMBROS da guild
+      // dona do evento (antes: qualquer autenticado listava presenças de
+      // qualquer evento). A página pública usa o callable
+      // getEventConfirmationCount (só o total). Escrita só via Function.
       match /confirmations/{userId} {
-        allow read: if isSignedIn();
+        allow read: if isEventGuildMember(eventId);
         allow write: if false;
       }
     }

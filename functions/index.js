@@ -338,6 +338,31 @@ exports.getOwnerDisplayNames = callable(async (data, context) => {
   return { names };
 });
 
+// Contagem de presenças de um evento (resposta ao finding: Logic Flaw).
+// A página pública do evento exibe apenas o NÚMERO de confirmações —
+// assinar a subcoleção confirmations entregava ao navegador todos os
+// documentos (displayName, guildId, confirmedAt) de qualquer evento.
+// Este callable público (o evento em si já é público) retorna SÓ o total,
+// via agregação count (nenhum documento é transferido).
+// A leitura direta de confirmations fica restrita a membros da guild
+// (ver firestore.rules) — o painel interno não é afetado.
+exports.getEventConfirmationCount = callable(async (data, context) => {
+  const eventId = typeof data?.eventId === 'string' ? data.eventId.trim().slice(0, 128) : '';
+  if (!eventId) {
+    throw new CallableError('invalid-argument', 'eventId is required');
+  }
+
+  const eventSnap = await admin.firestore().doc(`guild_events/${eventId}`).get();
+  if (!eventSnap.exists) throw new CallableError('not-found', 'Event not found');
+
+  const countSnap = await admin
+    .firestore()
+    .collection(`guild_events/${eventId}/confirmations`)
+    .count()
+    .get();
+  return { count: countSnap.data().count ?? 0 };
+});
+
 exports.setAdminClaims = callable(async (data, context) => {
   requireSuperAdmin(context);
 
