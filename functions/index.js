@@ -1051,14 +1051,64 @@ exports.setGuildMemberRank = callable(async (data, context) => {
 
   const update = { updatedAt: fv.serverTimestamp() };
   let rankName = null;
+  let targetRank = null;
   if (rankId) {
     const rankSnap = await guildDoc(guildId).collection('ranks').doc(rankId).get();
     if (!rankSnap.exists) throw new CallableError('not-found', 'Rank not found');
-    rankName = rankSnap.data().name || rankId;
+    targetRank = rankSnap.data();
+    rankName = targetRank.name || rankId;
     update[`memberRanks.${characterId}`] = rankId;
   } else {
     update[`memberRanks.${characterId}`] = admin.firestore.FieldValue.delete();
   }
+
+  // AUTHZ — anti-escalonamento de privilégios (resposta ao finding):
+  // ter manageMembers não autoriza conceder cargos administrativos.
+  // Dono/líderes mantêm poder total; demais só mexem em quem está ABAIXO
+  // deles na hierarquia (position maior = cargo mais baixo) e só para
+  // cargos com subconjunto das permissões que já possuem.
+  {
+    const uid = context.auth.uid;
+    const isOwnerOrLeader = guild.ownerId === uid || (guild.leaders ?? []).includes(uid);
+    if (!isOwnerOrLeader) {
+      const callerRank = await getCallerRank(guildId, guild, uid);
+      if (!callerRank) {
+        throw new CallableError('permission-denied', 'No rank assigned');
+      }
+      const callerPos = typeof callerRank.position === 'number' ? callerRank.position : Number.POSITIVE_INFINITY;
+
+      // Vítima: só quem está estritamente abaixo (pares e superiores, não).
+      // Sem cargo definido = cargo padrão (o mais baixo) → liberado.
+      const victimRankId = guild.memberRanks?.[characterId];
+      let victimPos = Number.POSITIVE_INFINITY;
+      if (victimRankId) {
+        const victimSnap = await guildDoc(guildId).collection('ranks').doc(victimRankId).get();
+        if (victimSnap.exists && typeof victimSnap.data().position === 'number') {
+          victimPos = victimSnap.data().position;
+        }
+      }
+      if (!(victimPos > callerPos)) {
+        throw new CallableError('permission-denied', 'Cannot change the rank of a member with equal or higher rank');
+      }
+
+      // Alvo: só cargo estritamente abaixo do seu e sem permissões que
+      // você não tenha (cobre cargos customizados com position enganosa).
+      if (targetRank) {
+        const targetPos = typeof targetRank.position === 'number' ? targetRank.position : Number.POSITIVE_INFINITY;
+        if (!(targetPos > callerPos)) {
+          throw new CallableError('permission-denied', 'Cannot assign a rank equal to or higher than your own');
+        }
+        const callerPerms = callerRank.permissions ?? {};
+        const targetPerms = targetRank.permissions ?? {};
+        for (const [perm, granted] of Object.entries(targetPerms)) {
+          if (granted === true && callerPerms[perm] !== true) {
+            throw new CallableError('permission-denied', `Cannot grant permission you do not have: ${perm}`);
+          }
+        }
+      }
+    }
+  }
+
   await guildDoc(guildId).update(update);
 
   try {
