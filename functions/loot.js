@@ -690,6 +690,10 @@ exports.purchaseRaffleTickets = callable(async (data, context) => {
   if (quantity < 1 || quantity > 100) throw new CallableError('invalid-argument', 'Invalid quantity');
   await requirePremiumLoot(guildId, 'loot');
   await requireGuildMember(guildId, context.auth.uid);
+  // AUTHZ: mesma política do placeBid — só participa quem tem a permissão
+  // participateLoot no cargo (dono/líderes passam direto). Antes, qualquer
+  // membro comprava tickets e movimentava DKP sem essa checagem.
+  await requireLootPermission(guildId, context.auth.uid, 'participateLoot');
   const char = await requireCharacterInGuild(guildId, characterId, context.auth.uid);
 
   await admin.firestore().runTransaction(async (tx) => {
