@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -146,8 +146,10 @@ const FACIONS: Record<string, string> = {
 export function GuildPanel({ view = 'overview' }: { view?: View }) {
   const t = useTranslations('GuildPanel');
   const params = useParams<{ id: string }>();
+  const router = useRouter();
 
   const [uid, setUid] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [guild, setGuild] = useState<GuildDoc | null>(null);
   const [memberNames, setMemberNames] = useState<MemberNames>({});
   const [memberMeta, setMemberMeta] = useState<MemberMeta>({});
@@ -159,7 +161,13 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(getFirebaseAuth(), (user) => {
-      if (user) setUid(user.uid);
+      // Painel é área restrita: sem login, volta para /login.
+      if (!user) {
+        router.replace('/login');
+        return;
+      }
+      setUid(user.uid);
+      setAuthChecked(true);
     });
 
     const db = getFirebaseDb();
@@ -182,10 +190,21 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
       unsubAuth();
       unsubscribe();
     };
-  }, [params.id]);
+  }, [params.id, router]);
+
+  // Somente membros (dono ou memberOwnerIds) veem o painel. O documento
+  // da guild em si é público por design (página /guilds/[id]), mas roster,
+  // cargos, auditoria e telas de gestão não são expostos a terceiros.
+  const isMember = useMemo(() => {
+    if (!guild || !uid) return false;
+    if (guild.ownerId === uid) return true;
+    return (guild.memberOwnerIds ?? []).includes(uid);
+  }, [guild, uid]);
 
   useEffect(() => {
-    if (!guild?.members?.length) return;
+    // Roster só é resolvido para membros — terceiros não disparam
+    // nenhuma leitura de personagens/usuários da guild.
+    if (!isMember || !guild?.members?.length) return;
 
     let disposed = false;
     const ids = guild.members;
@@ -213,14 +232,18 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
               return;
             }
           } catch {
-            // segue para fallback de usuário
+            // segue para fallback de displayName
           }
+          // Fallback via callable (só displayName — nunca lê users/ no cliente,
+          // que contém email, xp, plano, role e settings).
           try {
-            const userSnap = await getDoc(doc(db, COLLECTIONS.USERS, memberId));
-            if (!disposed && userSnap.exists()) {
-              const data = userSnap.data() as { displayName?: string };
-              if (data.displayName) names[memberId] = data.displayName;
-            }
+            const fn = httpsCallable<{ uids: string[] }, { names: Record<string, string> }>(
+              getFunctions(getFirebaseApp()),
+              'getOwnerDisplayNames',
+            );
+            const res = await fn({ uids: [memberId] });
+            const displayName = res.data?.names?.[memberId];
+            if (!disposed && displayName) names[memberId] = displayName;
           } catch {
             // perfil indisponível: exibe fallback
           }
@@ -248,7 +271,7 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
     return out;
   }, [memberMeta]);
 
-  const { ranks: guildRanks } = useGuildRanks(guild?.id ?? null);
+  const { ranks: guildRanks } = useGuildRanks(isMember ? (guild?.id ?? null) : null);
   const { settings: recruitmentSettings } = useRecruitmentSettings(
     guild?.id ?? null,
   );
@@ -339,6 +362,37 @@ export function GuildPanel({ view = 'overview' }: { view?: View }) {
         >
           <LayoutDashboard size={16} /> {t('backToDashboard')}
         </Link>
+      </div>
+    );
+  }
+
+  // IDOR: painel é exclusivo de membros. Terceiros (mesmo autenticados)
+  // veem apenas esta tela — sem roster, sem cargos, sem gestão — e são
+  // direcionados à página pública da guild.
+  if (!loading && authChecked && guild && !isMember) {
+    return (
+      <div className="min-h-screen bg-[#050912] flex flex-col items-center justify-center px-6 text-center">
+        <div className="w-14 h-14 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mb-4">
+          <Shield size={22} className="text-accent" />
+        </div>
+        <p className="text-white font-heading font-semibold">Acesso restrito a membros</p>
+        <p className="text-muted text-sm mt-1 max-w-sm">
+          O painel desta guild só pode ser acessado por seus membros. Veja as informações públicas da guild abaixo.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
+          <Link
+            href={`/guilds/${guild.id}`}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors"
+          >
+            <Eye size={16} /> Ver página pública
+          </Link>
+          <Link
+            href="/app/dashboard"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted text-sm hover:text-white transition-colors"
+          >
+            <LayoutDashboard size={16} /> {t('backToDashboard')}
+          </Link>
+        </div>
       </div>
     );
   }
