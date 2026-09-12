@@ -55,6 +55,14 @@ type GuildDoc = {
   communityId?: string | null;
 };
 
+type LinkRequestDoc = {
+  id: string;
+  guildId?: string;
+  guildName?: string;
+  requesterUid?: string;
+  status?: string;
+};
+
 export default function CommunityDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -156,21 +164,65 @@ export default function CommunityDetailPage() {
     () => myGuilds.filter((g) => !g.communityId),
     [myGuilds],
   );
+  const [linkRequests, setLinkRequests] = useState<LinkRequestDoc[]>([]);
+  const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [linkMessage, setLinkMessage] = useState('');
+
+  // Pedidos pendentes (só o dono da comunidade enxerga — via rules).
+  useEffect(() => {
+    if (!isOwner) {
+      setLinkRequests([]);
+      return;
+    }
+    const unsub = onSnapshot(
+      query(
+        collection(getFirebaseDb(), COLLECTIONS.COMMUNITIES, communityId, 'linkRequests'),
+        where('status', '==', 'PENDING'),
+      ),
+      (snap) => {
+        const list: LinkRequestDoc[] = [];
+        snap.forEach((d) => list.push({ id: d.id, ...d.data() } as LinkRequestDoc));
+        setLinkRequests(list);
+      },
+      () => setLinkRequests([]),
+    );
+    return unsub;
+  }, [isOwner, communityId]);
 
   const handleLink = async (guildId: string) => {
     setBusy(true);
     setActionError('');
+    setLinkMessage('');
     try {
-      const fn = httpsCallable<{ guildId: string; communityId: string }, { success: boolean }>(
+      const fn = httpsCallable<{ guildId: string; communityId: string }, { success: boolean; linked?: boolean; pending?: boolean }>(
         getFunctions(getFirebaseApp()),
         'linkGuildToCommunity',
       );
-      await fn({ guildId, communityId });
+      const res = await fn({ guildId, communityId });
       setShowLinkModal(false);
+      // Comunidade alheia: vira pedido — só o dono aprova.
+      if (res.data?.pending && !res.data?.linked) {
+        setLinkMessage('Solicitação enviada! O dono da comunidade vai aprovar (ou não) o vínculo.');
+      }
     } catch {
       setActionError('Não foi possível vincular a guild. Ela pode já estar em outra comunidade.');
     }
     setBusy(false);
+  };
+
+  const handleReview = async (guildId: string, decision: 'accepted' | 'rejected') => {
+    setReviewingId(guildId);
+    setActionError('');
+    try {
+      const fn = httpsCallable<{ communityId: string; guildId: string; decision: string }, { success: boolean }>(
+        getFunctions(getFirebaseApp()),
+        'reviewCommunityLinkRequest',
+      );
+      await fn({ communityId, guildId, decision });
+    } catch {
+      setActionError('Não foi possível avaliar a solicitação.');
+    }
+    setReviewingId(null);
   };
 
   const handleUnlink = async (guildId: string) => {
@@ -269,6 +321,54 @@ export default function CommunityDetailPage() {
       {actionError && (
         <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           {actionError}
+        </div>
+      )}
+
+      {linkMessage && (
+        <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
+          {linkMessage}
+        </div>
+      )}
+
+      {/* Solicitações de vínculo (só o dono aprova) */}
+      {isOwner && linkRequests.length > 0 && (
+        <div className="rounded-xl border border-amber-500/25 bg-gradient-to-br from-amber-950/20 to-[rgba(10,18,32,0.4)] p-6">
+          <h2 className="text-lg font-heading font-bold text-white mb-1">
+            Solicitações de vínculo ({linkRequests.length})
+          </h2>
+          <p className="text-xs text-muted mb-4">
+            Donos de guilds querem vincular a guild deles à sua comunidade. Só vincule quem for do seu clã.
+          </p>
+          <div className="space-y-2">
+            {linkRequests.map((req) => (
+              <div
+                key={req.id}
+                className="flex items-center gap-3 rounded-lg border border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)] p-3"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white font-medium truncate">
+                    {req.guildName || req.guildId}
+                  </p>
+                  <p className="text-xs text-muted">Quer vincular esta guild à comunidade</p>
+                </div>
+                <button
+                  onClick={() => handleReview(req.guildId as string, 'rejected')}
+                  disabled={reviewingId === req.guildId}
+                  className="px-3 h-9 rounded-lg border border-red-500/30 text-red-400 text-xs hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                >
+                  Recusar
+                </button>
+                <button
+                  onClick={() => handleReview(req.guildId as string, 'accepted')}
+                  disabled={reviewingId === req.guildId}
+                  className="px-3 h-9 rounded-lg bg-accent text-white text-xs font-medium hover:bg-accent-hover transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  {reviewingId === req.guildId && <Loader2 size={13} className="animate-spin" />}
+                  Aceitar
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -399,7 +499,9 @@ export default function CommunityDetailPage() {
           >
             <h3 className="text-lg font-bold text-white mb-1">Vincular guild</h3>
             <p className="text-xs text-muted mb-4">
-              Somente suas guilds sem vínculo (limite do plano: {myGuilds.length} sua(s)).
+              {isOwner
+                ? 'Vínculo direto: esta comunidade é sua.'
+                : 'Esta comunidade é de outro usuário: será enviada uma solicitação para o dono aprovar.'}
             </p>
             <div className="space-y-2 max-h-72 overflow-auto">
               {linkableGuilds.map((g) => (

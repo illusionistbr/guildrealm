@@ -180,6 +180,17 @@ service cloud.firestore {
         (resource.data.ownerId == request.auth.uid || isAdmin());
     }
 
+    // Pedidos de vínculo guild -> comunidade: leitura para o dono da
+    // comunidade (aprova) ou para o solicitante (acompanha); escrita só
+    // via Cloud Functions (link/review), nunca pelo cliente.
+    match /communities/{communityId}/linkRequests/{guildId} {
+      allow read: if isSignedIn() && (
+        get(/databases/$(database)/documents/communities/$(communityId)).data.ownerId == request.auth.uid ||
+        resource.data.requesterUid == request.auth.uid
+      );
+      allow write: if false;
+    }
+
     // ============ GRUPOS DE GUILD ============
     match /guilds/{guildId}/roles/{roleId} {
       allow read: if isSignedIn() && isGuildMember(guildId);

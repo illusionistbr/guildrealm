@@ -2037,15 +2037,25 @@ exports.deleteCharacter = callable(async (data, context) => {
 // ============ COMUNIDADES (agregado de guilds do mesmo clã) ============
 // - Qualquer usuário pode criar 1 comunidade (todos os planos).
 // - Cada guild pode pertencer a no máximo 1 comunidade (guilds/{id}.communityId).
-// - Vincular: só o DONO da guild vincula a própria guild (as guilds
-//   vinculáveis já respeitam os limites do plano: 1 free/elite, 5 conquistador).
+// - Vincular NA PRÓPRIA comunidade: direto (dono da guild + dono da comunidade
+//   são a mesma pessoa). Vincular na comunidade DE OUTRO usuário: cria um
+//   PEDIDO pendente — só o dono da comunidade aprova (sem associação
+//   unilateral ao objeto alheio). As guilds vinculáveis já respeitam os
+//   limites do plano: 1 free/elite, 5 conquistador.
 // - Desvincular: dono da guild OU dono da comunidade.
 
 function communityDoc(communityId) {
   return admin.firestore().doc(`communities/${communityId}`);
 }
 
-// Vincula uma guild do próprio usuário a uma comunidade (atômico, 2 lados).
+function communityLinkRequestDoc(communityId, guildId) {
+  return communityDoc(communityId).collection('linkRequests').doc(guildId);
+}
+
+// Vincula uma guild do próprio usuário a uma comunidade.
+// - Comunidade própria: vínculo imediato (atômico, 2 lados).
+// - Comunidade de outro usuário: cria pedido PENDING (idempotente por guild)
+//   para aprovação do dono — nunca altera a comunidade alheia diretamente.
 exports.linkGuildToCommunity = callable(async (data, context) => {
   if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
 
@@ -2056,29 +2066,116 @@ exports.linkGuildToCommunity = callable(async (data, context) => {
 
   const uid = context.auth.uid;
 
+  const guildSnap = await guildDoc(guildId).get();
+  if (!guildSnap.exists) throw new CallableError('not-found', 'Guild not found');
+  const guild = guildSnap.data();
+  if (guild.ownerId !== uid) {
+    throw new CallableError('permission-denied', 'Only the guild owner can link it to a community');
+  }
+  if (guild.communityId && guild.communityId !== communityId) {
+    throw new CallableError('already-in-guild', 'Guild is already linked to another community');
+  }
+  if (guild.communityId === communityId) return { success: true, linked: true };
+
+  const communitySnap = await communityDoc(communityId).get();
+  if (!communitySnap.exists) throw new CallableError('not-found', 'Community not found');
+  const community = communitySnap.data();
+
+  // Dono vinculando na própria comunidade: direto.
+  if (community.ownerId === uid) {
+    await admin.firestore().runTransaction(async (tx) => {
+      const freshGuild = await tx.get(guildDoc(guildId));
+      if (!freshGuild.exists) throw new CallableError('not-found', 'Guild not found');
+      if (freshGuild.data().communityId) return; // corrida: já vinculada
+      tx.update(guildDoc(guildId), { communityId, updatedAt: fv.serverTimestamp() });
+      tx.update(communityDoc(communityId), {
+        guildIds: admin.firestore.FieldValue.arrayUnion(guildId),
+        updatedAt: fv.serverTimestamp(),
+      });
+    });
+    return { success: true, linked: true };
+  }
+
+  // Comunidade alheia: pedido para aprovação (nunca escreve na comunidade).
+  const reqRef = communityLinkRequestDoc(communityId, guildId);
+  const reqSnap = await reqRef.get();
+  if (reqSnap.exists && reqSnap.data().status === 'PENDING') {
+    return { success: true, pending: true }; // idempotente
+  }
+  await reqRef.set({
+    guildId,
+    guildName: typeof guild.name === 'string' ? guild.name.slice(0, 60) : '',
+    requesterUid: uid,
+    status: 'PENDING',
+    createdAt: fv.serverTimestamp(),
+    updatedAt: fv.serverTimestamp(),
+  });
+  return { success: true, pending: true };
+});
+
+// Aprova/rejeita pedido de vínculo (só o DONO da comunidade).
+// No aceite, revalida: guild existe, solicitante ainda é dono, guild livre.
+exports.reviewCommunityLinkRequest = callable(async (data, context) => {
+  if (!context.auth) throw new CallableError('unauthenticated', 'User must be signed in');
+
+  const { communityId, guildId, decision } = data ?? {};
+  if (!communityId || !guildId) {
+    throw new CallableError('invalid-argument', 'communityId and guildId are required');
+  }
+  if (decision !== 'accepted' && decision !== 'rejected') {
+    throw new CallableError('invalid-argument', 'decision must be accepted or rejected');
+  }
+
+  const uid = context.auth.uid;
+  const communitySnap = await communityDoc(communityId).get();
+  if (!communitySnap.exists) throw new CallableError('not-found', 'Community not found');
+  if (communitySnap.data().ownerId !== uid) {
+    throw new CallableError('permission-denied', 'Only the community owner can review link requests');
+  }
+
+  const reqRef = communityLinkRequestDoc(communityId, guildId);
+  const reqSnap = await reqRef.get();
+  if (!reqSnap.exists) throw new CallableError('not-found', 'Link request not found');
+  if (reqSnap.data().status !== 'PENDING') {
+    throw new CallableError('already-reviewed', 'Link request was already reviewed');
+  }
+
+  if (decision === 'rejected') {
+    await reqRef.update({
+      status: 'REJECTED',
+      reviewedBy: uid,
+      updatedAt: fv.serverTimestamp(),
+    });
+    return { success: true };
+  }
+
   await admin.firestore().runTransaction(async (tx) => {
+    const request = (await tx.get(reqRef)).data();
+    if (!request || request.status !== 'PENDING') {
+      throw new CallableError('already-reviewed', 'Link request was already reviewed');
+    }
     const guildSnap = await tx.get(guildDoc(guildId));
     if (!guildSnap.exists) throw new CallableError('not-found', 'Guild not found');
     const guild = guildSnap.data();
-    if (guild.ownerId !== uid) {
-      throw new CallableError('permission-denied', 'Only the guild owner can link it to a community');
+    if (guild.ownerId !== request.requesterUid) {
+      throw new CallableError('failed-precondition', 'Requester is no longer the guild owner');
     }
-    if (guild.communityId && guild.communityId !== communityId) {
-      throw new CallableError('already-in-guild', 'Guild is already linked to another community');
+    if (guild.communityId) {
+      throw new CallableError('already-in-guild', 'Guild is already linked to a community');
     }
-    if (guild.communityId === communityId) return; // idempotente
-
-    const communitySnap = await tx.get(communityDoc(communityId));
-    if (!communitySnap.exists) throw new CallableError('not-found', 'Community not found');
-
     tx.update(guildDoc(guildId), { communityId, updatedAt: fv.serverTimestamp() });
     tx.update(communityDoc(communityId), {
       guildIds: admin.firestore.FieldValue.arrayUnion(guildId),
       updatedAt: fv.serverTimestamp(),
     });
+    tx.update(reqRef, {
+      status: 'ACCEPTED',
+      reviewedBy: uid,
+      updatedAt: fv.serverTimestamp(),
+    });
   });
 
-  return { success: true };
+  return { success: true, linked: true };
 });
 
 // Desvincula uma guild da comunidade (dono da guild ou dono da comunidade).
