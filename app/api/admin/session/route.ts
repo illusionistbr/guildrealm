@@ -15,7 +15,7 @@ function buildSessionCookieHeader(value: string, maxAge: number) {
 }
 
 /** Verifica o session cookie e retorna { uid, role } ou null. */
-export async function getAdminSession(req: NextRequest): Promise<{ uid: string; role: AdminRole } | null> {
+async function getAdminSession(req: NextRequest): Promise<{ uid: string; role: AdminRole } | null> {
   const cookie = req.cookies.get(COOKIE_NAME)?.value;
   if (!cookie) return null;
   try {
