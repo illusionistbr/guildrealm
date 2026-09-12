@@ -64,10 +64,10 @@ async function sendDiscordWebhook(webhookUrl, embed) {
       body: JSON.stringify({ embeds: [embed] }),
     });
     if (!res.ok) {
-      console.warn(`Discord webhook ${res.status}: ${await res.text()}`);
+      console.warn('Discord webhook %s: %s', res.status, await res.text());
     }
   } catch (err) {
-    console.warn('Discord webhook error:', err.message);
+    console.warn('Discord webhook error: %s', err?.message);
   }
 }
 

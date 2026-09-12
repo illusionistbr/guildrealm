@@ -63,12 +63,14 @@ async function postToChannel(guildId, channel, body) {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      console.warn(`Discord [${channel}] webhook ${res.status}: ${await res.text()}`);
+      // Args via placeholders: o 1º argumento nunca contém dados
+      // interpolados (evita format-string injection no util.format).
+      console.warn('Discord [%s] webhook %s: %s', channel, res.status, await res.text());
       return false;
     }
     return true;
   } catch (err) {
-    console.warn(`Discord [${channel}] webhook error:`, err.message);
+    console.warn('Discord [%s] webhook error: %s', channel, err?.message);
     return false;
   }
 }
