@@ -73,6 +73,21 @@ const LANGUAGE_OPTIONS = [
   'Chinês',
 ];
 
+const REGION_OPTIONS = [
+  { value: 'global', label: 'Global' },
+  { value: 'na', label: 'América do Norte' },
+  { value: 'sa', label: 'América do Sul' },
+  { value: 'europe', label: 'Europa' },
+  { value: 'asia', label: 'Ásia' },
+  { value: 'africa', label: 'África' },
+  { value: 'oceania', label: 'Oceania' },
+];
+
+function regionLabel(value: string | undefined): string | null {
+  if (!value) return null;
+  return REGION_OPTIONS.find((r) => r.value === value)?.label ?? value;
+}
+
 function normalizeLink(value: string): string | null {
   const v = value.trim();
   if (!v) return null;
@@ -90,6 +105,7 @@ type CommunityDoc = {
   description?: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  region?: string;
   languages?: string[];
   socialLinks?: Record<string, string>;
   showMembers?: boolean;
@@ -295,6 +311,7 @@ export default function CommunityDetailPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editDescription, setEditDescription] = useState('');
+  const [editRegion, setEditRegion] = useState('global');
   const [editLanguages, setEditLanguages] = useState<string[]>([]);
   const [editLinks, setEditLinks] = useState<Record<string, string>>({});
   const [editShowMembers, setEditShowMembers] = useState(true);
@@ -376,6 +393,7 @@ export default function CommunityDetailPage() {
   const openEdit = () => {
     if (!community) return;
     setEditDescription(community.description ?? '');
+    setEditRegion(community.region ?? 'global');
     setEditLanguages(Array.isArray(community.languages) ? community.languages.slice(0, 5) : []);
     setEditLinks({ ...(community.socialLinks ?? {}) });
     setEditShowMembers(community.showMembers !== false);
@@ -410,6 +428,7 @@ export default function CommunityDetailPage() {
       }
       await updateDoc(doc(getFirebaseDb(), COLLECTIONS.COMMUNITIES, community.id), {
         description: editDescription.trim().slice(0, 500) || null,
+        region: editRegion,
         languages: editLanguages.slice(0, 5),
         socialLinks: cleanLinks,
         showMembers: editShowMembers,
@@ -492,6 +511,11 @@ export default function CommunityDetailPage() {
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 {community.tag && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-accent/15 text-accent">[{community.tag}]</span>
+                )}
+                {regionLabel(community.region) && (
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300">
+                    <Globe size={12} /> {regionLabel(community.region)}
+                  </span>
                 )}
                 {isOwner && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400">Sua comunidade</span>
@@ -826,6 +850,21 @@ export default function CommunityDetailPage() {
                   rows={3}
                   className="w-full px-3 py-2.5 bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors resize-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm text-muted mb-1.5">Região</label>
+                <select
+                  value={editRegion}
+                  onChange={(e) => setEditRegion(e.target.value)}
+                  className="w-full h-11 px-3 bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white focus:outline-none focus:border-accent/50 transition-colors"
+                >
+                  {REGION_OPTIONS.map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

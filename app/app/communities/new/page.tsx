@@ -59,6 +59,16 @@ const LANGUAGE_OPTIONS = [
   'Chinês',
 ];
 
+const REGION_OPTIONS = [
+  { value: 'global', label: 'Global' },
+  { value: 'na', label: 'América do Norte' },
+  { value: 'sa', label: 'América do Sul' },
+  { value: 'europe', label: 'Europa' },
+  { value: 'asia', label: 'Ásia' },
+  { value: 'africa', label: 'África' },
+  { value: 'oceania', label: 'Oceania' },
+];
+
 const LINK_PLATFORMS = [
   { id: 'discord', label: 'Discord', placeholder: 'https://discord.gg/...' },
   { id: 'website', label: 'Website', placeholder: 'https://...' },
@@ -81,6 +91,7 @@ export default function CreateCommunityPage() {
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [bannerError, setBannerError] = useState('');
   const [languages, setLanguages] = useState<string[]>(['Português']);
+  const [region, setRegion] = useState('global');
   const [links, setLinks] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [creating, setCreating] = useState(false);
@@ -232,6 +243,7 @@ export default function CreateCommunityPage() {
         description: description.trim().slice(0, 500) || null,
         logoUrl,
         bannerUrl,
+        region,
         languages: languages.slice(0, 5),
         socialLinks: cleanLinks,
         showMembers: true,
@@ -419,6 +431,21 @@ export default function CreateCommunityPage() {
               </div>
               <p className="text-xs text-muted mt-1.5">PNG, JPEG, WebP ou GIF até 4MB. Aparece no topo da página.</p>
               {bannerError && <p className="text-xs text-red-400 mt-1.5">{bannerError}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm text-muted mb-1.5">Região</label>
+              <select
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+                className="w-full h-11 px-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white focus:outline-none focus:border-accent/50 transition-colors"
+              >
+                {REGION_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
