@@ -272,6 +272,13 @@ exports.getAnalysisPlayUrl = callable(async (data, context) => {
   const submissionSnap = await guildDoc(guildId).collection('analysisRequests').doc(requestId).collection('submissions').doc(submissionId).get();
   if (!submissionSnap.exists) throw new AnalysisError('not-found', 'Submission not found');
   const submission = submissionSnap.data();
+  // IDOR: só o DONO do vídeo ou quem pode revisar (líder ou cargo com
+  // manageEvents/manageMembers — mesmo critério da aba de revisão na UI)
+  // pode obter URL assinada. Antes, qualquer membro assistia ao vídeo
+  // de qualquer outro membro.
+  if (submission.userId !== context.auth.uid) {
+    await requireGuildAdmin(guildId, context.auth.uid);
+  }
   if (submission.status !== 'uploaded' && submission.status !== 'reviewed') {
     throw new AnalysisError('failed-precondition', 'Video not ready');
   }
