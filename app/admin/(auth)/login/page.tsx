@@ -104,9 +104,15 @@ function AdminLoginForm() {
         await signOut(getFirebaseAuth()).catch(() => {});
         let detail = '';
         try {
-          detail = (await res.json())?.error ?? '';
+          const body = await res.clone().json();
+          detail = body?.error ?? '';
         } catch {
-          detail = '';
+          try {
+            const text = await res.text();
+            if (text && !text.trimStart().startsWith('<')) detail = text.slice(0, 120);
+          } catch {
+            detail = '';
+          }
         }
         setError(
           res.status === 403
