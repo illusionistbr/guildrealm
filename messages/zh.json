@@ -252,6 +252,14 @@
       {
         "value": "oceania",
         "label": "大洋洲"
+      },
+      {
+        "value": "africa",
+        "label": "非洲"
+      },
+      {
+        "value": "global",
+        "label": "全球"
       }
     ],
     "languages": [
@@ -887,6 +895,14 @@
       {
         "value": "oceania",
         "label": "大洋洲"
+      },
+      {
+        "value": "africa",
+        "label": "非洲"
+      },
+      {
+        "value": "global",
+        "label": "全球"
       }
     ],
     "languages": [
@@ -1047,6 +1063,14 @@
       {
         "value": "oceania",
         "label": "大洋洲"
+      },
+      {
+        "value": "africa",
+        "label": "非洲"
+      },
+      {
+        "value": "global",
+        "label": "全球"
       }
     ],
     "languages": [
@@ -1192,6 +1216,14 @@
       {
         "value": "oceania",
         "label": "大洋洲"
+      },
+      {
+        "value": "africa",
+        "label": "非洲"
+      },
+      {
+        "value": "global",
+        "label": "全球"
       }
     ],
     "languages": [

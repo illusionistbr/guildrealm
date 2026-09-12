@@ -1673,6 +1673,8 @@ function SettingsView({
   const [description, setDescription] = useState(guild.description ?? '');
   const [focus, setFocus] = useState(guild.focus ?? '');
   const [mentality, setMentality] = useState(guild.mentality ?? '');
+  const [region, setRegion] = useState(guild.region ?? '');
+  const regions = useMemo(() => t.raw('regions') as Option[], [t]);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
     guild.languages ?? [],
   );
@@ -1747,6 +1749,7 @@ function SettingsView({
         description: description.trim() || null,
         focus: focus || null,
         mentality: mentality || null,
+        region: region || null,
         languages: selectedLanguages,
         updatedAt: serverTimestamp(),
       };
@@ -2098,6 +2101,29 @@ function SettingsView({
                 className={cn(
                   'h-9 rounded-md text-xs font-medium transition-colors',
                   mentality === opt.value
+                    ? 'bg-accent text-white'
+                    : 'text-muted hover:text-white',
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm text-muted mb-1.5">
+            {t('regionLabel')}
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 rounded-lg border border-[rgba(38,51,86,0.5)] bg-[#0a1122]">
+            {regions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setRegion(opt.value)}
+                className={cn(
+                  'h-9 rounded-md text-xs font-medium transition-colors',
+                  region === opt.value
                     ? 'bg-accent text-white'
                     : 'text-muted hover:text-white',
                 )}
