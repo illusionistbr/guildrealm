@@ -55,20 +55,53 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'server-misconfigured' }, { status: 503 });
   }
 
+  let adminAuth;
   try {
-    const decoded = await getAdminAuth().verifyIdToken(idToken, true);
+    adminAuth = getAdminAuth();
+  } catch (err) {
+    console.error(
+      '[admin/session] Admin SDK init falhou (verifique FIREBASE_PRIVATE_KEY/CLIENT_EMAIL/PROJECT_ID):',
+      err instanceof Error ? err.message : err,
+    );
+    return NextResponse.json({ error: 'server-misconfigured' }, { status: 503 });
+  }
+
+  try {
+    let decoded;
+    try {
+      decoded = await adminAuth.verifyIdToken(idToken, true);
+    } catch (err) {
+      console.error(
+        '[admin/session] verifyIdToken falhou:',
+        err instanceof Error ? `${(err as { code?: unknown }).code ?? ''} ${err.message}` : err,
+      );
+      return NextResponse.json({ error: 'invalid-token' }, { status: 401 });
+    }
     const role = (decoded as { role?: AdminRole }).role;
     if (!role || !ADMIN_ROLES.includes(role)) {
       return NextResponse.json({ error: 'forbidden' }, { status: 403 });
     }
-    const sessionCookie = await getAdminAuth().createSessionCookie(idToken, {
-      expiresIn: MAX_AGE * 1000,
-    });
+    let sessionCookie: string;
+    try {
+      sessionCookie = await adminAuth.createSessionCookie(idToken, {
+        expiresIn: MAX_AGE * 1000,
+      });
+    } catch (err) {
+      console.error(
+        '[admin/session] createSessionCookie falhou:',
+        err instanceof Error ? `${(err as { code?: unknown }).code ?? ''} ${err.message}` : err,
+      );
+      return NextResponse.json({ error: 'session-cookie-failed' }, { status: 500 });
+    }
     const res = NextResponse.json({ ok: true, role });
     res.headers.set('Set-Cookie', buildSessionCookieHeader(sessionCookie, MAX_AGE));
     return res;
-  } catch {
-    return NextResponse.json({ error: 'invalid-token' }, { status: 401 });
+  } catch (err) {
+    console.error(
+      '[admin/session] erro inesperado:',
+      err instanceof Error ? err.message : err,
+    );
+    return NextResponse.json({ error: 'internal' }, { status: 500 });
   }
 }
 

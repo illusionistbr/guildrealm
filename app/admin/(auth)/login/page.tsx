@@ -102,10 +102,20 @@ function AdminLoginForm() {
       });
       if (!res.ok) {
         await signOut(getFirebaseAuth()).catch(() => {});
+        let detail = '';
+        try {
+          detail = (await res.json())?.error ?? '';
+        } catch {
+          detail = '';
+        }
         setError(
           res.status === 403
             ? 'Acesso negado. Esta conta não possui permissões administrativas.'
-            : 'Não foi possível criar a sessão administrativa.',
+            : res.status === 503 || detail === 'server-misconfigured'
+              ? 'Servidor sem configuração administrativa (FIREBASE_* ausente). Contate o suporte.'
+              : res.status === 401 || detail === 'invalid-token'
+                ? 'Sessão expirada ao validar o token. Tente fazer login novamente.'
+                : `Não foi possível criar a sessão administrativa (erro ${res.status}${detail ? `/${detail}` : ''}).`,
         );
         setLoading(false);
         return;
