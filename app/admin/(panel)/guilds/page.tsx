@@ -195,6 +195,36 @@ export default function GuildsPage() {
     }
   };
 
+  const callPremiumApi = async (guildId: string, plan: PlanId, days: number) => {
+    const res = await fetch('/api/admin/guilds/premium', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ guildId, plan, days }),
+    });
+    let detail = '';
+    try {
+      detail = (await res.clone().json())?.error ?? '';
+    } catch {
+      detail = '';
+    }
+    if (!res.ok) {
+      throw new Error(
+        res.status === 403
+          ? 'Acesso negado. Somente super_admin/admin gerenciam premium.'
+          : res.status === 404
+            ? 'Guilda ou dono não encontrado.'
+            : `Falha no servidor (erro ${res.status}${detail ? `/${detail}` : ''}).`,
+      );
+    }
+    try {
+      const body = await res.json();
+      return typeof body?.expiresAt === 'string' ? new Date(body.expiresAt) : null;
+    } catch {
+      return null;
+    }
+  };
+
   const handleApplyPremium = async () => {
     if (!canPremium || !premiumGuild || actingId) return;
     const days = Math.max(1, Math.min(3650, Number(premiumDays) || 0));
@@ -205,13 +235,9 @@ export default function GuildsPage() {
     setActionError('');
     setActingId(premiumGuild.id);
     try {
-      const expiresAt = new Date(Date.now() + days * 86400000);
-      await updateDoc(doc(getFirebaseDb(), 'users', premiumGuild.ownerId), {
-        plan: premiumPlan,
-        premium: true,
-        planStartedAt: Timestamp.now(),
-        planExpiresAt: Timestamp.fromDate(expiresAt),
-      });
+      // Via servidor (Admin SDK): não depende das firestore.rules do cliente.
+      const serverExpiry = await callPremiumApi(premiumGuild.id, premiumPlan, days);
+      const expiresAt = serverExpiry ?? new Date(Date.now() + days * 86400000);
       const tooltip = `${premiumPlan === 'elite' ? 'Elite' : 'Conquistador'} · expira em ${formatDate(expiresAt)} · ${formatRemaining(expiresAt)}`;
       setGuilds((prev) =>
         prev.map((g) =>
@@ -221,8 +247,8 @@ export default function GuildsPage() {
         ),
       );
       setPremiumGuild(null);
-    } catch {
-      setActionError('Não foi possível aplicar o premium. Verifique suas permissões.');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Não foi possível aplicar o premium.');
     } finally {
       setActingId(null);
     }
@@ -234,12 +260,7 @@ export default function GuildsPage() {
     setActionError('');
     setActingId(premiumGuild.id);
     try {
-      await updateDoc(doc(getFirebaseDb(), 'users', premiumGuild.ownerId), {
-        plan: 'free',
-        premium: false,
-        planStartedAt: null,
-        planExpiresAt: null,
-      });
+      await callPremiumApi(premiumGuild.id, 'free', 0);
       setGuilds((prev) =>
         prev.map((g) =>
           g.id === premiumGuild.id
@@ -248,8 +269,8 @@ export default function GuildsPage() {
         ),
       );
       setPremiumGuild(null);
-    } catch {
-      setActionError('Não foi possível remover o premium. Verifique suas permissões.');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Não foi possível remover o premium.');
     } finally {
       setActingId(null);
     }
