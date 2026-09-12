@@ -8,6 +8,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
   ChevronDown,
+  Crown,
   Gamepad2,
   Globe2,
   Plus,
@@ -260,17 +261,24 @@ export default function AppCommunitiesCataloguePage() {
                       )}
                     </div>
                     <h2>{community.name}</h2>
-                    {regionLabel && (
-                      <p className="guild-meta">
-                        <Globe2 size={14} /> {regionLabel}
-                      </p>
-                    )}
-                    <p className="guild-meta">
-                      {ownerName ? `por ${ownerName}` : 'Comunidade'}
-                    </p>
-                    <p className="guild-members">
-                      <UsersRound size={15} /> {guildIds.length} {guildIds.length === 1 ? 'guild' : 'guilds'} · {totalMembers} {totalMembers === 1 ? 'membro' : 'membros'}
-                    </p>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {regionLabel && (
+                        <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                          <Globe2 size={12} /> {regionLabel}
+                        </span>
+                      )}
+                      {ownerName && (
+                        <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                          <Crown size={12} /> GM: {ownerName}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20">
+                        <ShieldCheck size={12} /> {guildIds.length} {guildIds.length === 1 ? 'guild' : 'guilds'}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                        <UsersRound size={12} /> {totalMembers} {totalMembers === 1 ? 'membro' : 'membros'}
+                      </span>
+                    </div>
                     <div className="guild-actions">
                       <Link href={`/app/communities/${community.id}`}>Ver comunidade</Link>
                       <Link href={`/app/communities/${community.id}`}>Ver guilds</Link>
