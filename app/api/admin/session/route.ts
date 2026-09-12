@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { adminAuth } from '@/lib/admin/firebase/admin';
+import { getAdminAuth } from '@/lib/admin/firebase/admin';
 import type { AdminRole } from '@/lib/admin/rbac/roles';
 
 export const runtime = 'nodejs';
@@ -19,7 +19,7 @@ async function getAdminSession(req: NextRequest): Promise<{ uid: string; role: A
   const cookie = req.cookies.get(COOKIE_NAME)?.value;
   if (!cookie) return null;
   try {
-    const decoded = await adminAuth.verifySessionCookie(cookie, true);
+    const decoded = await getAdminAuth().verifySessionCookie(cookie, true);
     const role = decoded.role as AdminRole | undefined;
     if (!role || !ADMIN_ROLES.includes(role)) return null;
     return { uid: decoded.uid, role };
@@ -50,13 +50,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'idToken-required' }, { status: 400 });
   }
 
+  // Config ausente no servidor: 503 explícito (em vez de 500 opaco).
+  if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !process.env.FIREBASE_PRIVATE_KEY) {
+    return NextResponse.json({ error: 'server-misconfigured' }, { status: 503 });
+  }
+
   try {
-    const decoded = await adminAuth.verifyIdToken(idToken, true);
+    const decoded = await getAdminAuth().verifyIdToken(idToken, true);
     const role = (decoded as { role?: AdminRole }).role;
     if (!role || !ADMIN_ROLES.includes(role)) {
       return NextResponse.json({ error: 'forbidden' }, { status: 403 });
     }
-    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
+    const sessionCookie = await getAdminAuth().createSessionCookie(idToken, {
       expiresIn: MAX_AGE * 1000,
     });
     const res = NextResponse.json({ ok: true, role });

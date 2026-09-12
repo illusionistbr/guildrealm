@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { cookies, headers } from 'next/headers';
-import { adminAuth } from '@/lib/admin/firebase/admin';
+import { getAdminAuth } from '@/lib/admin/firebase/admin';
 import type { AdminRole } from '@/lib/admin/rbac/roles';
 
 export const runtime = 'nodejs';
@@ -20,7 +20,7 @@ export default async function AdminPanelLayout({ children }: { children: React.R
   let authorized = false;
   if (session) {
     try {
-      const decoded = await adminAuth.verifySessionCookie(session, true);
+      const decoded = await getAdminAuth().verifySessionCookie(session, true);
       const role = (decoded as { role?: AdminRole }).role;
       authorized = !!role && ADMIN_ROLES.includes(role);
     } catch {
