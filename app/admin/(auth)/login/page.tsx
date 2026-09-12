@@ -3,11 +3,15 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { ShieldCheck, Eye, EyeOff, LogIn, AlertTriangle } from 'lucide-react';
 import { useAuthStore, buildAdminSession } from '@/lib/admin/rbac/store';
 import type { AdminRole, Permission } from '@/lib/admin/rbac/roles';
-import { getFirebaseAuth } from '@/lib/admin/firebase/client';
+import { getFirebaseApp, getFirebaseAuth } from '@/lib/admin/firebase/client';
+import { Turnstile } from '@/components/signup/Turnstile';
 import { cn } from '@/lib/admin/utils/cn';
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const ADMIN_ROLES: AdminRole[] = ['super_admin', 'admin', 'moderator', 'editor', 'support'];
 
@@ -49,6 +53,8 @@ function AdminLoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileNonce, setTurnstileNonce] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = safeRedirect(searchParams.get('redirect'));
@@ -74,6 +80,25 @@ function AdminLoginForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Turnstile (anti-bot), igual ao login principal.
+    if (TURNSTILE_SITE_KEY) {
+      if (!turnstileToken) {
+        setError('Resolva o desafio de segurança para continuar.');
+        setLoading(false);
+        return;
+      }
+      try {
+        const fn = httpsCallable(getFunctions(getFirebaseApp()), 'verifyLogin');
+        await fn({ token: turnstileToken });
+      } catch {
+        setTurnstileNonce((n) => n + 1);
+        setTurnstileToken(null);
+        setError('Falha na verificação de segurança. Tente novamente.');
+        setLoading(false);
+        return;
+      }
+    }
 
     try {
       const credential = await signInWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
@@ -214,6 +239,14 @@ function AdminLoginForm() {
               </button>
             </div>
           </div>
+
+          {TURNSTILE_SITE_KEY && (
+            <Turnstile
+              siteKey={TURNSTILE_SITE_KEY}
+              onToken={setTurnstileToken}
+              resetNonce={turnstileNonce}
+            />
+          )}
 
           <button
             type="submit"
