@@ -564,6 +564,13 @@ exports.sendVerificationEmail = callable(async (data, context) => {
   };
   const link = await admin.auth().generateEmailVerificationLink(email, actionCodeSettings);
 
+  // Defesa em profundidade: o link é gerado pelo Firebase (email vem do
+  // token verificado, continue-URL do env), mas garantimos o scheme antes
+  // de interpolar no HTML — fecha qualquer confusão de scheme/destino.
+  if (typeof link !== 'string' || !/^https:\/\//.test(link)) {
+    throw new CallableError('internal', 'Invalid verification link');
+  }
+
   // 2) Envia via Resend
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -636,6 +643,13 @@ exports.sendPasswordResetEmail = callable(async (data, context) => {
     handleCodeInApp: false,
   };
   const link = await admin.auth().generatePasswordResetLink(email, actionCodeSettings);
+
+  // Defesa em profundidade: o link é gerado pelo Firebase (email validado,
+  // continue-URL do env — nada do corpo da requisição entra na URL), mas
+  // garantimos o scheme https antes de interpolar no HTML.
+  if (typeof link !== 'string' || !/^https:\/\//.test(link)) {
+    throw new CallableError('internal', 'Invalid reset link');
+  }
 
   // 2) Envia via Resend
   const apiKey = process.env.RESEND_API_KEY;
