@@ -18,10 +18,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!hydrated) return; // Wait for zustand persist to rehydrate
 
-    if (!session) {
-      router.push('/admin/login');
-    }
-  }, [hydrated, session, router]);
+    // A sessão do store é só cache de UI: revalida no servidor.
+    // localStorage forjado não abre o painel (o layout server-side barra).
+    let disposed = false;
+    fetch('/api/admin/session', { credentials: 'same-origin' })
+      .then((res) => {
+        if (!disposed && !res.ok) {
+          useAuthStore.getState().clearSession();
+          router.push('/admin/login');
+        }
+      })
+      .catch(() => {});
+    return () => {
+      disposed = true;
+    };
+  }, [hydrated, router]);
 
   if (!hydrated || !session) {
     return (
@@ -36,11 +47,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     try {
+      await fetch('/api/admin/session', { method: 'DELETE', credentials: 'same-origin' });
+    } catch {
+      // Ignora falha ao limpar sessão server-side
+    }
+    try {
       await signOut(getFirebaseAuth());
     } catch {
       // Ignora falha no signOut local
     }
-    document.cookie = 'admin_session=; path=/admin; max-age=0';
     useAuthStore.getState().clearSession();
     router.push('/admin/login');
   };

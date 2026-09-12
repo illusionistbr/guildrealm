@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { ShieldCheck, Eye, EyeOff, LogIn, AlertTriangle } from 'lucide-react';
 import { useAuthStore, buildAdminSession } from '@/lib/admin/rbac/store';
 import type { AdminRole, Permission } from '@/lib/admin/rbac/roles';
@@ -22,13 +22,53 @@ const ERROR_MESSAGES: Record<string, string> = {
   'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.',
 };
 
+function safeRedirect(value: string | null): string {
+  // Só permite redireciono interno para /admin (anti open-redirect).
+  if (value && value.startsWith('/admin') && !value.startsWith('//')) return value;
+  return '/admin/dashboard';
+}
+
 export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#050912] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <AdminLoginForm />
+    </Suspense>
+  );
+}
+
+function AdminLoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = safeRedirect(searchParams.get('redirect'));
+
+  // Já com sessão admin válida? Vai direto ao painel.
+  useEffect(() => {
+    let disposed = false;
+    fetch('/api/admin/session', { credentials: 'same-origin' })
+      .then((res) => {
+        if (!disposed && res.ok) router.replace(redirectTo);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!disposed) setChecking(false);
+      });
+    return () => {
+      disposed = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,11 +78,35 @@ export default function AdminLoginPage() {
     try {
       const credential = await signInWithEmailAndPassword(getFirebaseAuth(), email.trim(), password);
 
-      const idTokenResult = await credential.user.getIdTokenResult();
+      // Token fresco: garante claims atualizadas (cargo pode ter mudado).
+      const idTokenResult = await credential.user.getIdTokenResult(true);
       const role = idTokenResult.claims.role as AdminRole | undefined;
 
       if (!role || !ADMIN_ROLES.includes(role)) {
+        // Conta comum tentando entrar no admin: encerra a sessão local
+        // para não deixar auth pendurada e nega explicitamente.
+        await signOut(getFirebaseAuth()).catch(() => {});
         setError('Acesso negado. Esta conta não possui permissões administrativas.');
+        setLoading(false);
+        return;
+      }
+
+      // Sessão server-side: o servidor revalida token + cargo e emite
+      // cookie httpOnly (não forjável via JS). Sem isso, o painel não abre.
+      const idToken = await credential.user.getIdToken();
+      const res = await fetch('/api/admin/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ idToken }),
+      });
+      if (!res.ok) {
+        await signOut(getFirebaseAuth()).catch(() => {});
+        setError(
+          res.status === 403
+            ? 'Acesso negado. Esta conta não possui permissões administrativas.'
+            : 'Não foi possível criar a sessão administrativa.',
+        );
         setLoading(false);
         return;
       }
@@ -57,19 +121,23 @@ export default function AdminLoginPage() {
         displayName: credential.user.displayName ?? undefined,
         photoURL: credential.user.photoURL ?? undefined,
       });
-
-      // Set cookie for middleware (server-side auth check)
-      document.cookie = `admin_session=${credential.user.uid}; path=/admin; max-age=86400; SameSite=Lax`;
-
       useAuthStore.getState().setSession(session);
 
-      window.location.href = '/admin/dashboard';
+      router.replace(redirectTo);
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code ?? '';
       setError(ERROR_MESSAGES[code] ?? 'Erro ao fazer login.');
       setLoading(false);
     }
   };
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-[#050912] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050912] flex items-center justify-center p-4">
@@ -104,6 +172,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               required
+              autoComplete="username"
               className="w-full h-11 px-4 bg-[#050912] border border-[rgba(38,51,86,0.7)] rounded-lg text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
             />
           </div>
@@ -117,6 +186,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="current-password"
                 className="w-full h-11 px-4 pr-11 bg-[#050912] border border-[rgba(38,51,86,0.7)] rounded-lg text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
               />
               <button
