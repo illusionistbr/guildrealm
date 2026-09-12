@@ -90,9 +90,11 @@ function AppSidebar({ open, onToggle }: { open: boolean; onToggle: () => void })
       </div>
 
       <nav className="flex-1 overflow-y-auto py-6 px-2 space-y-1 scrollbar-thin">
-        {navItems.map((item) => (
-          <SidebarItem key={item.href} {...item} collapsed={!open} isActive={pathname === item.href} />
-        ))}
+        {navItems
+          .filter((item) => item.href !== '/app/communities')
+          .map((item) => (
+            <SidebarItem key={item.href} {...item} collapsed={!open} isActive={pathname === item.href} />
+          ))}
       </nav>
 
       <SidebarUser open={open} />
