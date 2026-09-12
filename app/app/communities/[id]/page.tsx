@@ -509,9 +509,6 @@ export default function CommunityDetailPage() {
             <div className="pb-1 min-w-0 flex-1">
               <h1 className="text-xl font-heading font-bold text-white truncate">{community.name}</h1>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
-                {community.tag && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-accent/15 text-accent">[{community.tag}]</span>
-                )}
                 {regionLabel(community.region) && (
                   <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300">
                     <Globe size={12} /> {regionLabel(community.region)}

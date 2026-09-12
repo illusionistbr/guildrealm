@@ -25,10 +25,10 @@ export type CommunityDoc = {
   ownerId?: string;
   ownerName?: string | null;
   name?: string;
-  tag?: string;
   description?: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  region?: string;
   guildIds?: string[];
   createdAt?: { seconds: number };
 };
@@ -37,6 +37,17 @@ type GuildMini = {
   id: string;
   name?: string;
   game?: string;
+  membersCount?: number;
+};
+
+const REGION_LABELS: Record<string, string> = {
+  global: 'Global',
+  na: 'América do Norte',
+  sa: 'América do Sul',
+  europe: 'Europa',
+  asia: 'Ásia',
+  africa: 'África',
+  oceania: 'Oceania',
 };
 
 const GAME_FILTERS = [
@@ -77,8 +88,13 @@ export default function AppCommunitiesCataloguePage() {
       (snap) => {
         const map: Record<string, GuildMini> = {};
         snap.forEach((d) => {
-          const data = d.data() as { name?: string; game?: string };
-          map[d.id] = { id: d.id, name: data.name, game: data.game };
+          const data = d.data() as { name?: string; game?: string; members?: unknown };
+          map[d.id] = {
+            id: d.id,
+            name: data.name,
+            game: data.game,
+            membersCount: Array.isArray(data.members) ? data.members.length : 0,
+          };
         });
         setGuildsById(map);
       },
@@ -124,7 +140,7 @@ export default function AppCommunitiesCataloguePage() {
     const q = search.trim().toLowerCase();
     return communities.filter((c) => {
       if (q) {
-        const hay = `${c.name ?? ''} ${c.tag ?? ''} ${c.description ?? ''}`.toLowerCase();
+        const hay = `${c.name ?? ''} ${c.description ?? ''}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       if (game !== 'all') {
@@ -160,7 +176,7 @@ export default function AppCommunitiesCataloguePage() {
           <label className="search-field">
             <Search size={21} />
             <input
-              placeholder="Buscar comunidade por nome, tag ou descrição..."
+              placeholder="Buscar comunidade por nome ou descrição..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -209,6 +225,8 @@ export default function AppCommunitiesCataloguePage() {
               const ownerName = community.ownerName ?? ownerNames[community.ownerId ?? ''];
               const guildIds = community.guildIds ?? [];
               const games = [...new Set(guildIds.map((gid) => guildsById[gid]?.game).filter(Boolean))] as string[];
+              const totalMembers = guildIds.reduce((sum, gid) => sum + (guildsById[gid]?.membersCount ?? 0), 0);
+              const regionLabel = (community.region && REGION_LABELS[community.region]) || null;
               return (
                 <motion.article
                   key={community.id}
@@ -242,23 +260,17 @@ export default function AppCommunitiesCataloguePage() {
                       )}
                     </div>
                     <h2>{community.name}</h2>
+                    {regionLabel && (
+                      <p className="guild-meta">
+                        <Globe2 size={14} /> {regionLabel}
+                      </p>
+                    )}
                     <p className="guild-meta">
-                      {community.tag && (
-                        <>
-                          <Globe2 size={14} /> [{community.tag}]
-                          <i />
-                        </>
-                      )}
                       {ownerName ? `por ${ownerName}` : 'Comunidade'}
                     </p>
                     <p className="guild-members">
-                      <UsersRound size={15} /> {guildIds.length} {guildIds.length === 1 ? 'guild vinculada' : 'guilds vinculadas'}
+                      <UsersRound size={15} /> {guildIds.length} {guildIds.length === 1 ? 'guild' : 'guilds'} · {totalMembers} {totalMembers === 1 ? 'membro' : 'membros'}
                     </p>
-                    {community.description && (
-                      <p className="guild-meta" style={{ marginTop: 8 }}>
-                        {community.description.slice(0, 120)}{community.description.length > 120 ? '…' : ''}
-                      </p>
-                    )}
                     <div className="guild-actions">
                       <Link href={`/app/communities/${community.id}`}>Ver comunidade</Link>
                       <Link href={`/app/communities/${community.id}`}>Ver guilds</Link>

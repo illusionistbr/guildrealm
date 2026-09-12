@@ -82,7 +82,6 @@ export default function CreateCommunityPage() {
   const router = useRouter();
   const [uid, setUid] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -196,7 +195,6 @@ export default function CreateCommunityPage() {
       setError('Dê um nome para a comunidade.');
       return;
     }
-    const cleanTag = tag.trim().toUpperCase().slice(0, 6);
     setCreating(true);
     try {
       // Revalida o limite no momento da criação
@@ -239,7 +237,6 @@ export default function CreateCommunityPage() {
         ownerId: uid,
         ownerName: getFirebaseAuth().currentUser?.displayName?.trim() || null,
         name: cleanName.slice(0, 60),
-        tag: cleanTag || null,
         description: description.trim().slice(0, 300) || null,
         logoUrl,
         bannerUrl,
@@ -324,18 +321,6 @@ export default function CreateCommunityPage() {
                 placeholder="Ex.: Shadowborn"
                 maxLength={60}
                 className="w-full h-11 px-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-muted mb-1.5">Tag (opcional, até 6 letras)</label>
-              <input
-                type="text"
-                value={tag}
-                onChange={(e) => setTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
-                placeholder="Ex.: SHDW"
-                maxLength={6}
-                className="w-full h-11 px-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors uppercase"
               />
             </div>
 
