@@ -78,7 +78,7 @@ type CharacterOption = {
   guildId?: string;
 };
 
-const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 
 export default function CreateGuildPage() {
@@ -648,7 +648,7 @@ function FormStep({
               <input
                 ref={logoInput}
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
+                accept="image/png,image/jpeg,image/webp,image/gif"
                 className="hidden"
                 onChange={onLogoSelect}
               />

@@ -40,7 +40,7 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 };
 
-const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 const MAX_BANNER_BYTES = 4 * 1024 * 1024;
 
@@ -125,7 +125,7 @@ export default function CreateCommunityPage() {
     setLogoError('');
     if (!file) return;
     if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
-      setLogoError('Formato inválido. Use PNG, JPEG ou WebP.');
+      setLogoError('Formato inválido. Use PNG, JPEG, WebP ou GIF.');
       return;
     }
     if (file.size > MAX_LOGO_BYTES) {
@@ -148,7 +148,7 @@ export default function CreateCommunityPage() {
     setBannerError('');
     if (!file) return;
     if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
-      setBannerError('Formato inválido. Use PNG, JPEG ou WebP.');
+      setBannerError('Formato inválido. Use PNG, JPEG, WebP ou GIF.');
       return;
     }
     if (file.size > MAX_BANNER_BYTES) {
@@ -353,7 +353,7 @@ export default function CreateCommunityPage() {
                   <input
                     ref={logoInput}
                     type="file"
-                    accept="image/png,image/jpeg,image/webp"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
                     className="hidden"
                     onChange={handleLogoSelect}
                   />
@@ -375,7 +375,7 @@ export default function CreateCommunityPage() {
                       </button>
                     )}
                   </div>
-                  <p className="text-xs text-muted mt-1.5">PNG, JPEG ou WebP até 2MB.</p>
+                  <p className="text-xs text-muted mt-1.5">PNG, JPEG, WebP ou GIF até 2MB.</p>
                   {logoError && <p className="text-xs text-red-400 mt-1.5">{logoError}</p>}
                 </div>
               </div>
@@ -395,7 +395,7 @@ export default function CreateCommunityPage() {
               <input
                 ref={bannerInput}
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
+                accept="image/png,image/jpeg,image/webp,image/gif"
                 className="hidden"
                 onChange={handleBannerSelect}
               />
@@ -417,7 +417,7 @@ export default function CreateCommunityPage() {
                   </button>
                 )}
               </div>
-              <p className="text-xs text-muted mt-1.5">PNG, JPEG ou WebP até 4MB. Aparece no topo da página.</p>
+              <p className="text-xs text-muted mt-1.5">PNG, JPEG, WebP ou GIF até 4MB. Aparece no topo da página.</p>
               {bannerError && <p className="text-xs text-red-400 mt-1.5">{bannerError}</p>}
             </div>
 

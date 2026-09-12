@@ -800,7 +800,7 @@ export default function CommunityDetailPage() {
                   <ImagePlus size={14} /> {bannerFile || community.bannerUrl ? 'Trocar banner' : 'Enviar banner'}
                   <input
                     type="file"
-                    accept="image/png,image/jpeg,image/webp"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
@@ -814,7 +814,7 @@ export default function CommunityDetailPage() {
                     }}
                   />
                 </label>
-                <p className="text-xs text-muted mt-1">PNG, JPEG ou WebP até 4MB.</p>
+                <p className="text-xs text-muted mt-1">PNG, JPEG, WebP ou GIF até 4MB.</p>
               </div>
 
               <div>

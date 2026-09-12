@@ -1618,8 +1618,8 @@ const MENTALITY_OPTIONS: Option[] = [
   { value: 'casual', label: 'Casual' },
 ];
 
-const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
-const ALLOWED_BANNER_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+const ALLOWED_BANNER_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 const MAX_BANNER_BYTES = 4 * 1024 * 1024;
 
@@ -1932,7 +1932,7 @@ function SettingsView({
               <input
                 ref={logoInput}
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
+                accept="image/png,image/jpeg,image/webp,image/gif"
                 className="hidden"
                 onChange={(e) =>
                   handleFile(
@@ -1998,7 +1998,7 @@ function SettingsView({
               <input
                 ref={bannerInput}
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
+                accept="image/png,image/jpeg,image/webp,image/gif"
                 className="hidden"
                 onChange={(e) =>
                   handleFile(
