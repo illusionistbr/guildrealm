@@ -427,7 +427,7 @@ export default function CommunityDetailPage() {
         if (v) cleanLinks[p.id] = v;
       }
       await updateDoc(doc(getFirebaseDb(), COLLECTIONS.COMMUNITIES, community.id), {
-        description: editDescription.trim().slice(0, 500) || null,
+        description: editDescription.trim().slice(0, 300) || null,
         region: editRegion,
         languages: editLanguages.slice(0, 5),
         socialLinks: cleanLinks,
@@ -846,7 +846,7 @@ export default function CommunityDetailPage() {
                 <textarea
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  maxLength={500}
+                  maxLength={300}
                   rows={3}
                   className="w-full px-3 py-2.5 bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors resize-none"
                 />

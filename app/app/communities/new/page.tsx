@@ -240,7 +240,7 @@ export default function CreateCommunityPage() {
         ownerName: getFirebaseAuth().currentUser?.displayName?.trim() || null,
         name: cleanName.slice(0, 60),
         tag: cleanTag || null,
-        description: description.trim().slice(0, 500) || null,
+        description: description.trim().slice(0, 300) || null,
         logoUrl,
         bannerUrl,
         region,
@@ -345,7 +345,7 @@ export default function CreateCommunityPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Conte sobre o clã, os jogos e o estilo de jogo..."
-                maxLength={500}
+                maxLength={300}
                 rows={4}
                 className="w-full px-3 py-2.5 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors resize-none"
               />
