@@ -42,6 +42,31 @@ const fadeUp = {
 
 const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
+const MAX_BANNER_BYTES = 4 * 1024 * 1024;
+
+const LANGUAGE_OPTIONS = [
+  'Português',
+  'Inglês',
+  'Espanhol',
+  'Francês',
+  'Alemão',
+  'Italiano',
+  'Holandês',
+  'Polonês',
+  'Russo',
+  'Japonês',
+  'Coreano',
+  'Chinês',
+];
+
+const LINK_PLATFORMS = [
+  { id: 'discord', label: 'Discord', placeholder: 'https://discord.gg/...' },
+  { id: 'website', label: 'Website', placeholder: 'https://...' },
+  { id: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/...' },
+  { id: 'twitch', label: 'Twitch', placeholder: 'https://twitch.tv/...' },
+  { id: 'twitter', label: 'X / Twitter', placeholder: 'https://x.com/...' },
+  { id: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/...' },
+];
 
 export default function CreateCommunityPage() {
   const router = useRouter();
@@ -52,11 +77,17 @@ export default function CreateCommunityPage() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoError, setLogoError] = useState('');
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [bannerError, setBannerError] = useState('');
+  const [languages, setLanguages] = useState<string[]>(['Português']);
+  const [links, setLinks] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [creating, setCreating] = useState(false);
   const [ownedCount, setOwnedCount] = useState<number | null>(null);
   const planState = useUserPlan(uid);
   const logoInput = useRef<HTMLInputElement>(null);
+  const bannerInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(getFirebaseAuth(), (user) => {
@@ -112,6 +143,35 @@ export default function CreateCommunityPage() {
     if (logoInput.current) logoInput.current.value = '';
   };
 
+  const handleBannerSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setBannerError('');
+    if (!file) return;
+    if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
+      setBannerError('Formato inválido. Use PNG, JPEG ou WebP.');
+      return;
+    }
+    if (file.size > MAX_BANNER_BYTES) {
+      setBannerError('Imagem muito grande. Máximo 4MB.');
+      return;
+    }
+    setBannerFile(file);
+    setBannerPreview(URL.createObjectURL(file));
+  };
+
+  const handleBannerRemove = () => {
+    setBannerFile(null);
+    setBannerPreview(null);
+    setBannerError('');
+    if (bannerInput.current) bannerInput.current.value = '';
+  };
+
+  const toggleLanguage = (lang: string) => {
+    setLanguages((prev) =>
+      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang].slice(0, 5),
+    );
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uid) return;
@@ -150,6 +210,20 @@ export default function CreateCommunityPage() {
         logoUrl = await getDownloadURL(fileRef);
       }
 
+      let bannerUrl: string | null = null;
+      if (bannerFile) {
+        const ext = bannerFile.name.split('.').pop() ?? 'png';
+        const fileRef = storageRef(getFirebaseStorage(), `community-banners/${ref.id}/banner.${ext}`);
+        await uploadBytes(fileRef, bannerFile, { contentType: bannerFile.type });
+        bannerUrl = await getDownloadURL(fileRef);
+      }
+
+      const cleanLinks: Record<string, string> = {};
+      for (const p of LINK_PLATFORMS) {
+        const v = (links[p.id] ?? '').trim().slice(0, 200);
+        if (v) cleanLinks[p.id] = v;
+      }
+
       await setDoc(ref, {
         ownerId: uid,
         ownerName: getFirebaseAuth().currentUser?.displayName?.trim() || null,
@@ -157,7 +231,10 @@ export default function CreateCommunityPage() {
         tag: cleanTag || null,
         description: description.trim().slice(0, 500) || null,
         logoUrl,
-        bannerUrl: null,
+        bannerUrl,
+        languages: languages.slice(0, 5),
+        socialLinks: cleanLinks,
+        showMembers: true,
         guildIds: [],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -301,6 +378,88 @@ export default function CreateCommunityPage() {
                   <p className="text-xs text-muted mt-1.5">PNG, JPEG ou WebP até 2MB.</p>
                   {logoError && <p className="text-xs text-red-400 mt-1.5">{logoError}</p>}
                 </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm text-muted mb-1.5">Banner (opcional)</label>
+              <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#0a1122] overflow-hidden">
+                {bannerPreview ? (
+                  <img src={bannerPreview} alt="" className="w-full h-28 object-cover" />
+                ) : (
+                  <div className="w-full h-28 flex items-center justify-center">
+                    <ImagePlus size={22} className="text-muted" />
+                  </div>
+                )}
+              </div>
+              <input
+                ref={bannerInput}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={handleBannerSelect}
+              />
+              <div className="flex items-center gap-2 flex-wrap mt-2">
+                <button
+                  type="button"
+                  onClick={() => bannerInput.current?.click()}
+                  className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-[rgba(38,51,86,0.5)] bg-[#0a1122] text-white text-xs hover:border-accent/40 transition-colors"
+                >
+                  <ImagePlus size={14} /> {bannerFile ? 'Trocar' : 'Enviar banner'}
+                </button>
+                {bannerFile && (
+                  <button
+                    type="button"
+                    onClick={handleBannerRemove}
+                    className="flex items-center gap-1.5 px-3 h-9 rounded-lg border border-red-500/30 text-red-400 text-xs hover:bg-red-500/10 transition-colors"
+                  >
+                    <X size={14} /> Remover
+                  </button>
+                )}
+              </div>
+              <p className="text-xs text-muted mt-1.5">PNG, JPEG ou WebP até 4MB. Aparece no topo da página.</p>
+              {bannerError && <p className="text-xs text-red-400 mt-1.5">{bannerError}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm text-muted mb-1.5">Idiomas (até 5)</label>
+              <div className="flex flex-wrap gap-2">
+                {LANGUAGE_OPTIONS.map((lang) => {
+                  const active = languages.includes(lang);
+                  return (
+                    <button
+                      key={lang}
+                      type="button"
+                      onClick={() => toggleLanguage(lang)}
+                      className={
+                        active
+                          ? 'px-3 h-8 rounded-full bg-accent/20 border border-accent/50 text-white text-xs font-medium transition-colors'
+                          : 'px-3 h-8 rounded-full border border-[rgba(38,51,86,0.5)] text-muted text-xs hover:text-white transition-colors'
+                      }
+                    >
+                      {lang}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm text-muted mb-1.5">Links (opcional)</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {LINK_PLATFORMS.map((p) => (
+                  <div key={p.id}>
+                    <label className="block text-xs text-muted mb-1">{p.label}</label>
+                    <input
+                      type="text"
+                      value={links[p.id] ?? ''}
+                      onChange={(e) => setLinks((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                      placeholder={p.placeholder}
+                      maxLength={200}
+                      className="w-full h-10 px-3 bg-[#0a1122] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 

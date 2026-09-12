@@ -10,28 +10,76 @@ import {
   getDocs,
   onSnapshot,
   query,
+  serverTimestamp,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytes,
+} from 'firebase/storage';
+import {
   ChevronLeft,
+  ExternalLink,
+  Eye,
+  EyeOff,
   Gamepad2,
+  Globe,
+  ImagePlus,
+  Languages,
   Link2,
   Loader2,
+  Pencil,
   Plus,
   Shield,
   ShieldCheck,
   Trash2,
   Unlink,
   UsersRound,
+  X,
 } from 'lucide-react';
 import {
   getFirebaseApp,
   getFirebaseAuth,
   getFirebaseDb,
+  getFirebaseStorage,
 } from '@/lib/admin/firebase/client';
 import { COLLECTIONS } from '@/lib/admin/firebase/collections';
 import { cn } from '@/lib/admin/utils/cn';
+
+const LINK_PLATFORMS = [
+  { id: 'discord', label: 'Discord', placeholder: 'https://discord.gg/...' },
+  { id: 'website', label: 'Website', placeholder: 'https://...' },
+  { id: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/...' },
+  { id: 'twitch', label: 'Twitch', placeholder: 'https://twitch.tv/...' },
+  { id: 'twitter', label: 'X / Twitter', placeholder: 'https://x.com/...' },
+  { id: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/...' },
+];
+
+const LANGUAGE_OPTIONS = [
+  'Português',
+  'Inglês',
+  'Espanhol',
+  'Francês',
+  'Alemão',
+  'Italiano',
+  'Holandês',
+  'Polonês',
+  'Russo',
+  'Japonês',
+  'Coreano',
+  'Chinês',
+];
+
+function normalizeLink(value: string): string | null {
+  const v = value.trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  if (/^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(v)) return `https://${v}`;
+  return null;
+}
 
 type CommunityDoc = {
   id: string;
@@ -42,6 +90,9 @@ type CommunityDoc = {
   description?: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  languages?: string[];
+  socialLinks?: Record<string, string>;
+  showMembers?: boolean;
   guildIds?: string[];
 };
 
@@ -53,6 +104,12 @@ type GuildDoc = {
   members?: string[];
   logoUrl?: string | null;
   communityId?: string | null;
+};
+
+type MemberInfo = {
+  id: string;
+  name: string;
+  guildName: string;
 };
 
 type LinkRequestDoc = {
@@ -160,6 +217,70 @@ export default function CommunityDetailPage() {
   }, [uid, linkedGuilds.length]);
 
   const isOwner = !!uid && community?.ownerId === uid;
+  const showMembers = community?.showMembers !== false;
+  const canSeeMembers = showMembers || isOwner;
+
+  // Jogos jogados (agregado das guilds vinculadas).
+  const games = useMemo(() => {
+    const set = new Set<string>();
+    for (const g of linkedGuilds) {
+      if (g.game && g.game.trim()) set.add(g.game.trim());
+    }
+    return [...set].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [linkedGuilds]);
+
+  // Membros: personagens das guilds vinculadas.
+  useEffect(() => {
+    if (!canSeeMembers) {
+      setMembers([]);
+      return;
+    }
+    const guildById = new Map(linkedGuilds.map((g) => [g.id, g]));
+    const ids: string[] = [];
+    for (const g of linkedGuilds) {
+      for (const m of g.members ?? []) {
+        if (typeof m === 'string' && m && !ids.includes(m)) ids.push(m);
+      }
+    }
+    if (ids.length === 0) {
+      setMembers([]);
+      return;
+    }
+    let disposed = false;
+    setMembersLoading(true);
+    const load = async () => {
+      const db = getFirebaseDb();
+      const byId = new Map<string, { name?: string; guildId?: string }>();
+      for (let i = 0; i < ids.length; i += 30) {
+        const chunk = ids.slice(i, i + 30);
+        try {
+          const snap = await getDocs(
+            query(collection(db, 'characters'), where('__name__', 'in', chunk)),
+          );
+          snap.forEach((d) => {
+            const data = d.data();
+            byId.set(d.id, {
+              name: typeof data?.name === 'string' ? data.name : undefined,
+              guildId: typeof data?.guildId === 'string' ? data.guildId : undefined,
+            });
+          });
+        } catch {}
+      }
+      if (disposed) return;
+      const list: MemberInfo[] = ids.map((id) => {
+        const info = byId.get(id);
+        const guildName = (info?.guildId && guildById.get(info.guildId)?.name) || '—';
+        return { id, name: info?.name?.trim() || '—', guildName };
+      });
+      list.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+      setMembers(list);
+      setMembersLoading(false);
+    };
+    load();
+    return () => {
+      disposed = true;
+    };
+  }, [linkedGuilds, canSeeMembers]);
   const linkableGuilds = useMemo(
     () => myGuilds.filter((g) => !g.communityId),
     [myGuilds],
@@ -167,6 +288,18 @@ export default function CommunityDetailPage() {
   const [linkRequests, setLinkRequests] = useState<LinkRequestDoc[]>([]);
   const [reviewingId, setReviewingId] = useState<string | null>(null);
   const [linkMessage, setLinkMessage] = useState('');
+  const [members, setMembers] = useState<MemberInfo[]>([]);
+  const [membersLoading, setMembersLoading] = useState(false);
+
+  // Edição (dono): banner, descrição, idiomas, links, visibilidade de membros.
+  const [showEdit, setShowEdit] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editDescription, setEditDescription] = useState('');
+  const [editLanguages, setEditLanguages] = useState<string[]>([]);
+  const [editLinks, setEditLinks] = useState<Record<string, string>>({});
+  const [editShowMembers, setEditShowMembers] = useState(true);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
   // Pedidos pendentes (só o dono da comunidade enxerga — via rules).
   useEffect(() => {
@@ -240,6 +373,56 @@ export default function CommunityDetailPage() {
     setUnlinkingId(null);
   };
 
+  const openEdit = () => {
+    if (!community) return;
+    setEditDescription(community.description ?? '');
+    setEditLanguages(Array.isArray(community.languages) ? community.languages.slice(0, 5) : []);
+    setEditLinks({ ...(community.socialLinks ?? {}) });
+    setEditShowMembers(community.showMembers !== false);
+    setBannerFile(null);
+    setBannerPreview(null);
+    setActionError('');
+    setShowEdit(true);
+  };
+
+  const toggleEditLanguage = (lang: string) => {
+    setEditLanguages((prev) =>
+      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang].slice(0, 5),
+    );
+  };
+
+  const handleSaveEdit = async () => {
+    if (!community || !isOwner) return;
+    setSaving(true);
+    setActionError('');
+    try {
+      let bannerUrl = community.bannerUrl ?? null;
+      if (bannerFile) {
+        const ext = bannerFile.name.split('.').pop() ?? 'png';
+        const fileRef = storageRef(getFirebaseStorage(), `community-banners/${community.id}/banner.${ext}`);
+        await uploadBytes(fileRef, bannerFile, { contentType: bannerFile.type });
+        bannerUrl = await getDownloadURL(fileRef);
+      }
+      const cleanLinks: Record<string, string> = {};
+      for (const p of LINK_PLATFORMS) {
+        const v = (editLinks[p.id] ?? '').trim().slice(0, 200);
+        if (v) cleanLinks[p.id] = v;
+      }
+      await updateDoc(doc(getFirebaseDb(), COLLECTIONS.COMMUNITIES, community.id), {
+        description: editDescription.trim().slice(0, 500) || null,
+        languages: editLanguages.slice(0, 5),
+        socialLinks: cleanLinks,
+        showMembers: editShowMembers,
+        bannerUrl,
+        updatedAt: serverTimestamp(),
+      });
+      setShowEdit(false);
+    } catch {
+      setActionError('Não foi possível salvar as alterações.');
+    }
+    setSaving(false);
+  };
+
   const handleDelete = async () => {
     setBusy(true);
     setActionError('');
@@ -288,7 +471,11 @@ export default function CommunityDetailPage() {
 
       {/* Cabeçalho */}
       <div className="rounded-xl overflow-hidden border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.8)] to-[rgba(10,18,32,0.6)]">
-        <div className="h-28 bg-gradient-to-r from-accent/25 via-accent/10 to-transparent border-b border-[rgba(38,51,86,0.3)]" />
+        {community.bannerUrl ? (
+          <img src={community.bannerUrl} alt="" className="w-full h-40 object-cover border-b border-[rgba(38,51,86,0.3)]" />
+        ) : (
+          <div className="h-28 bg-gradient-to-r from-accent/25 via-accent/10 to-transparent border-b border-[rgba(38,51,86,0.3)]" />
+        )}
         <div className="px-6 pb-6 -mt-10">
           <div className="flex items-end gap-4">
             <div className="w-20 h-20 rounded-2xl border-4 border-[#0a1122] bg-[#0a1122] flex items-center justify-center overflow-hidden shrink-0">
@@ -300,7 +487,7 @@ export default function CommunityDetailPage() {
                 </div>
               )}
             </div>
-            <div className="pb-1 min-w-0">
+            <div className="pb-1 min-w-0 flex-1">
               <h1 className="text-xl font-heading font-bold text-white truncate">{community.name}</h1>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 {community.tag && (
@@ -311,9 +498,59 @@ export default function CommunityDetailPage() {
                 )}
               </div>
             </div>
+            {isOwner && (
+              <button
+                onClick={openEdit}
+                className="mb-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/15 border border-accent/30 text-accent text-xs font-medium hover:bg-accent hover:text-white transition-all shrink-0"
+              >
+                <Pencil size={13} /> Editar
+              </button>
+            )}
           </div>
           {community.description && (
             <p className="text-sm text-muted mt-4">{community.description}</p>
+          )}
+          {/* Idiomas + jogos */}
+          {((community.languages?.length ?? 0) > 0 || games.length > 0) && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {(community.languages ?? []).map((lang) => (
+                <span key={`lang-${lang}`} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300">
+                  <Languages size={12} /> {lang}
+                </span>
+              ))}
+              {games.map((game) => (
+                <span key={`game-${game}`} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300">
+                  <Gamepad2 size={12} /> {game}
+                </span>
+              ))}
+            </div>
+          )}
+          {/* Links */}
+          {community.socialLinks && Object.keys(community.socialLinks).length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {Object.entries(community.socialLinks).map(([id, value]) => {
+                const label = LINK_PLATFORMS.find((p) => p.id === id)?.label ?? id;
+                const href = normalizeLink(value);
+                return href ? (
+                  <a
+                    key={id}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted hover:text-white hover:border-accent/40 transition-colors"
+                  >
+                    <ExternalLink size={12} /> {label}
+                  </a>
+                ) : (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg border border-[rgba(38,51,86,0.5)] text-muted"
+                  >
+                    <Globe size={12} /> {label}: {value}
+                  </span>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>
@@ -453,6 +690,45 @@ export default function CommunityDetailPage() {
         )}
       </div>
 
+      {/* Membros */}
+      {canSeeMembers && (
+        <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-gradient-to-br from-[rgba(19,29,48,0.6)] to-[rgba(10,18,32,0.4)] p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+              <UsersRound size={18} className="text-accent" />
+              Membros ({members.length})
+            </h2>
+            {isOwner && !showMembers && (
+              <span className="inline-flex items-center gap-1 text-xs text-yellow-400">
+                <EyeOff size={13} /> Oculta para visitantes
+              </span>
+            )}
+          </div>
+          {membersLoading ? (
+            <p className="text-sm text-muted">Carregando membros...</p>
+          ) : members.length === 0 ? (
+            <p className="text-sm text-muted">Nenhum membro nas guilds vinculadas ainda.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {members.map((m) => (
+                <div
+                  key={m.id}
+                  className="flex items-center gap-3 rounded-lg border border-[rgba(38,51,86,0.3)] bg-[rgba(10,18,32,0.4)] p-2.5"
+                >
+                  <div className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0">
+                    {m.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm text-white font-medium truncate">{m.name}</p>
+                    <p className="text-xs text-muted truncate">{m.guildName}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Zona do dono */}
       {isOwner && (
         <div className="rounded-xl border border-red-500/20 bg-gradient-to-br from-red-950/20 to-[rgba(10,18,32,0.4)] p-6">
@@ -484,6 +760,152 @@ export default function CommunityDetailPage() {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Modal editar (dono) */}
+      {showEdit && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={() => !saving && setShowEdit(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#0a1122] p-6 shadow-2xl max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">Editar comunidade</h3>
+              <button
+                onClick={() => setShowEdit(false)}
+                disabled={saving}
+                className="p-1.5 text-muted hover:text-white transition-colors disabled:opacity-50"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-muted mb-1.5">Banner</label>
+                <div className="rounded-xl border border-[rgba(38,51,86,0.5)] bg-[#050912] overflow-hidden">
+                  {(bannerPreview || community.bannerUrl) ? (
+                    <img src={bannerPreview ?? community.bannerUrl ?? ''} alt="" className="w-full h-28 object-cover" />
+                  ) : (
+                    <div className="w-full h-28 flex items-center justify-center">
+                      <ImagePlus size={22} className="text-muted" />
+                    </div>
+                  )}
+                </div>
+                <label className="inline-flex items-center gap-1.5 mt-2 px-3 h-9 rounded-lg border border-[rgba(38,51,86,0.5)] text-white text-xs hover:border-accent/40 transition-colors cursor-pointer">
+                  <ImagePlus size={14} /> {bannerFile || community.bannerUrl ? 'Trocar banner' : 'Enviar banner'}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 4 * 1024 * 1024) {
+                        setActionError('Banner muito grande. Máximo 4MB.');
+                        return;
+                      }
+                      setBannerFile(file);
+                      setBannerPreview(URL.createObjectURL(file));
+                    }}
+                  />
+                </label>
+                <p className="text-xs text-muted mt-1">PNG, JPEG ou WebP até 4MB.</p>
+              </div>
+
+              <div>
+                <label className="block text-sm text-muted mb-1.5">Descrição</label>
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  maxLength={500}
+                  rows={3}
+                  className="w-full px-3 py-2.5 bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-muted mb-1.5">Idiomas (até 5)</label>
+                <div className="flex flex-wrap gap-2">
+                  {LANGUAGE_OPTIONS.map((lang) => {
+                    const active = editLanguages.includes(lang);
+                    return (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => toggleEditLanguage(lang)}
+                        className={
+                          active
+                            ? 'px-3 h-8 rounded-full bg-accent/20 border border-accent/50 text-white text-xs font-medium transition-colors'
+                            : 'px-3 h-8 rounded-full border border-[rgba(38,51,86,0.5)] text-muted text-xs hover:text-white transition-colors'
+                        }
+                      >
+                        {lang}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm text-muted mb-1.5">Links</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {LINK_PLATFORMS.map((p) => (
+                    <div key={p.id}>
+                      <label className="block text-xs text-muted mb-1">{p.label}</label>
+                      <input
+                        type="text"
+                        value={editLinks[p.id] ?? ''}
+                        onChange={(e) => setEditLinks((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                        placeholder={p.placeholder}
+                        maxLength={200}
+                        className="w-full h-10 px-3 bg-[#050912] border border-[rgba(38,51,86,0.5)] rounded-lg text-sm text-white placeholder-muted focus:outline-none focus:border-accent/50 transition-colors"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setEditShowMembers((v) => !v)}
+                className="w-full flex items-center justify-between rounded-lg border border-[rgba(38,51,86,0.5)] bg-[#050912] px-3 py-2.5"
+              >
+                <span className="inline-flex items-center gap-2 text-sm text-white">
+                  {editShowMembers ? <Eye size={15} className="text-emerald-400" /> : <EyeOff size={15} className="text-muted" />}
+                  Mostrar lista de membros
+                </span>
+                <span className={cn(
+                  'relative w-10 h-5.5 rounded-full transition-colors',
+                  editShowMembers ? 'bg-accent' : 'bg-[rgba(38,51,86,0.8)]',
+                )}>
+                  <span className={cn(
+                    'absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all',
+                    editShowMembers ? 'left-5.5' : 'left-0.5',
+                  )} />
+                </span>
+              </button>
+
+              <button
+                onClick={handleSaveEdit}
+                disabled={saving}
+                className="w-full h-11 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {saving ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  'Salvar alterações'
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
