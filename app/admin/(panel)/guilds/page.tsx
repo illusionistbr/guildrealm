@@ -2,12 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
-  collection,
   deleteDoc,
   doc,
-  getDoc,
-  getDocs,
-  Timestamp,
   updateDoc,
 } from 'firebase/firestore';
 import { AdminShell } from '@/components/admin/admin-shell';
@@ -44,14 +40,10 @@ type GuildRow = {
   premiumTooltip: string | null;
 };
 
-function toDate(value: unknown): Date | null {
+function parseDate(value: string | null): Date | null {
   if (!value) return null;
-  if (value instanceof Timestamp) return value.toDate();
-  if (value instanceof Date) return value;
-  if (typeof value === 'object' && value !== null && typeof (value as { seconds?: unknown }).seconds === 'number') {
-    return new Date((value as { seconds: number }).seconds * 1000);
-  }
-  return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
 function formatDate(d: Date | null): string {
@@ -87,30 +79,34 @@ export default function GuildsPage() {
     setLoading(true);
     setLoadError('');
     try {
-      const snap = await getDocs(collection(getFirebaseDb(), 'guilds'));
-      const raw = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Record<string, unknown> & { id: string });
+      // Via servidor (Admin SDK): inclui planos dos donos sem depender do Auth client-side.
+      const res = await fetch('/api/admin/guilds/list', { credentials: 'same-origin' });
+      if (!res.ok) {
+        throw new Error(`erro ${res.status}`);
+      }
+      const body = await res.json() as {
+        guilds?: Array<{
+          id: string;
+          name: string | null;
+          game: string | null;
+          ownerId: string | null;
+          ownerName: string | null;
+          ownerCharacterName: string | null;
+          members: number;
+          isActive: boolean;
+          createdAt: string | null;
+        }>;
+        owners?: Record<string, { displayName: string | null; plan: string; planExpiresAt: string | null; premium: boolean }>;
+      };
+      const owners = body.owners ?? {};
 
-      // Planos dos donos (o premium é do usuário dono; a guilda herda).
-      const ownerIds = [...new Set(raw.map((g) => String(g.ownerId ?? '')).filter(Boolean))];
-      const ownerMap = new Map<string, Record<string, unknown>>();
-      await Promise.all(
-        ownerIds.map(async (uid) => {
-          try {
-            const u = await getDoc(doc(getFirebaseDb(), 'users', uid));
-            if (u.exists()) ownerMap.set(uid, u.data());
-          } catch {
-            // Sem acesso ao dono: trata como sem premium.
-          }
-        }),
-      );
-
-      const rows: GuildRow[] = raw.map((g) => {
-        const ownerId = String(g.ownerId ?? '');
-        const owner = ownerMap.get(ownerId);
+      const rows: GuildRow[] = (body.guilds ?? []).map((g) => {
+        const ownerId = typeof g.ownerId === 'string' ? g.ownerId : '';
+        const owner = owners[ownerId];
         const rawPlan = owner?.plan === 'elite' || owner?.plan === 'conquistador'
           ? (owner.plan as PlanId)
           : 'free';
-        const expiresAt = rawPlan === 'free' ? null : toDate(owner?.planExpiresAt);
+        const expiresAt = rawPlan === 'free' ? null : parseDate(owner?.planExpiresAt ?? null);
         const premium = rawPlan !== 'free' && !!expiresAt && expiresAt.getTime() > Date.now();
         const plan: PlanId = premium ? rawPlan : 'free';
         const gm =
@@ -120,7 +116,7 @@ export default function GuildsPage() {
           '—';
         return {
           id: g.id,
-          name: typeof g.name === 'string' ? g.name : '(sem nome)',
+          name: typeof g.name === 'string' && g.name ? g.name : '(sem nome)',
           game: typeof g.game === 'string' && g.game ? g.game : '—',
           gm,
           ownerId,
@@ -128,9 +124,9 @@ export default function GuildsPage() {
             (typeof owner?.displayName === 'string' && owner.displayName.trim()) ||
             (typeof g.ownerName === 'string' && g.ownerName.trim()) ||
             '—',
-          members: Array.isArray(g.members) ? g.members.length : 0,
+          members: typeof g.members === 'number' ? g.members : 0,
           isActive: g.isActive !== false,
-          createdAt: formatDate(toDate(g.createdAt)),
+          createdAt: formatDate(parseDate(g.createdAt)),
           plan,
           planExpiresAt: premium ? expiresAt : null,
           premium,
@@ -142,8 +138,10 @@ export default function GuildsPage() {
 
       rows.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
       setGuilds(rows);
-    } catch {
-      setLoadError('Não foi possível carregar as guildas. Verifique sua conexão e permissões.');
+    } catch (err) {
+      setLoadError(
+        `Não foi possível carregar as guildas (${err instanceof Error ? err.message : 'erro de rede'}). Tente Atualizar.`,
+      );
     } finally {
       setLoading(false);
     }

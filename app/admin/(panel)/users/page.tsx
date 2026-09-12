@@ -2,11 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
-  collection,
   deleteDoc,
   doc,
-  getDocs,
-  Timestamp,
   updateDoc,
 } from 'firebase/firestore';
 import { AdminShell } from '@/components/admin/admin-shell';
@@ -32,14 +29,10 @@ type UserRow = {
   createdAt: string;
 };
 
-function toDate(value: unknown): Date | null {
+function parseDate(value: string | null): Date | null {
   if (!value) return null;
-  if (value instanceof Timestamp) return value.toDate();
-  if (value instanceof Date) return value;
-  if (typeof value === 'object' && value !== null && typeof (value as { seconds?: unknown }).seconds === 'number') {
-    return new Date((value as { seconds: number }).seconds * 1000);
-  }
-  return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
 function formatDate(d: Date | null): string {
@@ -75,59 +68,62 @@ export default function UsersPage() {
     setLoading(true);
     setLoadError('');
     try {
-      const db = getFirebaseDb();
-      const [usersSnap, guildsSnap] = await Promise.all([
-        getDocs(collection(db, 'users')),
-        getDocs(collection(db, 'guilds')),
-      ]);
-
-      // Nº de guildas por usuário (memberOwnerIds contém os uids dos membros).
-      const guildCount = new Map<string, number>();
-      for (const g of guildsSnap.docs) {
-        const owners = g.data()?.memberOwnerIds;
-        if (Array.isArray(owners)) {
-          for (const uid of owners) {
-            if (typeof uid === 'string') guildCount.set(uid, (guildCount.get(uid) ?? 0) + 1);
-          }
-        }
+      // Via servidor (Admin SDK): não depende do Auth client-side.
+      const res = await fetch('/api/admin/users/list', { credentials: 'same-origin' });
+      if (!res.ok) {
+        throw new Error(`erro ${res.status}`);
       }
+      const body = await res.json() as {
+        users?: Array<{
+          id: string;
+          nickname: string | null;
+          displayName: string | null;
+          email: string | null;
+          isActive: boolean;
+          banned: boolean;
+          xp: number;
+          plan: PlanId;
+          planExpiresAt: string | null;
+          premium: boolean;
+          createdAt: string | null;
+        }>;
+        guildCounts?: Record<string, number>;
+      };
+      const guildCounts = body.guildCounts ?? {};
 
-      const rows: UserRow[] = usersSnap.docs.map((d) => {
-        const u = d.data();
-        const rawPlan = u?.plan === 'elite' || u?.plan === 'conquistador'
-          ? (u.plan as PlanId)
-          : 'free';
-        const expiresAt = rawPlan === 'free' ? null : toDate(u?.planExpiresAt);
+      const rows: UserRow[] = (body.users ?? []).map((u) => {
+        const rawPlan = u.plan === 'elite' || u.plan === 'conquistador' ? u.plan : 'free';
+        const expiresAt = rawPlan === 'free' ? null : parseDate(u.planExpiresAt);
         const premium = rawPlan !== 'free' && !!expiresAt && expiresAt.getTime() > Date.now();
         const plan: PlanId = premium ? rawPlan : 'free';
-        const banned = u?.banned === true;
-        const suspended = u?.isActive === false;
-        const status: UserStatus = banned ? 'banned' : suspended ? 'suspended' : 'active';
+        const status: UserStatus = u.banned ? 'banned' : !u.isActive ? 'suspended' : 'active';
         const nickname =
-          (typeof u?.nickname === 'string' && u.nickname.trim()) ||
-          (typeof u?.displayName === 'string' && u.displayName.trim()) ||
+          (typeof u.nickname === 'string' && u.nickname.trim()) ||
+          (typeof u.displayName === 'string' && u.displayName.trim()) ||
           '(sem nome)';
         return {
-          id: d.id,
+          id: u.id,
           nickname,
-          email: typeof u?.email === 'string' ? u.email : '—',
+          email: typeof u.email === 'string' && u.email ? u.email : '—',
           status,
-          xp: typeof u?.xp === 'number' ? u.xp : 0,
-          guilds: guildCount.get(d.id) ?? 0,
+          xp: typeof u.xp === 'number' ? u.xp : 0,
+          guilds: guildCounts[u.id] ?? 0,
           plan,
           planExpiresAt: premium ? expiresAt : null,
           premium,
           premiumTooltip: premium && expiresAt
             ? `${rawPlan === 'elite' ? 'Elite' : 'Conquistador'} · expira em ${formatDate(expiresAt)} · ${formatRemaining(expiresAt)}`
             : null,
-          createdAt: formatDate(toDate(u?.createdAt)),
+          createdAt: formatDate(parseDate(u.createdAt)),
         };
       });
 
       rows.sort((a, b) => a.nickname.localeCompare(b.nickname, 'pt-BR'));
       setUsers(rows);
-    } catch {
-      setLoadError('Não foi possível carregar os usuários. Verifique sua conexão e permissões.');
+    } catch (err) {
+      setLoadError(
+        `Não foi possível carregar os usuários (${err instanceof Error ? err.message : 'erro de rede'}). Tente Atualizar.`,
+      );
     } finally {
       setLoading(false);
     }
