@@ -2526,9 +2526,13 @@ button {
   background: #1e2d4a;
 }
 .login-socials {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: center;
   gap: 12px;
+}
+.login-socials .login-social-btn {
+  flex: 1;
+  max-width: 320px;
 }
 .login-social-btn {
   display: flex;
@@ -2628,7 +2632,11 @@ button {
     padding: 32px 24px 28px;
   }
   .login-socials {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .login-socials .login-social-btn {
+    max-width: none;
   }
   .login-trust-inner {
     grid-template-columns: 1fr 1fr;
